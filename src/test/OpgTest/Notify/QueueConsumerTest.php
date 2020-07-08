@@ -6,14 +6,17 @@ namespace OpgTest\Notify;
 
 use Opg\Notify\QueueConsumer;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\Test\TestLogger;
 
 class QueueConsumerTest extends TestCase
 {
     private QueueConsumer $consumer;
+    private TestLogger $logger;
 
     public function setUp(): void
     {
-        $this->consumer = new QueueConsumer();
+        $this->logger = new TestLogger();
+        $this->consumer = new QueueConsumer($this->logger);
     }
     
     public function test_run_returns_string_success(): void
@@ -22,5 +25,6 @@ class QueueConsumerTest extends TestCase
         $result = $this->consumer->run();
 
         self::assertEquals($expectedResult, $result);
+        self::assertTrue($this->logger->hasInfoThatContains($expectedResult));
     }
 }

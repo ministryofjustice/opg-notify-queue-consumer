@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Opg\Notify;
 
-//use Psr\Log\LoggerInterface;
-
-use Laminas\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 
 class QueueConsumer
 {
