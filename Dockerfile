@@ -1,0 +1,31 @@
+FROM composer as composer
+# Allow parallel downloads
+RUN composer global require hirak/prestissimo --no-plugins --no-scripts
+COPY composer.json composer.json
+COPY composer.lock composer.lock
+RUN composer install --prefer-dist --no-interaction --no-scripts
+RUN composer dumpautoload -o
+
+FROM php:7.4-cli-alpine
+RUN apk --no-cache add \
+  supervisor \
+  # needed by intl
+  icu-dev
+RUN docker-php-ext-install calendar
+RUN docker-php-ext-install intl
+RUN docker-php-ext-install opcache
+
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY docker/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+WORKDIR /var/www/
+COPY src src
+COPY public public
+COPY phpunit.xml phpunit.xml
+
+COPY --from=composer /app/vendor /var/www/vendor
+RUN test -d /var/www/vendor
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

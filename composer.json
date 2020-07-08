@@ -1,0 +1,23 @@
+{
+  "name": "ministryofjustice/opg-notify-queue-consumer",
+  "description": "Process queued items, fetch details from api, send them to Notify, update sender api",
+  "type": "project",
+  "license": "ISC",
+  "require": {
+    "laminas/laminas-log": "^2.12"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Opg\\": "src/Opg",
+      "OpgTest\\": "src/test/OpgTest"
+    }
+  },
+  "config": {
+    "platform": {
+      "php": "7.4.0"
+    }
+  }
+}
