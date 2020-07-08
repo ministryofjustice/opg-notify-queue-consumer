@@ -12,7 +12,7 @@
          stopOnFailure="false">
 
     <testsuites>
-        <testsuite name="Test Suite">
+        <testsuite name="unit">
             <directory>src/test/</directory>
         </testsuite>
     </testsuites>
