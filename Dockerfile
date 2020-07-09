@@ -22,6 +22,7 @@ COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 WORKDIR /var/www/
 COPY src src
 COPY public public
+COPY tests tests
 COPY phpunit.xml phpunit.xml
 
 COPY --from=composer /app/vendor /var/www/vendor

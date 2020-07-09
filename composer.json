@@ -13,7 +13,7 @@
   "autoload": {
     "psr-4": {
       "Opg\\": "src/Opg",
-      "OpgTest\\": "src/test/OpgTest"
+      "OpgTest\\": "tests/unit/OpgTest"
     }
   },
   "config": {

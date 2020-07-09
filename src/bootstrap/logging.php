@@ -8,8 +8,6 @@ use Laminas\Log\PsrLoggerAdapter;
 use Laminas\Log\Writer\Stream;
 use Opg\Logging\Context;
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
 $doRunLoop = true;
 
 // Setup logging
@@ -21,7 +19,7 @@ $logger->addWriter($writer);
 $psrLoggerAdapter = new PsrLoggerAdapter($logger);
 
 // Set custom handlers
-function shutdown_handler()
+function shutdown_handler(): void
 {
     global $psrLoggerAdapter, $doRunLoop;
 
@@ -29,7 +27,7 @@ function shutdown_handler()
     $doRunLoop = false;
 }
 
-function exception_handler(Throwable $e)
+function exception_handler(Throwable $e): void
 {
     global $psrLoggerAdapter;
 
@@ -44,7 +42,15 @@ function exception_handler(Throwable $e)
     exit(1);
 }
 
-function error_handler($errno, $errstr, $errfile, $errline)
+/**
+ * @param int          $errno
+ * @param string       $errstr
+ * @param string       $errfile
+ * @param int          $errline
+ * @param array<mixed> $errcontext Deprecated - do not use
+ * @return bool
+ */
+function error_handler($errno, $errstr, $errfile, $errline, $errcontext): bool
 {
     global $psrLoggerAdapter;
 
@@ -66,13 +72,13 @@ function error_handler($errno, $errstr, $errfile, $errline)
         case E_USER_ERROR:
             $psrLoggerAdapter->critical('Fatal Error: ' . $errstr, $extras);
             exit(1);
-            break;
 
         default:
             $psrLoggerAdapter->critical('Unknown Error: ' . $errstr, $extras);
             exit(1);
-            break;
     }
+
+    return true;
 }
 
 pcntl_async_signals(true);
