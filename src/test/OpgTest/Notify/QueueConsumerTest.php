@@ -19,7 +19,7 @@ class QueueConsumerTest extends TestCase
         $this->consumer = new QueueConsumer($this->logger);
     }
     
-    public function test_run_returns_string_success(): void
+    public function testRunReturnsStringSuccess(): void
     {
         $expectedResult = "Hello world";
         $result = $this->consumer->run();

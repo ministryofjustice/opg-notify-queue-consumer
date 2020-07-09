@@ -13,9 +13,28 @@ services:
 
   test:
     image: opg-notify-queue-consumer_php:latest
-    build: ./
     command:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
       - "--testsuite=unit"
       - "--log-junit=/output/consumer-unit.xml"
+
+  phpstan:
+    image: opg-notify-queue-consumer_php:latest
+    command:
+      - "./vendor/bin/phpstan"
+      - "analyse"
+      - "--level=7"
+      - "src"
+
+  lint:
+    image: cytopia/phpcs:latest-php7.4
+    volumes:
+    - .:/data
+    command:
+      - -p
+      - --report=checkstyle
+      - --standard=PSR12
+      - --warning-severity=0
+      - ./src
+      - ./public
