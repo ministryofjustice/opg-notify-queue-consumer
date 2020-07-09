@@ -25,6 +25,6 @@ class QueueConsumerTest extends TestCase
         $result = $this->consumer->run();
 
         self::assertEquals($expectedResult, $result);
-        self::assertTrue($this->logger->hasInfoThatContains($expectedResult));
+        self::assertTrue($this->logger->hasInfoThatContains("Running"), var_export($this->logger, true));
     }
 }

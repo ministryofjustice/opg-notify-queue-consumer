@@ -3,7 +3,19 @@ version: "3.6"
 
 services:
 
+  php:
+    build: ./
+    image: opg-notify-queue-consumer_php
+
   consumer:
-    build: .
-    volumes:
-      - ".:/var/www/"
+    image: opg-notify-queue-consumer_php:latest
+    command: ["php", "-f", "public/consumer.php"]
+
+  test:
+    image: opg-notify-queue-consumer_php:latest
+    build: ./
+    command:
+      - "./vendor/bin/phpunit"
+      - "--configuration=phpunit.xml"
+      - "--testsuite=unit"
+      - "--log-junit=/output/consumer-unit.xml"
