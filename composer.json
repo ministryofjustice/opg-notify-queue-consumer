@@ -4,7 +4,9 @@
   "type": "project",
   "license": "ISC",
   "require": {
-    "laminas/laminas-log": "^2.12"
+    "laminas/laminas-log": "^2.12",
+    "aws/aws-sdk-php": "^3.147",
+    "league/flysystem": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.2",

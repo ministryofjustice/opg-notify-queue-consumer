@@ -10,6 +10,8 @@ services:
 
   test:
     image: notify-queue-consumer:latest
+    volumes:
+      - .:/var/www
     command:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
@@ -18,6 +20,8 @@ services:
 
   phpstan:
     image: notify-queue-consumer:latest
+    volumes:
+      - .:/var/www
     command:
       - "./vendor/bin/phpstan"
       - "analyse"
