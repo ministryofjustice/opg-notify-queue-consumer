@@ -3,16 +3,13 @@ version: "3.6"
 
 services:
 
-  php:
-    build: ./
-    image: opg-notify-queue-consumer_php
-
   consumer:
-    image: opg-notify-queue-consumer_php:latest
+    image: notify-queue-consumer:latest
+    build: .
     command: ["php", "-f", "public/consumer.php"]
 
   test:
-    image: opg-notify-queue-consumer_php:latest
+    image: notify-queue-consumer:latest
     command:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
@@ -20,7 +17,7 @@ services:
       - "--log-junit=/output/consumer-unit.xml"
 
   phpstan:
-    image: opg-notify-queue-consumer_php:latest
+    image: notify-queue-consumer:latest
     command:
       - "./vendor/bin/phpstan"
       - "analyse"
@@ -30,11 +27,12 @@ services:
   lint:
     image: cytopia/phpcs:latest-php7.4
     volumes:
-    - .:/data
+      - ./src:/data/src
+      - ./public:/data/public
     command:
       - -p
       - --report=checkstyle
       - --standard=PSR12
       - --warning-severity=0
-      - ./src
-      - ./public
+      - /data/src
+      - /data/public
