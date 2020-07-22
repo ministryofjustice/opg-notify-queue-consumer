@@ -8,6 +8,11 @@ use Opg\Command\SendToNotify;
 
 class SendToNotifyHandler
 {
+    public function __construct()
+    {
+        // Inject FlySystem, Notify Client, Guzzle Client here...
+    }
+
     public function handle(SendToNotify $command): void
     {
         $pdf = $command->getFilename();

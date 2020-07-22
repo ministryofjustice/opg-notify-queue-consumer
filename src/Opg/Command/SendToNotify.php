@@ -8,9 +8,9 @@ use InvalidArgumentException;
 
 class SendToNotify
 {
-    public string $id;
-    public string $uuid;
-    public string $filename;
+    protected string $id;
+    protected string $uuid;
+    protected string $filename;
 
     /**
      * @param array<string,string> $data
@@ -19,7 +19,7 @@ class SendToNotify
     public static function fromArray(array $data): self
     {
         if (empty($data['id'])) {
-            throw new InvalidArgumentException('Message doesn\'t contain a id');
+            throw new InvalidArgumentException('Message doesn\'t contain an id');
         }
 
         if (empty($data['uuid'])) {
