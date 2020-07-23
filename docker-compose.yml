@@ -21,10 +21,11 @@ services:
   phpstan:
     image: notify-queue-consumer:latest
     volumes:
+      - ./src:/var/www/src
       - ./vendor:/var/www/vendor
     command:
       - "ls"
-      - "-la"
+      - "-la ./vendor/bin"
 #      - "--level=7"
 #      - "/var/www/src"
 
