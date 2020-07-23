@@ -52,7 +52,7 @@ jobs:
           name: Run Unit Tests
           command: docker-compose run --rm test
       - store_test_results:
-          path: /tmp/test-results
+          path: build/output
 
   build_notify_queue_consumer:
     executor: notify_queue_consumer/python

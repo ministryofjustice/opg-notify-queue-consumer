@@ -16,17 +16,17 @@ services:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
       - "--testsuite=unit"
-      - "--log-junit=/output/consumer-unit.xml"
+      - "--log-junit=build/output/unit-tests.xml"
 
   phpstan:
     image: notify-queue-consumer:latest
     volumes:
       - .:/var/www
     command:
-      - "./vendor/bin/phpstan"
+      - "/var/www/vendor/bin/phpstan"
       - "analyse"
       - "--level=7"
-      - "src"
+      - "/var/www/src"
 
   lint:
     image: cytopia/phpcs:latest-php7.4
