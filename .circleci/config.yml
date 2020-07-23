@@ -47,10 +47,10 @@ jobs:
           command: docker-compose run --rm lint
       - run:
           name: Run Static Analysis
-          command: docker-compose run --rm phpstan
+          command: docker-compose run --rm phpstan-ci
       - run:
           name: Run Unit Tests
-          command: docker-compose run --rm test
+          command: docker-compose run --rm test-ci
       - store_test_results:
           path: build/output
 

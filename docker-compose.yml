@@ -8,6 +8,22 @@ services:
     build: .
     command: ["php", "-f", "public/consumer.php"]
 
+  test-ci:
+    image: notify-queue-consumer:latest
+    command:
+      - "./vendor/bin/phpunit"
+      - "--configuration=phpunit.xml"
+      - "--testsuite=unit"
+      - "--log-junit=build/output/unit-tests.xml"
+
+  phpstan-ci:
+    image: notify-queue-consumer:latest
+    command:
+      - "./vendor/bin/phpstan"
+      - "analyse"
+      - "--level=7"
+      - "/var/www/src"
+
   test:
     image: notify-queue-consumer:latest
     volumes:
