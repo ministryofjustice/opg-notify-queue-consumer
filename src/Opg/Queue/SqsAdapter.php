@@ -40,6 +40,7 @@ class SqsAdapter implements QueueInterface
             'id' => $raw['ReceiptHandle'],
             'uuid' => $body['uuid'],
             'filename' => $body['filename'],
+            'documentId' => $body['documentId'],
         ]);
     }
 

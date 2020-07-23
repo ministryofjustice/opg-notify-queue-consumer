@@ -43,7 +43,11 @@ class SqsAdapterTest extends TestCase
             'QueueUrl' => $this->queueUrl,
             'WaitTimeSeconds' => 0,
         ];
-        $rawBody = ['uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf'];
+        $rawBody = [
+            'uuid' => 'asd-123',
+            'filename' => 'this_is_a_test.pdf',
+            'documentId' => '1234'
+        ];
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
             'Body' => json_encode($rawBody),
@@ -52,6 +56,7 @@ class SqsAdapterTest extends TestCase
             'id' => $rawData['ReceiptHandle'],
             'uuid' => $rawBody['uuid'],
             'filename' => $rawBody['filename'],
+            'documentId' => $rawBody['documentId'],
         ]);
 
         $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
@@ -101,6 +106,7 @@ class SqsAdapterTest extends TestCase
             'id' => 'handle-85736',
             'uuid' => 'uuid-8537',
             'filename' => 'file.pdf',
+            'documentId' => '1234',
         ]);
 
         $this->sqsClientMock

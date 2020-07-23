@@ -11,6 +11,7 @@ class SendToNotify
     protected string $id;
     protected string $uuid;
     protected string $filename;
+    protected int $documentId;
 
     /**
      * @param array<string,string> $data
@@ -30,10 +31,15 @@ class SendToNotify
             throw new InvalidArgumentException('Message doesn\'t contain a filename');
         }
 
+        if (empty($data['documentId']) || !is_int((int) $data['documentId'])) {
+            throw new InvalidArgumentException('Message doesn\'t contain a numerical documentId');
+        }
+
         $instance = new self();
         $instance->id = $data['id'];
         $instance->uuid = $data['uuid'];
         $instance->filename = $data['filename'];
+        $instance->documentId = (int)$data['documentId'];
 
         return $instance;
     }
@@ -51,5 +57,10 @@ class SendToNotify
     public function getFilename(): string
     {
         return $this->filename;
+    }
+
+    public function getDocumentId(): int
+    {
+        return $this->documentId;
     }
 }

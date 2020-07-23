@@ -16,6 +16,7 @@ class SendToNotifyTest extends TestCase
             'id' => '123',
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
+            'documentId' => '1234',
         ];
 
         $command = SendToNotify::fromArray($data);
@@ -23,6 +24,7 @@ class SendToNotifyTest extends TestCase
         self::assertEquals($data['id'], $command->getId());
         self::assertEquals($data['uuid'], $command->getUuid());
         self::assertEquals($data['filename'], $command->getFilename());
+        self::assertEquals($data['documentId'], $command->getDocumentId());
     }
 
     /**
@@ -44,9 +46,26 @@ class SendToNotifyTest extends TestCase
     public function commandDataProvider(): array
     {
         return [
-            'missing id' => [['uuid' => 'asd-456', 'filename' => 'document.pdf'], 'Message doesn\'t contain an id'],
-            'missing uuid' => [['id' => '123', 'filename' => 'document.pdf'], 'Message doesn\'t contain a uuid'],
-            'missing filename' => [['id' => '123', 'uuid' => 'asd-456'], 'Message doesn\'t contain a filename'],
+            'missing id' => [
+                ['uuid' => 'asd-456', 'filename' => 'document.pdf', 'documentId' => '1234'],
+                'Message doesn\'t contain an id'
+            ],
+            'missing uuid' => [
+                ['id' => '123', 'filename' => 'document.pdf', 'documentId' => '1234'],
+                'Message doesn\'t contain a uuid'
+            ],
+            'missing filename' => [
+                ['id' => '123', 'uuid' => 'asd-456', 'documentId' => '1234'],
+                'Message doesn\'t contain a filename'
+            ],
+            'missing documentId' => [
+                ['id' => '123', 'uuid' => 'asd-456', 'filename' => 'document.pdf'],
+                'Message doesn\'t contain a numerical documentId'
+            ],
+            'non-numerical documentId' => [
+                ['id' => '123', 'uuid' => 'asd-456', 'filename' => 'document.pdf'],
+                'Message doesn\'t contain a numerical documentId'
+            ],
         ];
     }
 }

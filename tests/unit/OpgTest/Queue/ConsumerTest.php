@@ -94,6 +94,11 @@ class ConsumerTest extends TestCase
 
     private function createSendToNotifyCommand(): SendToNotify
     {
-        return SendToNotify::fromArray(['id' => '1', 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf']);
+        return SendToNotify::fromArray([
+            'id' => '1',
+            'uuid' => 'asd-123',
+            'filename' => 'this_is_a_test.pdf',
+            'documentId' => '4545',
+        ]);
     }
 }
