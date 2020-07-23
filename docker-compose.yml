@@ -10,8 +10,6 @@ services:
 
   test:
     image: notify-queue-consumer:latest
-    volumes:
-      - .:/var/www
     command:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
@@ -20,15 +18,11 @@ services:
 
   phpstan:
     image: notify-queue-consumer:latest
-    volumes:
-      - ./src:/var/www/src
-      - ./vendor:/var/www/vendor
     command:
-      - "ls"
-      - "-la"
-      - "./vendor/bin"
-#      - "--level=7"
-#      - "/var/www/src"
+      - "./vendor/bin/phpstan"
+      - "analyse"
+      - "--level=7"
+      - "/var/www/src"
 
   lint:
     image: cytopia/phpcs:latest-php7.4
