@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Opg\Handler;
 
 use Alphagov\Notifications\Client;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\GuzzleException;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use Opg\Command\SendToNotify;
@@ -13,19 +15,22 @@ use UnexpectedValueException;
 class SendToNotifyHandler
 {
     private Filesystem $filesystem;
-    private Client $client;
+    private Client $notifyClient;
+    private GuzzleClient $guzzleClient;
 
-    public function __construct(Filesystem $filesystem, Client $client)
+    public function __construct(Filesystem $filesystem, Client $notifyClient, GuzzleClient $guzzleClient)
     {
         // Inject FlySystem, Notify Client, Guzzle Client here...
 
         $this->filesystem = $filesystem;
-        $this->client = $client;
+        $this->notifyClient = $notifyClient;
+        $this->guzzleClient = $guzzleClient;
     }
 
     /**
      * @param SendToNotify $command
      * @throws FileNotFoundException
+     * @throws GuzzleException
      */
     public function handle(SendToNotify $command): void
     {
@@ -37,11 +42,13 @@ class SendToNotifyHandler
             throw new UnexpectedValueException("Cannot read PDF");
         }
 
-        $response = $this->client->sendPrecompiledLetter(
+        $response = $this->notifyClient->sendPrecompiledLetter(
             $command->getUuid(),
             $contents
             );
-        // send to notify
+
+        $guzzleResponse = $this->guzzleClient->put('/api/public/v1/correspondence/update-send-status');
+
 
         // TODO make sure it handles unique but duplicate messages
 
