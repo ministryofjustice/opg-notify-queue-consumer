@@ -21,12 +21,12 @@ services:
   phpstan:
     image: notify-queue-consumer:latest
     volumes:
-      - .:/var/www
+      - ./vendor:/var/www/vendor
     command:
-      - "/var/www/vendor/bin/phpstan"
-      - "analyse"
-      - "--level=7"
-      - "/var/www/src"
+      - "ls"
+      - "-la"
+#      - "--level=7"
+#      - "/var/www/src"
 
   lint:
     image: cytopia/phpcs:latest-php7.4
