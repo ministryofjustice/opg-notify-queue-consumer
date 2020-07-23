@@ -25,7 +25,8 @@ services:
       - ./vendor:/var/www/vendor
     command:
       - "ls"
-      - "-la ./vendor/bin"
+      - "-la"
+      - "./vendor/bin"
 #      - "--level=7"
 #      - "/var/www/src"
 
