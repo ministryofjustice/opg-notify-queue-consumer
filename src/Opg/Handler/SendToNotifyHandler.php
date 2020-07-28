@@ -39,46 +39,49 @@ class SendToNotifyHandler
      */
     public function handle(SendToNotify $command): void
     {
+        // 1. Fetch PDF for queued item
         $pdf = $command->getFilename();
-
         $contents = $this->filesystem->read($pdf);
 
         if ($contents === false) {
             throw new UnexpectedValueException("Cannot read PDF");
         }
 
+        // 2. Send to notify
         // TODO make sure duplicate references are ignored
-        $response = $this->notifyClient->sendPrecompiledLetter(
+        $notifySendResponse = $this->notifyClient->sendPrecompiledLetter(
             $command->getUuid(),
             $contents
         );
 
-        if (empty($response['id'])) {
+        if (empty($notifySendResponse['id'])) {
             throw new UnexpectedValueException("No Notify id returned");
         }
 
-        /*
-         * The response received from notify is in the following format
-         * {
-         *     "id": "740e5834-3a29-46b4-9a6f-16142fde533a", //the notify id
-         *     "reference": "your-letter-reference", // the uuid for the correspondence
-         *     "postage": "postage-you-have-set-or-None" // the type of postage you selected
-         * }
-         *
-         * Once we have that notify id, we can check for the status of our correspondence by using the getNotification
-         * method on the notify client which takes in the notify id as an argument. The response provides a 200 and a
-         * raft of data which may be useful but we are only concerned with the status
-         */
-        $statusQuery = $this->notifyClient->getNotification($response['id']);
+        $notifyStatusResponse = $this->notifyClient->getNotification($notifySendResponse['id']);
 
-        if (empty($statusQuery['status'])) {
-            throw new UnexpectedValueException(sprintf("No Notify status found for the ID: %s", $response['id']));
+        if (empty($notifyStatusResponse['status'])) {
+            throw new UnexpectedValueException(
+                sprintf("No Notify status found for the ID: %s", $notifySendResponse['id'])
+            );
         }
 
+        // 3. Update status on Sirius
+        $this->updateSirius($command->getDocumentId(), $notifySendResponse['id'], $notifyStatusResponse['status']);
+    }
+
+    /**
+     * @param int    $documentId
+     * @param string $notifyId
+     * @param string $notifyStatus
+     * @throws GuzzleException
+     */
+    private function updateSirius(int $documentId, string $notifyId, string $notifyStatus): void
+    {
         $payload = [
-            'documentId' => $command->getDocumentId(),
-            'notifySendId' => $response['id'],
-            'notifyStatus' => $this->notifyStatusMapper->toSirius($statusQuery['status']),
+            'documentId' => $documentId,
+            'notifySendId' => $notifyId,
+            'notifyStatus' => $this->notifyStatusMapper->toSirius($notifyStatus),
         ];
 
         $guzzleResponse = $this->guzzleClient->request(
@@ -87,6 +90,10 @@ class SendToNotifyHandler
             ['json' => $payload]
         );
 
-        // handle api response
+        if ($guzzleResponse->getStatusCode() !== 204) {
+            throw new UnexpectedValueException(
+                sprintf('Expected status "%s" but received "%s"', 204, $guzzleResponse->getStatusCode())
+            );
+        }
     }
 }
