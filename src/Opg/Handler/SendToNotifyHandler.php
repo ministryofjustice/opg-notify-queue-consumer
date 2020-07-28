@@ -11,9 +11,6 @@ use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use Opg\Command\SendToNotify;
 use UnexpectedValueException;
-use InvalidArgumentException;
-
-use function PHPUnit\Framework\isNull;
 
 class SendToNotifyHandler
 {
@@ -23,8 +20,6 @@ class SendToNotifyHandler
 
     public function __construct(Filesystem $filesystem, Client $notifyClient, GuzzleClient $guzzleClient)
     {
-        // Inject FlySystem, Notify Client, Guzzle Client here...
-
         $this->filesystem = $filesystem;
         $this->notifyClient = $notifyClient;
         $this->guzzleClient = $guzzleClient;
@@ -50,27 +45,27 @@ class SendToNotifyHandler
             $contents
         );
 
+        if (empty($response['id'])) {
+            throw new UnexpectedValueException("No Notify id returned");
+        }
+
         /*
          * The response received from notify is in the following format
          * {
-              "id": "740e5834-3a29-46b4-9a6f-16142fde533a", //the notify id
-              "reference": "your-letter-reference", // the uuid for the correspondence
-              "postage": "postage-you-have-set-or-None" // the type of postage you selected
-            }
+         *     "id": "740e5834-3a29-46b4-9a6f-16142fde533a", //the notify id
+         *     "reference": "your-letter-reference", // the uuid for the correspondence
+         *     "postage": "postage-you-have-set-or-None" // the type of postage you selected
+         * }
          *
-         * */
-
-        /*
-         * Once we have that notify id, we can check for the status of our correspondence
-         * by using the getNotification method on the notify client which takes in the notify
-         * id as an argument. The response provides a 200 and a raft of data which may be useful
-         * but we are only concerned with the status */
+         * Once we have that notify id, we can check for the status of our correspondence by using the getNotification
+         * method on the notify client which takes in the notify id as an argument. The response provides a 200 and a
+         * raft of data which may be useful but we are only concerned with the status
+         */
         $statusQuery = $this->notifyClient->getNotification($response['id']);
 
-        //TODO the statusQuery returns Null if the notification cannot be found
-//        if (isNull($statusQuery)) {
-//            throw new InvalidArgumentException("No notification found for the ID");
-//        }
+        if (empty($statusQuery['status'])) {
+            throw new UnexpectedValueException(sprintf("No Notify status found for the ID: %s", $response['id']));
+        }
 
         $correspondenceStatus = $statusQuery['status'];
 
@@ -79,7 +74,8 @@ class SendToNotifyHandler
          * permanent-failure, temporary-failure, technical failure - in the original endpoint ticket these were
          * queued for sending, Sent for posting (the only one which should give a notify id), Posted and rejected.
          * Are we meant to map these statuses to statuses from Notify and/or set these depending on the part of the process
-         * the correspondence has got to?*/
+         * the correspondence has got to?
+         */
 
         $payload = [
             $command->getDocumentId(), //the document id in the database
