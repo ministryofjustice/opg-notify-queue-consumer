@@ -20,15 +20,21 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $config = include __DIR__ . '/../src/bootstrap/config.php';
 require_once __DIR__ . '/../src/bootstrap/logging.php';
 
+// Initialise dependencies before starting the consumer
 try {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Flysystem ///////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    $client = new S3Client([
+    $awsS3Client = new S3Client([
         'region' => $config['aws']['region'],
         'version' => $config['aws']['s3']['version'],
     ]);
-    $adapter = new AwsS3Adapter($client, 'your-bucket-name', 'optional/path/prefix');
+    $adapter = new AwsS3Adapter(
+        $awsS3Client,
+        $config['aws']['s3']['bucket'],
+        $config['aws']['s3']['prefix'],
+        $config['aws']['s3']['options']
+    );
     $filesystem = new Filesystem($adapter);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
