@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpgTest\Handler;
 
+use Opg\Mapper\NotifyStatus;
 use UnexpectedValueException;
 use Alphagov\Notifications\Client;
 use GuzzleHttp\Client as GuzzleClient;
@@ -32,18 +33,25 @@ class SendToNotifyHandlerTest extends TestCase
      */
     private $mockGuzzleClient;
 
-    private SendToNotifyHandler $handler;
+    /**
+     * @var NotifyStatus|MockObject
+     */
+    private $mockNotifyStatusMapper;
 
+    private SendToNotifyHandler $handler;
 
     public function setUp(): void
     {
         parent::setUp();
+
         $this->mockFilesystem = $this->createMock(Filesystem::class);
         $this->mockNotifyClient = $this->createMock(Client::class);
+        $this->mockNotifyStatusMapper = $this->createMock(NotifyStatus::class);
         $this->mockGuzzleClient = $this->createMock(GuzzleClient::class);
         $this->handler = new SendToNotifyHandler(
             $this->mockFilesystem,
             $this->mockNotifyClient,
+            $this->mockNotifyStatusMapper,
             $this->mockGuzzleClient
         );
     }
@@ -52,7 +60,7 @@ class SendToNotifyHandlerTest extends TestCase
      * @throws FileNotFoundException
      * @throws GuzzleException
      */
-    public function testSendToNotifySuccess(): void
+    public function testRetrieveQueueMessageSendToNotifyAndUpdateSiriusSuccess(): void
     {
         $data = [
             'id' => '123',
@@ -84,10 +92,12 @@ class SendToNotifyHandlerTest extends TestCase
               "completed_at" => ""
         ];
 
+        $siriusStatus = NotifyStatus::SIRIUS_QUEUED;
+
         $payload = [
-            456,
-            "740e5834-3a29-46b4-9a6f-16142fde533a",
-            "sending"
+            "documentId" => 456,
+            "notifySendId" => "740e5834-3a29-46b4-9a6f-16142fde533a",
+            "notifyStatus" => $siriusStatus,
         ];
 
         $command = SendToNotify::fromArray($data);
@@ -110,6 +120,8 @@ class SendToNotifyHandlerTest extends TestCase
             ->with($response['id'])
             ->willReturn($statusQuery);
 
+        $this->mockNotifyStatusMapper->expects(self::once())->method('toSirius')->willReturn($siriusStatus);
+
         $this->mockGuzzleClient
             ->expects(self::once())
             ->method('request')
@@ -122,7 +134,7 @@ class SendToNotifyHandlerTest extends TestCase
      * @throws FileNotFoundException
      * @throws GuzzleException
      */
-    public function testEmptyPdfFailure(): void
+    public function testEmptyPdfInQueueFailure(): void
     {
         $data = [
             'id' => "123",

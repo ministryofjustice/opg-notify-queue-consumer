@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use Opg\Command\SendToNotify;
+use Opg\Mapper\NotifyStatus;
 use UnexpectedValueException;
 
 class SendToNotifyHandler
@@ -17,11 +18,17 @@ class SendToNotifyHandler
     private Filesystem $filesystem;
     private Client $notifyClient;
     private GuzzleClient $guzzleClient;
+    private NotifyStatus $notifyStatusMapper;
 
-    public function __construct(Filesystem $filesystem, Client $notifyClient, GuzzleClient $guzzleClient)
-    {
+    public function __construct(
+        Filesystem $filesystem,
+        Client $notifyClient,
+        NotifyStatus $notifyStatusMapper,
+        GuzzleClient $guzzleClient
+    ) {
         $this->filesystem = $filesystem;
         $this->notifyClient = $notifyClient;
+        $this->notifyStatusMapper = $notifyStatusMapper;
         $this->guzzleClient = $guzzleClient;
     }
 
@@ -40,6 +47,7 @@ class SendToNotifyHandler
             throw new UnexpectedValueException("Cannot read PDF");
         }
 
+        // TODO make sure duplicate references are ignored
         $response = $this->notifyClient->sendPrecompiledLetter(
             $command->getUuid(),
             $contents
@@ -67,20 +75,10 @@ class SendToNotifyHandler
             throw new UnexpectedValueException(sprintf("No Notify status found for the ID: %s", $response['id']));
         }
 
-        $correspondenceStatus = $statusQuery['status'];
-
-        /*
-         * TODO the status from the notification response states the status is either sending, delivered,
-         * permanent-failure, temporary-failure, technical failure - in the original endpoint ticket these were
-         * queued for sending, Sent for posting (the only one which should give a notify id), Posted and rejected.
-         * Are we meant to map these statuses to statuses from Notify and/or set these depending on the part of the process
-         * the correspondence has got to?
-         */
-
         $payload = [
-            $command->getDocumentId(), //the document id in the database
-            $response['id'], //the notify id
-            $correspondenceStatus //the status of the correspondence
+            'documentId' => $command->getDocumentId(),
+            'notifySendId' => $response['id'],
+            'notifyStatus' => $this->notifyStatusMapper->toSirius($statusQuery['status']),
         ];
 
         $guzzleResponse = $this->guzzleClient->request(
@@ -89,11 +87,6 @@ class SendToNotifyHandler
             ['json' => $payload]
         );
 
-
-        // TODO make sure it handles unique but duplicate messages
-
-        // on success update the api
-
-        // on failure throw an exception
+        // handle api response
     }
 }
