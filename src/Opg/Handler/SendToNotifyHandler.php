@@ -48,26 +48,38 @@ class SendToNotifyHandler
         }
 
         // 2. Send to notify
-        // TODO make sure duplicate references are ignored
-        $notifySendResponse = $this->notifyClient->sendPrecompiledLetter(
-            $command->getUuid(),
-            $contents
-        );
+        list('id' => $notifyId, 'status' => $notifyStatus) = $this->sendToNotify($command->getUuid(), $contents);
 
-        if (empty($notifySendResponse['id'])) {
+        // 3. Update status on Sirius
+        $this->updateSirius($command->getDocumentId(), $notifyId, $notifyStatus);
+    }
+
+    /**
+     * @param string $reference
+     * @param string $contents
+     * @return array<string,string>
+     */
+    private function sendToNotify(string $reference, string $contents): array
+    {
+        // TODO make sure duplicate references are ignored
+        $sendResponse = $this->notifyClient->sendPrecompiledLetter($reference, $contents);
+
+        if (empty($sendResponse['id'])) {
             throw new UnexpectedValueException("No Notify id returned");
         }
 
-        $notifyStatusResponse = $this->notifyClient->getNotification($notifySendResponse['id']);
+        $statusResponse = $this->notifyClient->getNotification($sendResponse['id']);
 
-        if (empty($notifyStatusResponse['status'])) {
+        if (empty($statusResponse['status'])) {
             throw new UnexpectedValueException(
-                sprintf("No Notify status found for the ID: %s", $notifySendResponse['id'])
+                sprintf("No Notify status found for the ID: %s", $sendResponse['id'])
             );
         }
 
-        // 3. Update status on Sirius
-        $this->updateSirius($command->getDocumentId(), $notifySendResponse['id'], $notifyStatusResponse['status']);
+        return [
+            'id' => $sendResponse['id'],
+            'status' => $statusResponse['status']
+        ];
     }
 
     /**
@@ -84,8 +96,7 @@ class SendToNotifyHandler
             'notifyStatus' => $this->notifyStatusMapper->toSirius($notifyStatus),
         ];
 
-        $guzzleResponse = $this->guzzleClient->request(
-            'PUT',
+        $guzzleResponse = $this->guzzleClient->put(
             '/api/public/v1/correspondence/update-send-status',
             ['json' => $payload]
         );

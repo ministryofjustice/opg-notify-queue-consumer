@@ -128,8 +128,8 @@ class SendToNotifyHandlerTest extends TestCase
 
         $this->mockGuzzleClient
             ->expects(self::once())
-            ->method('request')
-            ->with('PUT', '/api/public/v1/correspondence/update-send-status', ['json' => $payload])
+            ->method('put')
+            ->with('/api/public/v1/correspondence/update-send-status', ['json' => $payload])
             ->willReturn($mockResponse)
         ;
 
@@ -317,8 +317,8 @@ class SendToNotifyHandlerTest extends TestCase
 
         $this->mockGuzzleClient
             ->expects(self::once())
-            ->method('request')
-            ->with('PUT', '/api/public/v1/correspondence/update-send-status', ['json' => $payload])
+            ->method('put')
+            ->with('/api/public/v1/correspondence/update-send-status', ['json' => $payload])
             ->willReturn($mockResponse)
         ;
 
