@@ -17,7 +17,7 @@ return [
             ]
         ],
         'sqs' => [
-            'endpoint' => getenv('AWS_SQS_ENDPOINT_URL') ?: "https://sqs.eu-west-1.amazonaws.com",
+            'queue_url' => getenv('AWS_SQS_ENDPOINT_URL') ?: null,
             'version' => '2012-11-05', // TODO can this be `latest`?
         ],
     ],

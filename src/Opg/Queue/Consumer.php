@@ -25,7 +25,7 @@ class Consumer
     public function run(): void
     {
         $logExtras = ['context' => Context::NOTIFY_CONSUMER];
-        $this->logger->info('Fetching next item', $logExtras);
+        $this->logger->info('Asking for next message', $logExtras);
 
         try {
             $command = $this->queue->next();
@@ -37,6 +37,8 @@ class Consumer
 
                 $this->logger->info('Deleting message', $logExtras);
                 $this->queue->delete($command);
+            } else {
+                $this->logger->info('No available message', $logExtras);
             }
         } catch (Throwable $e) {
             $logExtras = array_merge($logExtras, ['error' => (string)$e, 'trace' => $e->getTraceAsString()]);

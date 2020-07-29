@@ -6,6 +6,7 @@ services:
   consumer:
     image: notify-queue-consumer:latest
     build: .
+    env_file: [local.env]
     command: ["php", "-f", "public/consumer.php"]
 
   test-ci:
@@ -63,6 +64,10 @@ services:
       DEFAULT_REGION: eu-west-1
       HOSTNAME_EXTERNAL: localstack
       SERVICES: sqs,s3
+      DEBUG: 1
+    ports:
+      - "4572:4572"
+      - "4576:4576"
     volumes:
       - "./scripts/localstack:/docker-entrypoint-initaws.d"
       - "./tests/fixtures:/tmp/fixtures"

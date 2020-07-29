@@ -28,6 +28,8 @@ try {
     $awsS3Client = new S3Client([
         'region' => $config['aws']['region'],
         'version' => $config['aws']['s3']['version'],
+        'endpoint' => $config['aws']['s3']['endpoint'],
+        'use_path_style_endpoint' => $config['aws']['s3']['use_path_style_endpoint'],
     ]);
     $adapter = new AwsS3Adapter(
         $awsS3Client,
@@ -63,7 +65,7 @@ try {
         'region' => $config['aws']['region'],
         'version' => $config['aws']['sqs']['version']
     ]);
-    $queue = new SqsAdapter($awsSqsClient, $config['aws']['sqs']['endpoint']);
+    $queue = new SqsAdapter($awsSqsClient, $config['aws']['sqs']['queue_url']);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Message Handler /////////////////////////////////////////////////////////////////////////////////////////////////
