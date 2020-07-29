@@ -62,6 +62,7 @@ services:
     environment:
       DEFAULT_REGION: eu-west-1
       HOSTNAME_EXTERNAL: localstack
-      SERVICES: sqs
+      SERVICES: sqs,s3
     volumes:
       - "./scripts/localstack:/docker-entrypoint-initaws.d"
+      - "./tests/fixtures:/tmp/fixtures"

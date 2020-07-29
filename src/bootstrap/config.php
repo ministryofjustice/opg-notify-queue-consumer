@@ -10,7 +10,7 @@ return [
             'version' => 'latest',
             'use_path_style_endpoint' => getenv('AWS_S3_USE_PATH_STYLE_ENDPOINT') ?
                 boolval(getenv('AWS_S3_USE_PATH_STYLE_ENDPOINT')) : false,
-            'bucket' => getenv('OPG_CORE_BACK_FILE_PERSISTENCE_S3_BUCKET_NAME') ?: '',
+            'bucket' => getenv('OPG_CORE_BACK_FILE_PERSISTENCE_S3_BUCKET_NAME') ?: 'localbucket',
             'prefix' => '/',
             'options' => [
                 'ServerSideEncryption' => 'AES256',
