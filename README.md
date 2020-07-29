@@ -17,4 +17,5 @@
     
 #### Check the Localstack SQS Queue has been created
     
+    docker-compose up localstack
     docker-compose exec localstack awslocal sqs list-queues

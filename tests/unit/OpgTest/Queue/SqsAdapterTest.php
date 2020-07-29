@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Aws\Result;
 use Aws\Sqs\SqsClient;
 use Opg\Queue\SqsAdapter;
+use UnexpectedValueException;
 
 class SqsAdapterTest extends TestCase
 {
@@ -95,6 +96,50 @@ class SqsAdapterTest extends TestCase
         $actualResult = $sqsAdapter->next();
 
         self::assertNull($actualResult);
+    }
+
+    /**
+     * @param array<mixed> $rawMessageBody
+     * @throws Exception
+     * @dataProvider invalidMessageProvider
+     */
+    public function testNextInvalidMessageThrowsExceptionFailure(array $rawMessageBody): void
+    {
+        $awsResult = $this->createMock(Result::class);
+        $config = [
+            'AttributeNames' => ['SentTimestamp'],
+            'MaxNumberOfMessages' => 1,
+            'MessageAttributeNames' => ['All'],
+            'QueueUrl' => $this->queueUrl,
+            'WaitTimeSeconds' => 0,
+        ];
+        $rawData = [
+            'ReceiptHandle' => 'handle-12345',
+            'Body' => json_encode($rawMessageBody),
+        ];
+
+        $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
+
+        $this->sqsClientMock->method('receiveMessage')->with($config)->willReturn($awsResult);
+
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl);
+
+        self::expectException(UnexpectedValueException::class);
+
+        $sqsAdapter->next();
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function invalidMessageProvider(): array
+    {
+        return [
+            [['filename' => 'this_is_a_test.pdf', 'documentId' => '1234']],
+            [['uuid' => 'asd-123', 'documentId' => '1234']],
+            [['uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf']],
+            [[]],
+        ];
     }
 
     /**

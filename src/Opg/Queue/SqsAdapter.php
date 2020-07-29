@@ -6,6 +6,7 @@ namespace Opg\Queue;
 
 use Aws\Sqs\SqsClient;
 use Opg\Command\SendToNotify;
+use UnexpectedValueException;
 
 class SqsAdapter implements QueueInterface
 {
@@ -36,6 +37,8 @@ class SqsAdapter implements QueueInterface
         $raw = $result->get('Messages')[0];
         $body = json_decode($raw['Body'], true);
 
+        $this->validateBody($body);
+
         return SendToNotify::fromArray([
             'id' => $raw['ReceiptHandle'],
             'uuid' => $body['uuid'],
@@ -51,5 +54,27 @@ class SqsAdapter implements QueueInterface
             'QueueUrl' => $this->queueUrl,
             'ReceiptHandle' => $command->getId(),
         ]);
+    }
+
+    /**
+     * @param mixed $body
+     */
+    private function validateBody($body): void
+    {
+        if (empty($body)) {
+            throw new UnexpectedValueException('Empty message');
+        }
+
+        if (empty($body['uuid'])) {
+            throw new UnexpectedValueException('Missing "uuid"');
+        }
+
+        if (empty($body['filename'])) {
+            throw new UnexpectedValueException('Missing "filename"');
+        }
+
+        if (empty($body['documentId'])) {
+            throw new UnexpectedValueException('Missing "documentId"');
+        }
     }
 }
