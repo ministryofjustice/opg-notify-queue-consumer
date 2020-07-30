@@ -1,5 +1,7 @@
 ## Building
 
+    cp local.env.example local.env
+    # Update the local.env file with any secret credentials when testing external services
     docker-compose build consumer
 
 ## Running

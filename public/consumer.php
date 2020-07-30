@@ -44,7 +44,6 @@ try {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     $notifyClient = new Client([
         'apiKey' => $config['notify']['api_key'],
-        'serviceId' => $config['notify']['service_id'],
         'httpClient' => new CurlClient(
             Psr17FactoryDiscovery::findResponseFactory(),
             Psr17FactoryDiscovery::findStreamFactory()

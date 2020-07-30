@@ -13,3 +13,5 @@ jm_behat_report.html
 
 /build/
 /vendor/
+
+local.env

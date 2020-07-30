@@ -40,8 +40,11 @@ jobs:
           version: 18.06.0-ce
           docker_layer_caching: false
       - run:
+          name: Prep local env variables for docker compose
+          command: cp local.env.example local.env
+      - run:
           name: Build container
-          command: docker-compose build
+          command: docker-compose build consumer
       - run:
           name: Run Linting Checks
           command: docker-compose run --rm lint
