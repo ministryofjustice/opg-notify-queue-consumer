@@ -22,18 +22,18 @@ class NotifyStatus
         // ones here https://docs.notifications.service.gov.uk/rest-api.html#get-the-status-of-one-message-response
         // Assumption is that statuses will be a combination of letter and precompiled letter statuses...
         switch ($notifyStatus) {
-            case 'Failed':
-            case 'Virus scan failed':
-            case 'Validation failed':
+            case 'failed':
+            case 'virus-scan-failed':
+            case 'validation-failed':
                 return self::SIRIUS_REJECTED;
 
-            case 'Pending virus check':
+            case 'pending-virus-check':
                 return self::SIRIUS_QUEUED;
 
-            case 'Accepted':
+            case 'accepted':
                 return self::SIRIUS_POSTING;
 
-            case 'Received':
+            case 'received':
                 return self::SIRIUS_POSTED;
 
             default:

@@ -97,7 +97,7 @@ class SendToNotifyHandler
         ];
 
         $guzzleResponse = $this->guzzleClient->put(
-            '/api/public/v1/correspondence/update-send-status',
+            'http://api/api/public/v1/correspondence/update-send-status',
             ['json' => $payload]
         );
 
