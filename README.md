@@ -46,6 +46,11 @@ Add a message to queue
 Receive a message
     
     docker-compose exec localstack awslocal --endpoint-url=http://localhost:4576 sqs receive-message --queue-url http://localhost:4576/queue/notify
+    
+Delete a message
+    
+    docker-compose exec localstack awslocal --endpoint-url=http://localhost:4576 sqs delete-message --queue-url http://localhost:4576/queue/notify --receipt-handle <HANDLE>
+
 
 ## References
 

@@ -29,12 +29,12 @@ class NotifyStatusTest extends TestCase
     public function notifyStatusProvider(): array
     {
         return [
-            ['Failed', 'rejected'],
-            ['Virus scan failed', 'rejected'],
-            ['Validation failed', 'rejected'],
-            ['Pending virus check', 'queued'],
-            ['Accepted', 'posting'],
-            ['Received', 'posted'],
+            ['failed', 'rejected'],
+            ['virus-scan-failed', 'rejected'],
+            ['validation-failed', 'rejected'],
+            ['pending-virus-check', 'queued'],
+            ['accepted', 'posting'],
+            ['received', 'posted'],
         ];
     }
 

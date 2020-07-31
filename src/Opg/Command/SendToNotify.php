@@ -13,6 +13,10 @@ class SendToNotify
     protected string $filename;
     protected int $documentId;
 
+    private function __construct()
+    {
+    }
+
     /**
      * @param array<string,string> $data
      * @return self

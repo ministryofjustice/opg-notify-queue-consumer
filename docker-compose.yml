@@ -7,7 +7,6 @@ services:
     image: notify-queue-consumer:latest
     build: .
     env_file: [local.env]
-    command: ["php", "-f", "public/consumer.php"]
 
   test-ci:
     image: notify-queue-consumer:latest

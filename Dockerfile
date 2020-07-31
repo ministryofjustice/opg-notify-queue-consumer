@@ -27,3 +27,4 @@ COPY phpunit.xml phpunit.xml
 
 COPY --from=composer /app/vendor /var/www/vendor
 RUN test -d /var/www/vendor
+CMD ["php", "-f", "/var/www/public/consumer.php"]

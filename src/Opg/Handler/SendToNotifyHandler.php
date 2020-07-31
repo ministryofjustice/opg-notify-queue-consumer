@@ -5,53 +5,54 @@ declare(strict_types=1);
 namespace Opg\Handler;
 
 use Alphagov\Notifications\Client;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\GuzzleException;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use Opg\Command\SendToNotify;
-use Opg\Mapper\NotifyStatus;
+use Opg\Command\UpdateDocumentStatus;
+use Opg\Queue\DuplicateMessageException;
 use UnexpectedValueException;
 
 class SendToNotifyHandler
 {
     private Filesystem $filesystem;
     private Client $notifyClient;
-    private GuzzleClient $guzzleClient;
-    private NotifyStatus $notifyStatusMapper;
 
-    public function __construct(
-        Filesystem $filesystem,
-        Client $notifyClient,
-        NotifyStatus $notifyStatusMapper,
-        GuzzleClient $guzzleClient
-    ) {
+    public function __construct(Filesystem $filesystem, Client $notifyClient)
+    {
         $this->filesystem = $filesystem;
         $this->notifyClient = $notifyClient;
-        $this->notifyStatusMapper = $notifyStatusMapper;
-        $this->guzzleClient = $guzzleClient;
     }
 
     /**
-     * @param SendToNotify $command
+     * @param SendToNotify $sendToNotifyCommand
+     * @return UpdateDocumentStatus
      * @throws FileNotFoundException
-     * @throws GuzzleException
      */
-    public function handle(SendToNotify $command): void
+    public function handle(SendToNotify $sendToNotifyCommand): UpdateDocumentStatus
     {
-        // 1. Fetch PDF for queued item
-        $pdf = $command->getFilename();
+        // 1. Check if message exists using our reference - Notify doesn't ignore duplicates!
+        // https://docs.notifications.service.gov.uk/php.html#get-the-status-of-multiple-messages
+        if ($this->isDuplicate($sendToNotifyCommand->getUuid())) {
+            throw new DuplicateMessageException();
+        }
+
+        // 2. Fetch PDF for queued item
+        $pdf = $sendToNotifyCommand->getFilename();
         $contents = $this->filesystem->read($pdf);
 
         if ($contents === false) {
             throw new UnexpectedValueException("Cannot read PDF");
         }
 
-        // 2. Send to notify
-        list('id' => $notifyId, 'status' => $notifyStatus) = $this->sendToNotify($command->getUuid(), $contents);
+        // 3. Send to notify
+        list('id' => $notifyId, 'status' => $notifyStatus)
+            = $this->sendToNotify($sendToNotifyCommand->getUuid(), $contents);
 
-        // 3. Update status on Sirius
-        $this->updateSirius($command->getDocumentId(), $notifyId, $notifyStatus);
+        return UpdateDocumentStatus::fromArray([
+            'notifyId' => $notifyId,
+            'notifyStatus' => $notifyStatus,
+            'documentId' => $sendToNotifyCommand->getDocumentId(),
+        ]);
     }
 
     /**
@@ -61,7 +62,6 @@ class SendToNotifyHandler
      */
     private function sendToNotify(string $reference, string $contents): array
     {
-        // TODO make sure duplicate references are ignored
         $sendResponse = $this->notifyClient->sendPrecompiledLetter($reference, $contents);
 
         if (empty($sendResponse['id'])) {
@@ -83,28 +83,19 @@ class SendToNotifyHandler
     }
 
     /**
-     * @param int    $documentId
-     * @param string $notifyId
-     * @param string $notifyStatus
-     * @throws GuzzleException
+     * @param string $reference
+     * @return bool
      */
-    private function updateSirius(int $documentId, string $notifyId, string $notifyStatus): void
+    private function isDuplicate(string $reference): bool
     {
-        $payload = [
-            'documentId' => $documentId,
-            'notifySendId' => $notifyId,
-            'notifyStatus' => $this->notifyStatusMapper->toSirius($notifyStatus),
-        ];
+        $response = $this->notifyClient->listNotifications(['reference' => $reference]);
 
-        $guzzleResponse = $this->guzzleClient->put(
-            'http://api/api/public/v1/correspondence/update-send-status',
-            ['json' => $payload]
-        );
+        // NOTE we are sending one letter at a time and expecting one letter per reference
+        if (!empty($response['notifications'][0]['id'])) {
 
-        if ($guzzleResponse->getStatusCode() !== 204) {
-            throw new UnexpectedValueException(
-                sprintf('Expected status "%s" but received "%s"', 204, $guzzleResponse->getStatusCode())
-            );
+            return true;
         }
+
+        return false;
     }
 }

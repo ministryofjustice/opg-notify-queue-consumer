@@ -11,14 +11,18 @@ use Aws\Sqs\SqsClient;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use Opg\Handler\SendToNotifyHandler;
+use Opg\Handler\UpdateDocumentStatusHandler;
 use Opg\Logging\Context;
 use Opg\Queue\Consumer;
 use Opg\Queue\SqsAdapter;
 use Opg\Mapper\NotifyStatus;
+use Psr\Log\LoggerInterface;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 $config = include __DIR__ . '/../src/bootstrap/config.php';
 require_once __DIR__ . '/../src/bootstrap/logging.php';
+
+/** @var LoggerInterface $psrLoggerAdapter */
 
 // Initialise dependencies before starting the consumer
 try {
@@ -67,11 +71,14 @@ try {
     $queue = new SqsAdapter($awsSqsClient, $config['aws']['sqs']['queue_url']);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Message Handler /////////////////////////////////////////////////////////////////////////////////////////////////
+    // Handlers ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    $messageHandler = new SendToNotifyHandler(
+    $sendToNotifyHandler = new SendToNotifyHandler(
         $filesystem,
-        $notifyClient,
+        $notifyClient
+    );
+
+    $updateDocumentStatusHandler = new UpdateDocumentStatusHandler(
         new NotifyStatus(),
         $guzzleClient
     );
@@ -79,7 +86,7 @@ try {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Consumer ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    $consumer = new Consumer($queue, $messageHandler, $psrLoggerAdapter);
+    $consumer = new Consumer($queue, $sendToNotifyHandler, $updateDocumentStatusHandler, $psrLoggerAdapter);
 
     while ($doRunLoop) {
         $consumer->run();
