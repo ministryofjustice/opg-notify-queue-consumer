@@ -10,8 +10,8 @@ use Aws\S3\S3Client;
 use Aws\Sqs\SqsClient;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
-use Opg\Handler\SendToNotifyHandler;
-use Opg\Handler\UpdateDocumentStatusHandler;
+use Opg\Command\Handler\SendToNotifyHandler;
+use Opg\Command\Handler\UpdateDocumentStatusHandler;
 use Opg\Logging\Context;
 use Opg\Queue\Consumer;
 use Opg\Queue\SqsAdapter;
@@ -86,7 +86,12 @@ try {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Consumer ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    $consumer = new Consumer($queue, $sendToNotifyHandler, $updateDocumentStatusHandler, $psrLoggerAdapter);
+    $consumer = new Consumer(
+        $queue,
+        $sendToNotifyHandler,
+        $updateDocumentStatusHandler,
+        $psrLoggerAdapter
+    );
 
     while ($doRunLoop) {
         $consumer->run();

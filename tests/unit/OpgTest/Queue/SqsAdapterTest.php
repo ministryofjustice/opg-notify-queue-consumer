@@ -42,7 +42,7 @@ class SqsAdapterTest extends TestCase
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
             'QueueUrl' => $this->queueUrl,
-            'WaitTimeSeconds' => 0,
+            'WaitTimeSeconds' => 10,
         ];
         $rawBody = [
             'uuid' => 'asd-123',
@@ -84,7 +84,7 @@ class SqsAdapterTest extends TestCase
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
             'QueueUrl' => $this->queueUrl,
-            'WaitTimeSeconds' => 0,
+            'WaitTimeSeconds' => 10,
         ];
 
         $awsResult->method('get')->with('Messages')->willReturn(null);
@@ -111,7 +111,7 @@ class SqsAdapterTest extends TestCase
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
             'QueueUrl' => $this->queueUrl,
-            'WaitTimeSeconds' => 0,
+            'WaitTimeSeconds' => 10,
         ];
         $rawData = [
             'ReceiptHandle' => 'handle-12345',

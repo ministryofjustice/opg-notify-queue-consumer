@@ -26,7 +26,7 @@ class SqsAdapter implements QueueInterface
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
             'QueueUrl' => $this->queueUrl,
-            'WaitTimeSeconds' => 0,
+            'WaitTimeSeconds' => 10,
         ]);
 
         if (empty($result->get('Messages')[0])) {

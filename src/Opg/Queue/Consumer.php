@@ -43,6 +43,8 @@ class Consumer
             $sendToNotifyCommand = $this->queue->next();
 
             if (empty($sendToNotifyCommand)) {
+                $this->logger->info('No message', $logExtras);
+
                 return;
             }
 
