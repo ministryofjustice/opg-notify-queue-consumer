@@ -22,17 +22,21 @@ class UpdateDocumentStatus
      */
     public static function fromArray(array $data): self
     {
+        AggregateValidationException::create();
+
         if (empty($data['documentId']) || !is_numeric($data['documentId'])) {
-            throw new InvalidArgumentException('Data doesn\'t contain a numeric documentId');
+            AggregateValidationException::addError('Data doesn\'t contain a numeric documentId');
         }
 
         if (empty($data['notifyId'])) {
-            throw new InvalidArgumentException('Data doesn\'t contain a notifyId');
+            AggregateValidationException::addError('Data doesn\'t contain a notifyId');
         }
 
         if (empty($data['notifyStatus'])) {
-            throw new InvalidArgumentException('Data doesn\'t contain a notifyStatus');
+            AggregateValidationException::addError('Data doesn\'t contain a notifyStatus');
         }
+
+        AggregateValidationException::checkAndThrow();
 
         $instance = new self();
 

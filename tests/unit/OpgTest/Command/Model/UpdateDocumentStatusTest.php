@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpgTest\Command\Model;
 
-use InvalidArgumentException;
+use Opg\Command\Model\AggregateValidationException;
 use Opg\Command\Model\UpdateDocumentStatus;
 use PHPUnit\Framework\TestCase;
 
@@ -32,7 +32,7 @@ class UpdateDocumentStatusTest extends TestCase
      */
     public function testFromArrayThrowsExceptionFailure(array $data, string $expectedMessage): void
     {
-        self::expectException(InvalidArgumentException::class);
+        self::expectException(AggregateValidationException::class);
         self::expectExceptionMessage($expectedMessage);
 
         UpdateDocumentStatus::fromArray($data);
@@ -59,6 +59,15 @@ class UpdateDocumentStatusTest extends TestCase
             'non-numeric documentId' => [
                 ['notifyId' => '1', 'notifyStatus' => 'accepted', 'documentId' => 'word'],
                 'Data doesn\'t contain a numeric documentId'
+            ],
+            'missing all' => [
+                [],
+                implode(', ', [
+                        'Data doesn\'t contain a numeric documentId',
+                        'Data doesn\'t contain a notifyId',
+                        'Data doesn\'t contain a notifyStatus',
+                    ]
+                ),
             ],
         ];
     }

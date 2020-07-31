@@ -23,21 +23,25 @@ class SendToNotify
      */
     public static function fromArray(array $data): self
     {
+        AggregateValidationException::create();
+
         if (empty($data['id'])) {
-            throw new InvalidArgumentException('Data doesn\'t contain an id');
+            AggregateValidationException::addError('Data doesn\'t contain an id');
         }
 
         if (empty($data['uuid'])) {
-            throw new InvalidArgumentException('Data doesn\'t contain a uuid');
+            AggregateValidationException::addError('Data doesn\'t contain a uuid');
         }
 
         if (empty($data['filename'])) {
-            throw new InvalidArgumentException('Data doesn\'t contain a filename');
+            AggregateValidationException::addError('Data doesn\'t contain a filename');
         }
 
         if (empty($data['documentId']) || !is_numeric($data['documentId'])) {
-            throw new InvalidArgumentException('Data doesn\'t contain a numeric documentId');
+            AggregateValidationException::addError('Data doesn\'t contain a numeric documentId');
         }
+
+        AggregateValidationException::checkAndThrow();
 
         $instance = new self();
         $instance->id = $data['id'];

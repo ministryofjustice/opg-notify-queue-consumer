@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpgTest\Command\Model;
 
-use InvalidArgumentException;
+use Opg\Command\Model\AggregateValidationException;
 use Opg\Command\Model\SendToNotify;
 use PHPUnit\Framework\TestCase;
 
@@ -34,7 +34,7 @@ class SendToNotifyTest extends TestCase
      */
     public function testFromArrayThrowsExceptionFailure(array $data, string $expectedMessage): void
     {
-        self::expectException(InvalidArgumentException::class);
+        self::expectException(AggregateValidationException::class);
         self::expectExceptionMessage($expectedMessage);
 
         SendToNotify::fromArray($data);
@@ -66,6 +66,15 @@ class SendToNotifyTest extends TestCase
                 ['id' => '123', 'uuid' => 'asd-456', 'filename' => 'document.pdf', 'documentId' => 'word'],
                 'Data doesn\'t contain a numeric documentId'
             ],
+            'missing all' => [
+                [],
+                implode(', ', [
+                    'Data doesn\'t contain an id',
+                    'Data doesn\'t contain a uuid',
+                    'Data doesn\'t contain a filename',
+                    'Data doesn\'t contain a numeric documentId',
+                ])
+            ]
         ];
     }
 }

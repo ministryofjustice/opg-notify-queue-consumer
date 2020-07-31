@@ -48,19 +48,19 @@ class SendToNotifyHandlerTest extends TestCase
             'id' => '123',
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
-            'documentId' => 456,
+            'documentId' => '456',
         ];
         $contents = "abcdef";
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
-            "reference" => "unique_ref123",
+            "reference" => $data['uuid'],
             "postage" => "first",
         ];
         $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
         $notifyStatus = "sending";
         $statusResponse = [
               "id" => $notifyId,
-              "reference" => "unique_ref123",
+              "reference" => $data['uuid'],
               "line_1" => "742 Evergreen Terrace ",
               "line_2" => "Springfield",
               "postcode" => "S1M 2SO",
@@ -73,7 +73,7 @@ class SendToNotifyHandlerTest extends TestCase
               "completed_at" => "",
         ];
         $payload = [
-            "documentId" => 456,
+            "documentId" => $data['documentId'],
             "notifySendId" => $notifyId,
             "notifyStatus" => $notifyStatus,
         ];
@@ -96,6 +96,12 @@ class SendToNotifyHandlerTest extends TestCase
             ->method('getNotification')
             ->with($response['id'])
             ->willReturn($statusResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('listNotifications')
+            ->with(['reference' => $response['reference']])
+            ->willReturn([]);
 
         $command = $this->handler->handle($command);
 
