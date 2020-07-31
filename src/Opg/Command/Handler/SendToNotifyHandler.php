@@ -92,7 +92,6 @@ class SendToNotifyHandler
 
         // NOTE we are sending one letter at a time and expecting one letter per reference
         if (!empty($response['notifications'][0]['id'])) {
-
             return true;
         }
 

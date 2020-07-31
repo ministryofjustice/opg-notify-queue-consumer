@@ -48,10 +48,8 @@ class Consumer
 
             $logExtras = array_merge(
                 $logExtras,
-                [
-                    'id' => $sendToNotifyCommand->getId(),
-                    'uuid' => $sendToNotifyCommand->getUuid()
-                ]);
+                ['id' => $sendToNotifyCommand->getId(), 'uuid' => $sendToNotifyCommand->getUuid()]
+            );
             $this->logger->info('Sending to Notify', $logExtras);
             $updateDocumentStatusCommand = $this->sendToNotifyHandler->handle($sendToNotifyCommand);
 

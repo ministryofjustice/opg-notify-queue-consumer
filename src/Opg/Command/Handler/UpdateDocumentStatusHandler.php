@@ -25,7 +25,7 @@ class UpdateDocumentStatusHandler
      * @param UpdateDocumentStatus $command
      * @throws GuzzleException
      */
-    public function handle(UpdateDocumentStatus $command)
+    public function handle(UpdateDocumentStatus $command): void
     {
         $payload = [
             'documentId' => $command->getDocumentId(),

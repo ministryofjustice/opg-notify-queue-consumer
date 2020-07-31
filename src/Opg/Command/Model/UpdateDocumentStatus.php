@@ -16,6 +16,10 @@ class UpdateDocumentStatus
     {
     }
 
+    /**
+     * @param array<string,mixed> $data
+     * @return self
+     */
     public static function fromArray(array $data): self
     {
         if (empty($data['documentId']) || !is_numeric($data['documentId'])) {
