@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpgTest\Command\Handler;
 
+use Opg\Queue\DuplicateMessageException;
 use UnexpectedValueException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -108,6 +109,45 @@ class SendToNotifyHandlerTest extends TestCase
         self::assertEquals($payload['documentId'], $command->getDocumentId());
         self::assertEquals($payload['notifyStatus'], $command->getNotifyStatus());
         self::assertEquals($payload['notifySendId'], $command->getNotifyId());
+    }
+
+
+    /**
+     * @throws FileNotFoundException
+     */
+    public function testRetrieveDuplicateMessageThrowsExceptionFailure(): void
+    {
+        $data = [
+            'id' => '123',
+            'uuid' => 'asd-456',
+            'filename' => 'document.pdf',
+            'documentId' => '456',
+        ];
+        $response = [
+            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
+            "reference" => $data['uuid'],
+            "postage" => "first",
+        ];
+        $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
+        $command = SendToNotify::fromArray($data);
+
+        $this->mockFilesystem->expects(self::never())->method('read');
+        $this->mockNotifyClient->expects(self::never())->method('sendPrecompiledLetter');
+        $this->mockNotifyClient->expects(self::never())->method('getNotification');
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('listNotifications')
+            ->with(['reference' => $response['reference']])
+            ->willReturn([
+                'notifications' => [
+                    ['id' => $notifyId],
+                ],
+            ]);
+
+        self::expectException(DuplicateMessageException::class);
+
+        $this->handler->handle($command);
     }
 
     /**

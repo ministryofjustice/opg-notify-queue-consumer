@@ -9,6 +9,10 @@ use InvalidArgumentException;
 class AggregateValidationException extends InvalidArgumentException
 {
     private static ?self $instance = null;
+
+    /**
+     * @var array<string>
+     */
     private array $errors = [];
 
     private function __construct()

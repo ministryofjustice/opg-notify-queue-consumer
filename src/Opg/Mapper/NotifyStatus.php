@@ -15,8 +15,7 @@ class NotifyStatus
 
     public function toSirius(string $notifyStatus): string
     {
-        // TODO update Sirius status strings to match these short ones below
-        // TODO the notifications documentation is unclear on the exact on the statuses for precompiled letters -
+        // NOTE the notifications documentation is unclear on the exact on the statuses for precompiled letters -
         // there's only 3 statuses which can't be right, and the ones listed
         // here https://docs.notifications.service.gov.uk/rest-api.html#status-precompiled-letter don't match up the
         // ones here https://docs.notifications.service.gov.uk/rest-api.html#get-the-status-of-one-message-response

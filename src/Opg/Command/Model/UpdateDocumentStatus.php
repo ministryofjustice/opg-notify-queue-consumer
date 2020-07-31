@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Opg\Command\Model;
 
-use InvalidArgumentException;
-
 class UpdateDocumentStatus
 {
     protected int $documentId;
