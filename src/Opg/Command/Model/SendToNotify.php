@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Opg\Command;
+namespace Opg\Command\Model;
 
 use InvalidArgumentException;
 
@@ -24,19 +24,19 @@ class SendToNotify
     public static function fromArray(array $data): self
     {
         if (empty($data['id'])) {
-            throw new InvalidArgumentException('Message doesn\'t contain an id');
+            throw new InvalidArgumentException('Data doesn\'t contain an id');
         }
 
         if (empty($data['uuid'])) {
-            throw new InvalidArgumentException('Message doesn\'t contain a uuid');
+            throw new InvalidArgumentException('Data doesn\'t contain a uuid');
         }
 
         if (empty($data['filename'])) {
-            throw new InvalidArgumentException('Message doesn\'t contain a filename');
+            throw new InvalidArgumentException('Data doesn\'t contain a filename');
         }
 
-        if (empty($data['documentId']) || !is_int((int) $data['documentId'])) {
-            throw new InvalidArgumentException('Message doesn\'t contain a numerical documentId');
+        if (empty($data['documentId']) || !is_numeric($data['documentId'])) {
+            throw new InvalidArgumentException('Data doesn\'t contain a numeric documentId');
         }
 
         $instance = new self();

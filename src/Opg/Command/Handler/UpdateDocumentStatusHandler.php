@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Opg\Handler;
+namespace Opg\Command\Handler;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
-use Opg\Command\UpdateDocumentStatus;
+use Opg\Command\Model\UpdateDocumentStatus;
 use Opg\Mapper\NotifyStatus;
 use UnexpectedValueException;
 

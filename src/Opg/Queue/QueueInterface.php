@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Opg\Queue;
 
 use Exception;
-use Opg\Command\SendToNotify;
+use Opg\Command\Model\SendToNotify;
 
 interface QueueInterface
 {

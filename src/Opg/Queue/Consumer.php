@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Opg\Queue;
 
 use Exception;
-use Opg\Handler\UpdateDocumentStatusHandler;
+use Opg\Command\Handler\UpdateDocumentStatusHandler;
 use Throwable;
 use Psr\Log\LoggerInterface;
-use Opg\Handler\SendToNotifyHandler;
+use Opg\Command\Handler\SendToNotifyHandler;
 use Opg\Logging\Context;
 
 class Consumer
@@ -16,9 +16,6 @@ class Consumer
     private LoggerInterface $logger;
     private QueueInterface $queue;
     private SendToNotifyHandler $sendToNotifyHandler;
-    /**
-     * @var UpdateDocumentStatusHandler
-     */
     private UpdateDocumentStatusHandler $updateDocumentStatusHandler;
 
     public function __construct(
@@ -55,16 +52,16 @@ class Consumer
                     'id' => $sendToNotifyCommand->getId(),
                     'uuid' => $sendToNotifyCommand->getUuid()
                 ]);
-            $this->logger->info('Handling message', $logExtras);
+            $this->logger->info('Sending to Notify', $logExtras);
             $updateDocumentStatusCommand = $this->sendToNotifyHandler->handle($sendToNotifyCommand);
 
-            $this->logger->info('Deleting message', $logExtras);
+            $this->logger->info('Deleting processed message', $logExtras);
             $this->queue->delete($sendToNotifyCommand);
 
-            $this->logger->info('Updating status', $logExtras);
+            $this->logger->info('Updating document status', $logExtras);
             $this->updateDocumentStatusHandler->handle($updateDocumentStatusCommand);
         } catch (DuplicateMessageException $e) {
-            $this->logger->info('Deleting duplicate', $logExtras);
+            $this->logger->info('Deleting duplicate message', $logExtras);
             $this->queue->delete($sendToNotifyCommand);
         } catch (Throwable $e) {
             $logExtras = array_merge($logExtras, ['error' => (string)$e, 'trace' => $e->getTraceAsString()]);

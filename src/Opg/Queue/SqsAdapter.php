@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Opg\Queue;
 
 use Aws\Sqs\SqsClient;
-use Opg\Command\SendToNotify;
+use Opg\Command\Model\SendToNotify;
 use UnexpectedValueException;
 
 class SqsAdapter implements QueueInterface

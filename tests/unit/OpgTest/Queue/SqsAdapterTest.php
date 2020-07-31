@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpgTest\Queue;
 
 use Exception;
-use Opg\Command\SendToNotify;
+use Opg\Command\Model\SendToNotify;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Aws\Result;

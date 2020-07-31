@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OpgTest\Command;
+namespace OpgTest\Command\Model;
 
 use InvalidArgumentException;
-use Opg\Command\SendToNotify;
+use Opg\Command\Model\SendToNotify;
 use PHPUnit\Framework\TestCase;
 
 class SendToNotifyTest extends TestCase
@@ -48,23 +48,23 @@ class SendToNotifyTest extends TestCase
         return [
             'missing id' => [
                 ['uuid' => 'asd-456', 'filename' => 'document.pdf', 'documentId' => '1234'],
-                'Message doesn\'t contain an id'
+                'Data doesn\'t contain an id'
             ],
             'missing uuid' => [
                 ['id' => '123', 'filename' => 'document.pdf', 'documentId' => '1234'],
-                'Message doesn\'t contain a uuid'
+                'Data doesn\'t contain a uuid'
             ],
             'missing filename' => [
                 ['id' => '123', 'uuid' => 'asd-456', 'documentId' => '1234'],
-                'Message doesn\'t contain a filename'
+                'Data doesn\'t contain a filename'
             ],
             'missing documentId' => [
                 ['id' => '123', 'uuid' => 'asd-456', 'filename' => 'document.pdf'],
-                'Message doesn\'t contain a numerical documentId'
+                'Data doesn\'t contain a numeric documentId'
             ],
-            'non-numerical documentId' => [
-                ['id' => '123', 'uuid' => 'asd-456', 'filename' => 'document.pdf'],
-                'Message doesn\'t contain a numerical documentId'
+            'non-numeric documentId' => [
+                ['id' => '123', 'uuid' => 'asd-456', 'filename' => 'document.pdf', 'documentId' => 'word'],
+                'Data doesn\'t contain a numeric documentId'
             ],
         ];
     }

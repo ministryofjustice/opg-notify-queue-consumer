@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Opg\Handler;
+namespace Opg\Command\Handler;
 
 use Alphagov\Notifications\Client;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
-use Opg\Command\SendToNotify;
-use Opg\Command\UpdateDocumentStatus;
+use Opg\Command\Model\SendToNotify;
+use Opg\Command\Model\UpdateDocumentStatus;
 use Opg\Queue\DuplicateMessageException;
 use UnexpectedValueException;
 

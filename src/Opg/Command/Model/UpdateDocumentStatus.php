@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Opg\Command;
+namespace Opg\Command\Model;
 
 use InvalidArgumentException;
 
@@ -18,16 +18,16 @@ class UpdateDocumentStatus
 
     public static function fromArray(array $data): self
     {
-        if (empty($data['documentId']) || !intval($data['documentId'])) {
-            throw new InvalidArgumentException('Message doesn\'t contain a valid documentId');
+        if (empty($data['documentId']) || !is_numeric($data['documentId'])) {
+            throw new InvalidArgumentException('Data doesn\'t contain a numeric documentId');
         }
 
         if (empty($data['notifyId'])) {
-            throw new InvalidArgumentException('Message doesn\'t contain a notifyId');
+            throw new InvalidArgumentException('Data doesn\'t contain a notifyId');
         }
 
         if (empty($data['notifyStatus'])) {
-            throw new InvalidArgumentException('Message doesn\'t contain a notifyStatus');
+            throw new InvalidArgumentException('Data doesn\'t contain a notifyStatus');
         }
 
         $instance = new self();
