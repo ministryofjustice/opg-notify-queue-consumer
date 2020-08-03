@@ -44,7 +44,7 @@ jobs:
           command: cp local.env.example local.env
       - run:
           name: make output dir
-          command: mkdir -p test-results/{phpstan,unit}
+          command: mkdir -p test-results/{unit}
       - run:
           name: Build container
           command: docker-compose build consumer
@@ -53,9 +53,7 @@ jobs:
           command: docker-compose run --rm lint
       - run:
           name: Run Static Analysis
-          command: |
-            set -o pipefail
-            docker-compose run --rm phpstan-ci | tee test-results/phpstan/results.xml
+          command: docker-compose run --rm phpstan-ci
       - run:
           name: Run Unit Tests
           command: docker-compose run --rm test-ci

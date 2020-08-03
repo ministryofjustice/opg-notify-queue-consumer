@@ -26,8 +26,6 @@ services:
       - "/var/www/vendor/bin/phpstan"
       - "analyse"
       - "--level=7"
-      - "--error-format=junit"
-      - "--no-progress"
       - "/var/www/src"
 
   test:
