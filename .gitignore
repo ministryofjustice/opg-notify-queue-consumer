@@ -12,6 +12,7 @@ atlassian-ide-plugin.xml
 jm_behat_report.html
 
 /build/
+/test-results/
 /vendor/
 
 local.env

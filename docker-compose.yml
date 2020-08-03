@@ -10,14 +10,18 @@ services:
 
   test-ci:
     image: notify-queue-consumer:latest
+    volumes:
+      - ./test-results:/var/www/test-results
     command:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
       - "--testsuite=unit"
-      - "--log-junit=build/output/unit-tests.xml"
+      - "--log-junit=test-results/unit/results.xml"
 
   phpstan-ci:
     image: notify-queue-consumer:latest
+    volumes:
+      - ./test-results:/var/www/test-results
     command:
       - "./vendor/bin/phpstan"
       - "analyse"
@@ -32,7 +36,7 @@ services:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
       - "--testsuite=unit"
-      - "--log-junit=build/output/unit-tests.xml"
+      - "--log-junit=test-results/unit/results.xml"
 
   phpstan:
     image: notify-queue-consumer:latest
@@ -42,6 +46,7 @@ services:
       - "/var/www/vendor/bin/phpstan"
       - "analyse"
       - "--level=7"
+      - "--error-format=junit"
       - "/var/www/src"
 
   lint:
