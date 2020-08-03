@@ -57,6 +57,9 @@ jobs:
       - run:
           name: Run Unit Tests
           command: docker-compose run --rm test-ci
+      - run:
+          name: Debug
+          command: find -f test-results
       - store_test_results:
           path: test-results
 
