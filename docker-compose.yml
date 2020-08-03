@@ -16,7 +16,7 @@ services:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
       - "--testsuite=unit"
-      - "--log-junit=test-results/unit/results.xml"
+      - "--log-junit=/var/www/test-results/unit/results.xml"
 
   phpstan-ci:
     image: notify-queue-consumer:latest
@@ -36,7 +36,7 @@ services:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
       - "--testsuite=unit"
-      - "--log-junit=test-results/unit/results.xml"
+      - "--log-junit=/var/www/test-results/unit/results.xml"
 
   phpstan:
     image: notify-queue-consumer:latest
