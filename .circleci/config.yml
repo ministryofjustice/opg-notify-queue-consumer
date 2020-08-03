@@ -59,8 +59,8 @@ jobs:
           command: docker-compose run --rm test-ci
       - run:
           name: Debug
-      - store_test_results:
           command: ls -la test-results/unit
+      - store_test_results:
           path: test-results
 
   build_notify_queue_consumer:
