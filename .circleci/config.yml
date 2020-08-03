@@ -44,7 +44,7 @@ jobs:
           command: cp local.env.example local.env
       - run:
           name: make output dir
-          command: mkdir test-results
+          command: mkdir -p test-results/{phpstan,unit}
       - run:
           name: Build container
           command: docker-compose build consumer
