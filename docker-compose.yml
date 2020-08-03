@@ -11,7 +11,7 @@ services:
   test-ci:
     image: notify-queue-consumer:latest
     volumes:
-      - ./test-results:/var/www/test-results
+      - ./test-results/:/var/www/test-results
     command:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"

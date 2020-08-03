@@ -59,7 +59,7 @@ jobs:
           command: docker-compose run --rm test-ci
       - run:
           name: Debug
-          command: ls -la test-results/unit
+          command: ls -la test-results/*
       - store_test_results:
           path: test-results
 
