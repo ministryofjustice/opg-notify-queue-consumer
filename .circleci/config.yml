@@ -43,9 +43,6 @@ jobs:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
       - run:
-          name: make output dir
-          command: mkdir -p test-results/{unit}
-      - run:
           name: Build container
           command: docker-compose build consumer
       - run:

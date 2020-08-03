@@ -20,6 +20,7 @@ COPY docker/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 WORKDIR /var/www/
+RUN mkdir -p test-results/unit
 COPY src src
 COPY public public
 COPY tests tests
