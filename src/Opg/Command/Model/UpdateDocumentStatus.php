@@ -20,7 +20,7 @@ class UpdateDocumentStatus
      */
     public static function fromArray(array $data): self
     {
-        AggregateValidationException::create();
+        AggregateValidationException::clearInstance();
 
         if (empty($data['documentId']) || !is_numeric($data['documentId'])) {
             AggregateValidationException::addError('Data doesn\'t contain a numeric documentId');

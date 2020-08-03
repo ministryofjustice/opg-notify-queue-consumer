@@ -21,7 +21,7 @@ class SendToNotify
      */
     public static function fromArray(array $data): self
     {
-        AggregateValidationException::create();
+        AggregateValidationException::clearInstance();
 
         if (empty($data['id'])) {
             AggregateValidationException::addError('Data doesn\'t contain an id');

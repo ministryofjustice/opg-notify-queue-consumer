@@ -42,7 +42,7 @@ class AggregateValidationException extends InvalidArgumentException
         return count(self::getInstance()->errors) > 0;
     }
 
-    public static function create(): void
+    public static function clearInstance(): void
     {
         self::$instance = null;
     }
