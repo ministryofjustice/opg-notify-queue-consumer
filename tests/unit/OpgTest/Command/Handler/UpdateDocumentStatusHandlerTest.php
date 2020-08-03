@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace OpgTest\Command\Handler;
 
-use Opg\Command\Model\UpdateDocumentStatus;
-use Opg\Command\Handler\UpdateDocumentStatusHandler;
 use PHPUnit\Framework\TestCase;
+use UnexpectedValueException;
+use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
+use Opg\Command\Model\UpdateDocumentStatus;
+use Opg\Command\Handler\UpdateDocumentStatusHandler;
 use Opg\Mapper\NotifyStatus;
-use Psr\Http\Message\ResponseInterface;
-use UnexpectedValueException;
 
 class UpdateDocumentStatusHandlerTest extends TestCase
 {
+    private const ENDPOINT = '/update-status';
     private $mockGuzzleClient;
     private $mockNotifyStatusMapper;
 
@@ -28,7 +29,8 @@ class UpdateDocumentStatusHandlerTest extends TestCase
         $this->mockGuzzleClient = $this->createMock(GuzzleClient::class);
         $this->handler = new UpdateDocumentStatusHandler(
             $this->mockNotifyStatusMapper,
-            $this->mockGuzzleClient
+            $this->mockGuzzleClient,
+            self::ENDPOINT
         );
     }
 
@@ -58,7 +60,7 @@ class UpdateDocumentStatusHandlerTest extends TestCase
         $this->mockGuzzleClient
             ->expects(self::once())
             ->method('put')
-            ->with('http://api/api/public/v1/correspondence/update-send-status', ['json' => $payload])
+            ->with(self::ENDPOINT, ['json' => $payload])
             ->willReturn($mockResponse);
 
         $this->handler->handle($command);
@@ -90,7 +92,7 @@ class UpdateDocumentStatusHandlerTest extends TestCase
         $this->mockGuzzleClient
             ->expects(self::once())
             ->method('put')
-            ->with('http://api/api/public/v1/correspondence/update-send-status', ['json' => $payload])
+            ->with(self::ENDPOINT, ['json' => $payload])
             ->willReturn($mockResponse);
 
         self::expectException(UnexpectedValueException::class);

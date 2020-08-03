@@ -18,11 +18,14 @@ use Opg\Queue\SqsAdapter;
 use Opg\Mapper\NotifyStatus;
 use Psr\Log\LoggerInterface;
 
+/** @var LoggerInterface $psrLoggerAdapter */
+$psrLoggerAdapter = null;
+$doRunLoop = false;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 $config = include __DIR__ . '/../src/bootstrap/config.php';
 require_once __DIR__ . '/../src/bootstrap/logging.php';
 
-/** @var LoggerInterface $psrLoggerAdapter */
 
 // Initialise dependencies before starting the consumer
 try {
@@ -80,7 +83,8 @@ try {
 
     $updateDocumentStatusHandler = new UpdateDocumentStatusHandler(
         new NotifyStatus(),
-        $guzzleClient
+        $guzzleClient,
+        $config['sirius']['update_status_endpoint']
     );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

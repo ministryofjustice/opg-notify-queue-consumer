@@ -14,11 +14,16 @@ class UpdateDocumentStatusHandler
 {
     private NotifyStatus $notifyStatusMapper;
     private GuzzleClient $guzzleClient;
+    private string $updateEndpointUrl;
 
-    public function __construct(NotifyStatus $notifyStatusMapper, GuzzleClient $guzzleClient)
-    {
+    public function __construct(
+        NotifyStatus $notifyStatusMapper,
+        GuzzleClient $guzzleClient,
+        string $updateEndpointUrl
+    ) {
         $this->notifyStatusMapper = $notifyStatusMapper;
         $this->guzzleClient = $guzzleClient;
+        $this->updateEndpointUrl = $updateEndpointUrl;
     }
 
     /**
@@ -34,7 +39,7 @@ class UpdateDocumentStatusHandler
         ];
 
         $guzzleResponse = $this->guzzleClient->put(
-            'http://api/api/public/v1/correspondence/update-send-status',
+            $this->updateEndpointUrl,
             ['json' => $payload]
         );
 

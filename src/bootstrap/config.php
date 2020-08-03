@@ -30,6 +30,6 @@ return [
         'service_id' => getenv('OPG_NOTIFY_SERVICE_ID') === false ? '8aaa7cd4-b7af-4f49-90be-88d4815ecb72' : getenv('OPG_NOTIFY_SERVICE_ID'),
     ],
     'sirius' => [
-        'api_base_uri' => 'https://foo.com/api/',
+        'update_status_endpoint' => getenv('OPG_SIRIUS_UPDATE_STATUS_ENDPOINT') ?: '/update-status',
     ],
 ];
