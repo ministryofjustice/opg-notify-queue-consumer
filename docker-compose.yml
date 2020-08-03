@@ -23,9 +23,11 @@ services:
     volumes:
       - ./test-results:/var/www/test-results
     command:
-      - "./vendor/bin/phpstan"
+      - "/var/www/vendor/bin/phpstan"
       - "analyse"
       - "--level=7"
+      - "--error-format=junit"
+      - "--no-progress"
       - "/var/www/src"
 
   test:
@@ -46,7 +48,6 @@ services:
       - "/var/www/vendor/bin/phpstan"
       - "analyse"
       - "--level=7"
-      - "--error-format=junit"
       - "/var/www/src"
 
   lint:
