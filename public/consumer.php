@@ -10,12 +10,12 @@ use Aws\S3\S3Client;
 use Aws\Sqs\SqsClient;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
-use Opg\Command\Handler\SendToNotifyHandler;
-use Opg\Command\Handler\UpdateDocumentStatusHandler;
-use Opg\Logging\Context;
-use Opg\Queue\Consumer;
-use Opg\Queue\SqsAdapter;
-use Opg\Mapper\NotifyStatus;
+use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
+use NotifyQueueConsumer\Command\Handler\UpdateDocumentStatusHandler;
+use NotifyQueueConsumer\Logging\Context;
+use NotifyQueueConsumer\Queue\Consumer;
+use NotifyQueueConsumer\Queue\SqsAdapter;
+use NotifyQueueConsumer\Mapper\NotifyStatus;
 use Psr\Log\LoggerInterface;
 
 /** @var LoggerInterface $psrLoggerAdapter */

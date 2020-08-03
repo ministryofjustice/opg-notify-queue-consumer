@@ -53,9 +53,7 @@ jobs:
           command: docker-compose run --rm phpstan-ci
       - run:
           name: Run Unit Tests
-          command: |
-            docker-compose run --rm test-ci
-            ls -la test-results/*
+          command: docker-compose run --rm test-ci
       - store_test_results:
           path: test-results
 
