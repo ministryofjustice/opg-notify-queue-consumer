@@ -28,6 +28,25 @@ services:
       - "--level=7"
       - "/var/www/src"
 
+  pcov:
+    image: notify-queue-consumer-pcov:latest
+    build:
+      context: .
+      dockerfile: docker/pcov/Dockerfile
+    volumes:
+      - .:/var/www
+    command:
+      - "php"
+      - "-dpcov.enabled=1"
+      - "-dpcov.directory=."
+      - "-dpcov.directory=."
+      - "-dpcov.exclude=\"~vendor~\""
+      - "./vendor/bin/phpunit"
+      - "--configuration=phpunit.xml"
+      - "--coverage-text"
+      - "--coverage-clover=coverage.xml"
+      - "--testsuite=unit"
+
   test:
     image: notify-queue-consumer:latest
     volumes:

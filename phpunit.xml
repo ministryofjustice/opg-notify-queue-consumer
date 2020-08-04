@@ -17,4 +17,14 @@
         </testsuite>
     </testsuites>
 
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src/NotifyQueueConsumer/</directory>
+            <exclude>
+                <directory suffix=".php">./public</directory>
+                <directory suffix=".php">./src/bootstrap</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
 </phpunit>
