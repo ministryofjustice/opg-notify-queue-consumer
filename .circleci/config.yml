@@ -3,11 +3,13 @@ version: 2.1
 workflows:
   pr-build-and-test:
     jobs:
-      - test_notify_queue_consumer:
-          name: test_notify_queue_consumer
-      - build_notify_queue_consumer:
-          name: build_notify_queue_consumer
-          requires: [test_notify_queue_consumer]
+      - test:
+          name: test
+      - lint:
+          name: lint
+      - build:
+          name: build
+          requires: [test, lint]
 
 orbs:
   notify_queue_consumer:
@@ -30,34 +32,73 @@ orbs:
     executors:
       python:
         docker: [image: circleci/python]
+      php:
+        docker: [image: circleci/php]
+      linter:
+        docker: [image: cytopia/phpcs:latest-php7.4]
 
 jobs:
-  test_notify_queue_consumer:
-    executor: notify_queue_consumer/python
+  test:
+    executor: notify_queue_consumer/php
     steps:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: false
+          docker_layer_caching: true
+      - run:
+          name: Prep local env variables for docker compose
+          command: cp local.env.example local.env
+      - run: sudo pecl install pcov
+      - run: sudo docker-php-ext-enable pcov
+      - run: sudo composer self-update
+      - run: composer install -n --prefer-dist
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+      - run:
+          name: Run unit tests with coverage
+          command: |
+            php \
+            -dpcov.enabled=1 \
+            -dpcov.directory=./ \
+            -dpcov.exclude=\"~./vendor~\" \
+            ./vendor/bin/phpunit \
+            --configuration=./phpunit.xml \
+            --coverage-text \
+            --coverage-clover=./test-results/pcov/results.xml \
+            --log-junit=./test-results/unit/results.xml \
+            --testsuite=unit
+      - run:
+          name: Run Static Analysis
+          command: ./vendor/bin/phpstan analyse --no-progress --level=7 src
+      - store_test_results:
+          path: ./test-results
+      - store_artifacts:
+          path:  ./test-results/pcov
+          destination: coverage-report
+  lint:
+    executor: notify_queue_consumer/linter
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: true
       - run:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
       - run:
-          name: Build container
-          command: docker-compose build consumer
-      - run:
           name: Run Linting Checks
-          command: docker-compose run --rm lint
-      - run:
-          name: Run Static Analysis
-          command: docker-compose run --rm phpstan-ci
-      - run:
-          name: Run Unit Tests
-          command: docker-compose run --rm test-ci
-      - store_test_results:
-          path: test-results
+          command: |
+            phpcs \
+            -p \
+            --report=checkstyle \
+            --standard=PSR12 \
+            --warning-severity=0 \
+            src \
+            public
 
-  build_notify_queue_consumer:
+  build:
     executor: notify_queue_consumer/python
     parameters:
       container_repo_url:

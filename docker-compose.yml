@@ -34,17 +34,17 @@ services:
       context: .
       dockerfile: docker/pcov/Dockerfile
     volumes:
-      - .:/var/www
+      - ./test-results:/var/www/test-results
     command:
       - "php"
       - "-dpcov.enabled=1"
-      - "-dpcov.directory=."
-      - "-dpcov.directory=."
-      - "-dpcov.exclude=\"~vendor~\""
-      - "./vendor/bin/phpunit"
-      - "--configuration=phpunit.xml"
+      - "-dpcov.directory=/var/www/"
+      - "-dpcov.exclude=\"~/var/www/vendor~\""
+      - "/var/www/vendor/bin/phpunit"
+      - "--configuration=/var/www/phpunit.xml"
       - "--coverage-text"
-      - "--coverage-clover=coverage.xml"
+      - "--coverage-clover=/var/www/test-results/pcov/results.xml"
+      - "--log-junit=/var/www/test-results/unit/results.xml"
       - "--testsuite=unit"
 
   test:
@@ -52,7 +52,7 @@ services:
     volumes:
       - .:/var/www
     command:
-      - "./vendor/bin/phpunit"
+      - "/var/www/vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
       - "--testsuite=unit"
       - "--log-junit=/var/www/test-results/unit/results.xml"

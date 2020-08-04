@@ -16,5 +16,12 @@ RUN docker-php-ext-configure calendar
 
 WORKDIR /var/www/
 
+RUN mkdir -p test-results/{unit,pcov}
+
+COPY src src
+COPY tests tests
+COPY phpunit.xml phpunit.xml
+
 COPY --from=composer /app/vendor /var/www/vendor
 RUN test -d /var/www/vendor
+RUN ls -la /var/www/vendor/bin
