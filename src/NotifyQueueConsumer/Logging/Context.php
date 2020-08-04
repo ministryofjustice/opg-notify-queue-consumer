@@ -1,6 +1,8 @@
 <?php
 
-namespace Opg\Logging;
+declare(strict_types=1);
+
+namespace NotifyQueueConsumer\Logging;
 
 class Context
 {

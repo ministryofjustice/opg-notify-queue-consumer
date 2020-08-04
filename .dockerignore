@@ -37,3 +37,5 @@ Dockerfile*
 docker-compose*
 Makefile
 composer.phar
+
+local.env

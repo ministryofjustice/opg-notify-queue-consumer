@@ -6,23 +6,47 @@ services:
   consumer:
     image: notify-queue-consumer:latest
     build: .
-    command: ["php", "-f", "public/consumer.php"]
+    env_file: [local.env]
 
-  test:
+  test-ci:
     image: notify-queue-consumer:latest
+    volumes:
+      - ./test-results/:/var/www/test-results
     command:
       - "./vendor/bin/phpunit"
       - "--configuration=phpunit.xml"
       - "--testsuite=unit"
-      - "--log-junit=/output/consumer-unit.xml"
+      - "--log-junit=/var/www/test-results/unit/results.xml"
+
+  phpstan-ci:
+    image: notify-queue-consumer:latest
+    volumes:
+      - ./test-results:/var/www/test-results
+    command:
+      - "/var/www/vendor/bin/phpstan"
+      - "analyse"
+      - "--level=7"
+      - "/var/www/src"
+
+  test:
+    image: notify-queue-consumer:latest
+    volumes:
+      - .:/var/www
+    command:
+      - "./vendor/bin/phpunit"
+      - "--configuration=phpunit.xml"
+      - "--testsuite=unit"
+      - "--log-junit=/var/www/test-results/unit/results.xml"
 
   phpstan:
     image: notify-queue-consumer:latest
+    volumes:
+      - .:/var/www
     command:
-      - "./vendor/bin/phpstan"
+      - "/var/www/vendor/bin/phpstan"
       - "analyse"
       - "--level=7"
-      - "src"
+      - "/var/www/src"
 
   lint:
     image: cytopia/phpcs:latest-php7.4
@@ -36,3 +60,17 @@ services:
       - --warning-severity=0
       - /data/src
       - /data/public
+
+  localstack:
+    image: localstack/localstack:0.10.5
+    environment:
+      DEFAULT_REGION: eu-west-1
+      HOSTNAME_EXTERNAL: localstack
+      SERVICES: sqs,s3
+      DEBUG: 1
+    ports:
+      - "4572:4572"
+      - "4576:4576"
+    volumes:
+      - "./scripts/localstack:/docker-entrypoint-initaws.d"
+      - "./tests/fixtures:/tmp/fixtures"

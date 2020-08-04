@@ -20,6 +20,7 @@ COPY docker/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 WORKDIR /var/www/
+RUN mkdir -p test-results/unit
 COPY src src
 COPY public public
 COPY tests tests
@@ -27,3 +28,4 @@ COPY phpunit.xml phpunit.xml
 
 COPY --from=composer /app/vendor /var/www/vendor
 RUN test -d /var/www/vendor
+CMD ["php", "-f", "/var/www/public/consumer.php"]

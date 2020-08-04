@@ -6,7 +6,7 @@ use Laminas\Log\Formatter\Json;
 use Laminas\Log\Logger;
 use Laminas\Log\PsrLoggerAdapter;
 use Laminas\Log\Writer\Stream;
-use Opg\Logging\Context;
+use NotifyQueueConsumer\Logging\Context;
 
 $doRunLoop = true;
 

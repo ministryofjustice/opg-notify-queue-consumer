@@ -40,19 +40,22 @@ jobs:
           version: 18.06.0-ce
           docker_layer_caching: false
       - run:
+          name: Prep local env variables for docker compose
+          command: cp local.env.example local.env
+      - run:
           name: Build container
-          command: docker-compose build
+          command: docker-compose build consumer
       - run:
           name: Run Linting Checks
           command: docker-compose run --rm lint
       - run:
           name: Run Static Analysis
-          command: docker-compose run --rm phpstan
+          command: docker-compose run --rm phpstan-ci
       - run:
           name: Run Unit Tests
-          command: docker-compose run --rm test
+          command: docker-compose run --rm test-ci
       - store_test_results:
-          path: /tmp/test-results
+          path: test-results
 
   build_notify_queue_consumer:
     executor: notify_queue_consumer/python
@@ -69,7 +72,7 @@ jobs:
       - notify_queue_consumer/ecr_login
       - run:
           name: Build
-          command: docker-compose build
+          command: docker build --file Dockerfile --tag notify-queue-consumer:latest .
       - run:
           name: Push container
           command: |
