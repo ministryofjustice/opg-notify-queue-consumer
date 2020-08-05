@@ -9,6 +9,8 @@ workflows:
           name: Linting
       - static_analysis:
           name: Static Analysis
+      - metrics:
+          name: PHP Metrics
       - build:
           name: Build and deploy to Amazon ECR
           requires: [Unit Tests, Linting, Static Analysis]
@@ -79,6 +81,23 @@ jobs:
       - store_artifacts:
           path:  ./test-results/coverage
           destination: coverage-report
+
+  metrics:
+    executor: notify_queue_consumer/phpqa
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: true
+      - run:
+          name: Generate report
+          command: |
+            phpmetrics \
+            --report-html=./test-results/phpmetrics \
+            src/NotifyQueueConsumer
+      - store_artifacts:
+          path:  ./test-results/phpmetrics
+          destination: phpmetrics
 
   static_analysis:
     executor: notify_queue_consumer/phpqa
