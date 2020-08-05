@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="vendor/autoload.php"
+<phpunit bootstrap="../vendor/autoload.php"
          backupGlobals="false"
          backupStaticAttributes="false"
          beStrictAboutTestsThatDoNotTestAnything="true"
@@ -13,23 +13,23 @@
 
     <testsuites>
         <testsuite name="unit">
-            <directory>tests/unit/</directory>
+            <directory>./unit/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./src/NotifyQueueConsumer/</directory>
+            <directory suffix=".php">../src/NotifyQueueConsumer/</directory>
             <exclude>
-                <directory suffix=".php">./public</directory>
-                <directory suffix=".php">./src/bootstrap</directory>
+                <directory suffix=".php">../public</directory>
+                <directory suffix=".php">../src/bootstrap</directory>
             </exclude>
         </whitelist>
     </filter>
 
     <logging>
-        <log type="coverage-clover" target="./test-results/clover/results.xml"/>
-        <log type="coverage-html" target="./test-results/coverage" lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-clover" target="../test-results/clover/results.xml"/>
+        <log type="coverage-html" target="../test-results/coverage" lowUpperBound="35" highLowerBound="70"/>
     </logging>
 
 </phpunit>

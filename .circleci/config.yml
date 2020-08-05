@@ -56,6 +56,10 @@ jobs:
             sudo pecl install pcov
             sudo docker-php-ext-enable pcov
             sudo composer self-update
+      - restore_cache:
+          keys:
+              - composer-v1-{{ checksum "composer.lock" }}
+              - composer-v1
       - run:
           name: Run composer install
           command: composer install -n --prefer-dist
@@ -71,7 +75,7 @@ jobs:
             -dpcov.directory=./ \
             -dpcov.exclude=\"~./vendor~\" \
             ./vendor/bin/phpunit \
-            --configuration=./phpunit.xml \
+            --configuration=./tests/phpunit.xml \
             --coverage-text \
             --log-junit=./test-results/unit/results.xml \
             --testsuite=unit

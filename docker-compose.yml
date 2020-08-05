@@ -9,19 +9,22 @@ services:
       context: .
       args:
         ENABLE_COVERAGE: "true"
+        ENABLE_DEV_DEPS: "true"
     env_file: [local.env]
 
   test:
     image: notify-queue-consumer:latest
     volumes:
-      - .:/var/www
+      - ./src:/var/www/src
+      - ./tests:/var/www/tests
+      - ./test-results:/var/www/test-results
     command:
       - "php"
       - "-dpcov.enabled=1"
       - "-dpcov.directory=."
       - "-dpcov.exclude=\"~vendor~\""
       - "./vendor/bin/phpunit"
-      - "--configuration=./phpunit.xml"
+      - "--configuration=./tests/phpunit.xml"
       - "--coverage-text"
       - "--log-junit=./test-results/unit/results.xml"
       - "--testsuite=unit"
