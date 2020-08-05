@@ -5,57 +5,27 @@ services:
 
   consumer:
     image: notify-queue-consumer:latest
-    build: .
-    env_file: [local.env]
-
-  test-ci:
-    image: notify-queue-consumer:latest
-    volumes:
-      - ./test-results/:/var/www/test-results
-    command:
-      - "./vendor/bin/phpunit"
-      - "--configuration=phpunit.xml"
-      - "--testsuite=unit"
-      - "--log-junit=/var/www/test-results/unit/results.xml"
-
-  phpstan-ci:
-    image: notify-queue-consumer:latest
-    volumes:
-      - ./test-results:/var/www/test-results
-    command:
-      - "/var/www/vendor/bin/phpstan"
-      - "analyse"
-      - "--level=7"
-      - "/var/www/src"
-
-  pcov:
-    image: notify-queue-consumer-pcov:latest
     build:
       context: .
-      dockerfile: docker/pcov/Dockerfile
-    volumes:
-      - ./test-results:/var/www/test-results
-    command:
-      - "php"
-      - "-dpcov.enabled=1"
-      - "-dpcov.directory=/var/www/"
-      - "-dpcov.exclude=\"~/var/www/vendor~\""
-      - "/var/www/vendor/bin/phpunit"
-      - "--configuration=/var/www/phpunit.xml"
-      - "--coverage-text"
-      - "--coverage-clover=/var/www/test-results/pcov/results.xml"
-      - "--log-junit=/var/www/test-results/unit/results.xml"
-      - "--testsuite=unit"
+      args:
+        ENABLE_COVERAGE: "true"
+    env_file: [local.env]
 
   test:
     image: notify-queue-consumer:latest
     volumes:
       - .:/var/www
     command:
-      - "/var/www/vendor/bin/phpunit"
-      - "--configuration=phpunit.xml"
+      - "php"
+      - "-dpcov.enabled=1"
+      - "-dpcov.directory=."
+      - "-dpcov.exclude=\"~vendor~\""
+      - "./vendor/bin/phpunit"
+      - "--configuration=./phpunit.xml"
+      - "--coverage-text"
+      - "--coverage-clover=./test-results/pcov/results.xml"
+      - "--log-junit=./test-results/unit/results.xml"
       - "--testsuite=unit"
-      - "--log-junit=/var/www/test-results/unit/results.xml"
 
   phpstan:
     image: notify-queue-consumer:latest

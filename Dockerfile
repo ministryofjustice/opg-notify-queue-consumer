@@ -19,6 +19,11 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
+ARG ENABLE_COVERAGE
+# if coverage is enabled then install pcov and its dependencies
+RUN if [ "$ENABLE_COVERAGE" = "true" ] ; then apk add --no-cache $PHPIZE_DEPS; fi
+RUN if [ "$ENABLE_COVERAGE" = "true" ] ; then pecl install pcov && docker-php-ext-enable pcov; fi
+
 WORKDIR /var/www/
 RUN mkdir -p test-results/unit
 COPY src src
