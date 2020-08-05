@@ -77,7 +77,7 @@ jobs:
             --testsuite=unit
       - run:
           name: Check coverage
-          command: php -f scripts/coverage-checker.php test-results/clover/results.xml 90
+          command: php -f scripts/coverage-checker.php test-results/clover/results.xml 100
       - store_test_results:
           path: ./test-results
       - store_artifacts:
