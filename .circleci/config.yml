@@ -73,16 +73,15 @@ jobs:
             ./vendor/bin/phpunit \
             --configuration=./phpunit.xml \
             --coverage-text \
-            --coverage-clover=./test-results/pcov/results.xml \
             --log-junit=./test-results/unit/results.xml \
             --testsuite=unit
       - run:
-          name: Run Static Analysis
-          command: ./vendor/bin/phpstan analyse --no-progress --level=7 src
+          name: Check coverage
+          command: php -f scripts/coverage-checker.php test-results/clover/results.xml 100
       - store_test_results:
           path: ./test-results
       - store_artifacts:
-          path:  ./test-results/pcov
+          path:  ./test-results/clover
           destination: coverage-report
 
   static_analysis:

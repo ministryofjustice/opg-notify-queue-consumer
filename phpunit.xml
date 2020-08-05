@@ -27,4 +27,8 @@
         </whitelist>
     </filter>
 
+    <logging>
+        <log type="coverage-clover" target="./test-results/clover/results.xml"/>
+    </logging>
+
 </phpunit>

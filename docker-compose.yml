@@ -23,7 +23,6 @@ services:
       - "./vendor/bin/phpunit"
       - "--configuration=./phpunit.xml"
       - "--coverage-text"
-      - "--coverage-clover=./test-results/pcov/results.xml"
       - "--log-junit=./test-results/unit/results.xml"
       - "--testsuite=unit"
 
