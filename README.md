@@ -1,14 +1,24 @@
-## Building
+## Local setup
+
+Add the following alias to your shell - this will allow you to use a 
+[jakzal/phpqa](https://hub.docker.com/r/jakzal/phpqa/) container for running common php tools
+
+    alias phpqa='docker run --init -it --rm -v "$(pwd):/project" -v "$(pwd)/tmp-phpqa:/tmp" -w /project jakzal/phpqa:php7.4-alpine'
+    
+*macOS note*: If you find commands like composer too slow due to the known issues with file mounts, then try using your 
+local native equivalent 
+
+### Building
 
     cp local.env.example local.env
     
     # Install dependencies on your host machine
-    composer install --prefer-dist --no-interaction --no-scripts
+    phpqa composer install --prefer-dist --no-interaction --no-scripts
     
     # Update the local.env file with any secret credentials when testing external services
     docker-compose build consumer
 
-## Running
+### Running
 
      docker-compose up localstack
      docker-compose up consumer

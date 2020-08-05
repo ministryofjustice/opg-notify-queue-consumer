@@ -34,14 +34,12 @@ orbs:
     executors:
       python:
         docker: [image: circleci/python]
-      php:
-        docker: [image: circleci/php]
-      linter:
-        docker: [image: cytopia/phpcs:latest-php7.4]
+      phpqa:
+        docker: [image: jakzal/phpqa:php7.4-alpine]
 
 jobs:
   test_unit:
-    executor: notify_queue_consumer/php
+    executor: notify_queue_consumer/phpqa
     steps:
       - checkout
       - setup_remote_docker:
@@ -50,12 +48,6 @@ jobs:
       - run:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
-      - run:
-          name: Install dependencies
-          command: |
-            sudo pecl install pcov
-            sudo docker-php-ext-enable pcov
-            sudo composer self-update
       - restore_cache:
           keys:
               - composer-v1-{{ checksum "composer.lock" }}
@@ -89,21 +81,29 @@ jobs:
           destination: coverage-report
 
   static_analysis:
-    executor: notify_queue_consumer/php
+    executor: notify_queue_consumer/phpqa
     steps:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
           docker_layer_caching: true
+      - restore_cache:
+          keys:
+            - composer-v1-{{ checksum "composer.lock" }}
+            - composer-v1
       - run:
           name: Run composer install
           command: composer install -n --prefer-dist
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
       - run:
           name: Run PHPStan
-          command: ./vendor/bin/phpstan analyse --no-progress --level=7 src
+          command: phpstan analyse --no-progress --level=7 src
 
   lint:
-    executor: notify_queue_consumer/linter
+    executor: notify_queue_consumer/phpqa
     steps:
       - checkout
       - setup_remote_docker:
@@ -111,14 +111,7 @@ jobs:
           docker_layer_caching: true
       - run:
           name: Run PHPCS
-          command: |
-            phpcs \
-            -p \
-            --report=checkstyle \
-            --standard=PSR12 \
-            --warning-severity=0 \
-            src \
-            public
+          command: phpcs -p --report=checkstyle --standard=PSR12 --warning-severity=0 src public
 
   build:
     executor: notify_queue_consumer/python

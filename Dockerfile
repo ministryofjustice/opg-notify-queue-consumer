@@ -1,12 +1,13 @@
 FROM composer as composer
+
 ARG ENABLE_DEV_DEPS
 # Allow parallel downloads
 RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 COPY composer.json composer.json
 COPY composer.lock composer.lock
-RUN composer install --prefer-dist --no-interaction --no-scripts
 RUN if [ "$ENABLE_DEV_DEPS" = "true" ] ; then composer install --prefer-dist --no-interaction --no-scripts; fi
 RUN if [ "$ENABLE_DEV_DEPS" = "false" ] ; then composer install --prefer-dist --no-interaction --no-scripts --no-dev; fi
+
 RUN composer dumpautoload -o
 
 FROM php:7.4-cli-alpine
@@ -21,11 +22,6 @@ RUN docker-php-ext-install opcache
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-
-ARG ENABLE_COVERAGE
-# if coverage is enabled then install pcov and its dependencies
-RUN if [ "$ENABLE_COVERAGE" = "true" ] ; then apk add --no-cache $PHPIZE_DEPS; fi
-RUN if [ "$ENABLE_COVERAGE" = "true" ] ; then pecl install pcov && docker-php-ext-enable pcov; fi
 
 WORKDIR /var/www/
 RUN mkdir -p test-results/unit

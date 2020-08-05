@@ -14,5 +14,6 @@ jm_behat_report.html
 /build/
 /test-results/
 /vendor/
+/tmp-phpqa/
 
 local.env

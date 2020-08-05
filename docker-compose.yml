@@ -8,49 +8,64 @@ services:
     build:
       context: .
       args:
-        ENABLE_COVERAGE: "true"
         ENABLE_DEV_DEPS: "true"
     env_file: [local.env]
 
-  test:
-    image: notify-queue-consumer:latest
+  phpqa:
+    image: jakzal/phpqa:php7.4-alpine
+    build:
+      context: .
+      dockerfile: docker/phpqa/Dockerfile
+
+  phpstan:
+    image: jakzal/phpqa:php7.4-alpine
     volumes:
-      - ./src:/var/www/src
-      - ./tests:/var/www/tests
-      - ./test-results:/var/www/test-results
+      - .:/app
+    command:
+      - "phpstan"
+      - "analyse"
+      - "--level=7"
+      - "/app/src"
+
+  lint:
+    image: jakzal/phpqa:php7.4-alpine
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    command:
+      - phpcs
+      - -p
+      - --report=checkstyle
+      - --standard=PSR12
+      - --warning-severity=0
+      - /app/src
+      - /app/public
+
+  phpmd:
+    image: jakzal/phpqa:php7.4-alpine
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    command:
+      - phpmd
+      - /app/src/NotifyQueueConsumer
+      - text
+      - codesize,unusedcode,naming
+
+  test:
+    image: jakzal/phpqa:php7.4-alpine
+    volumes:
+      - .:/app
     command:
       - "php"
       - "-dpcov.enabled=1"
       - "-dpcov.directory=."
       - "-dpcov.exclude=\"~vendor~\""
-      - "./vendor/bin/phpunit"
-      - "--configuration=./tests/phpunit.xml"
+      - "/app/vendor/bin/phpunit"
+      - "--configuration=/app/tests/phpunit.xml"
       - "--coverage-text"
-      - "--log-junit=./test-results/unit/results.xml"
+      - "--log-junit=/app/test-results/unit/results.xml"
       - "--testsuite=unit"
-
-  phpstan:
-    image: notify-queue-consumer:latest
-    volumes:
-      - .:/var/www
-    command:
-      - "/var/www/vendor/bin/phpstan"
-      - "analyse"
-      - "--level=7"
-      - "/var/www/src"
-
-  lint:
-    image: cytopia/phpcs:latest-php7.4
-    volumes:
-      - ./src:/data/src
-      - ./public:/data/public
-    command:
-      - -p
-      - --report=checkstyle
-      - --standard=PSR12
-      - --warning-severity=0
-      - /data/src
-      - /data/public
 
   localstack:
     image: localstack/localstack:0.10.5
