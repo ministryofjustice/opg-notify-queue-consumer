@@ -1,15 +1,17 @@
 version: 2.1
 
 workflows:
-  pr-build-and-test:
+  pr-test-and-build:
     jobs:
-      - test:
-          name: test
+      - test_unit:
+          name: Unit Tests
       - lint:
-          name: lint
+          name: Linting
+      - static_analysis:
+          name: Static Analysis
       - build:
-          name: build
-          requires: [test, lint]
+          name: Build and deploy to Amazon ECR
+          requires: [Unit Tests, Linting, Static Analysis]
 
 orbs:
   notify_queue_consumer:
@@ -38,7 +40,7 @@ orbs:
         docker: [image: cytopia/phpcs:latest-php7.4]
 
 jobs:
-  test:
+  test_unit:
     executor: notify_queue_consumer/php
     steps:
       - checkout
@@ -48,10 +50,15 @@ jobs:
       - run:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
-      - run: sudo pecl install pcov
-      - run: sudo docker-php-ext-enable pcov
-      - run: sudo composer self-update
-      - run: composer install -n --prefer-dist
+      - run:
+          name: Install dependencies
+          command: |
+            sudo pecl install pcov
+            sudo docker-php-ext-enable pcov
+            sudo composer self-update
+      - run:
+          name: Run composer install
+          command: composer install -n --prefer-dist
       - save_cache:
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
@@ -77,6 +84,21 @@ jobs:
       - store_artifacts:
           path:  ./test-results/pcov
           destination: coverage-report
+
+  static_analysis:
+    executor: notify_queue_consumer/php
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: true
+      - run:
+          name: Run composer install
+          command: composer install -n --prefer-dist
+      - run:
+          name: Run PHPStan
+          command: ./vendor/bin/phpstan analyse --no-progress --level=7 src
+
   lint:
     executor: notify_queue_consumer/linter
     steps:
@@ -85,10 +107,7 @@ jobs:
           version: 18.06.0-ce
           docker_layer_caching: true
       - run:
-          name: Prep local env variables for docker compose
-          command: cp local.env.example local.env
-      - run:
-          name: Run Linting Checks
+          name: Run PHPCS
           command: |
             phpcs \
             -p \
