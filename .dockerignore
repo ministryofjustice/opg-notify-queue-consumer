@@ -3,6 +3,7 @@
 .buildpath
 .DS_Store
 .idea
+.run
 .project
 .settings
 build/output
@@ -29,6 +30,7 @@ docs
 # PHP
 vendor
 .php_cs.cache
+.phpunit.result.cache
 
 # Build
 Jenkinsfile

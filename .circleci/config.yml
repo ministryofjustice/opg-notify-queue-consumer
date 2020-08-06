@@ -147,7 +147,7 @@ jobs:
       - notify_queue_consumer/ecr_login
       - run:
           name: Build
-          command: docker build --file Dockerfile --tag notify-queue-consumer:latest .
+          command: docker build --file docker/Dockerfile --tag notify-queue-consumer:latest .
       - run:
           name: Push container
           command: |
