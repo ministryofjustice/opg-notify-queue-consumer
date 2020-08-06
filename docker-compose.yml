@@ -25,8 +25,8 @@ services:
     command:
       - "phpstan"
       - "analyse"
-      - "--level=7"
-      - "/app/src"
+      - "-c"
+      - "/app/tests/phpstan.neon"
 
   lint:
     image: jakzal/phpqa:php7.4-alpine
@@ -67,6 +67,18 @@ services:
       - "--coverage-text"
       - "--log-junit=/app/test-results/unit/results.xml"
       - "--testsuite=unit"
+
+  test-functional:
+    image: notify-queue-consumer:latest
+    depends_on:
+      - localstack
+    volumes:
+      - .:/var/www
+    command:
+      - "/var/www/vendor/bin/phpunit"
+      - "--configuration=/var/www/tests/phpunit.xml"
+      - "--log-junit=/var/www/test-results/functional/results.xml"
+      - "--testsuite=functional"
 
   localstack:
     image: localstack/localstack:0.10.5
