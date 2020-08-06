@@ -1,3 +1,5 @@
+[![ministryofjustice](https://circleci.com/gh/ministryofjustice/opg-notify-queue-consumer.svg?style=svg)](https://github.com/ministryofjustice/opg-notify-queue-consumer)
+
 ## Local setup
 
 Add the following alias to your shell - this will allow you to use a 
@@ -26,6 +28,10 @@ local native equivalent
 ## Testing
 
     docker-compose run --rm test
+    
+### Coverage
+
+See [IDE PHPUnit coverage integration setup](docs/ide-coverage-setup.md)    
     
 ## Check Linting / Static Analysis
 
