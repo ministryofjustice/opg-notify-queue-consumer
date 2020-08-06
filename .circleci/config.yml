@@ -38,6 +38,8 @@ orbs:
     executors:
       python:
         docker: [image: circleci/python]
+      php:
+        docker: [image: circleci/php]
       phpqa:
         docker: [image: jakzal/phpqa:php7.4-alpine]
 
@@ -85,7 +87,7 @@ jobs:
           destination: coverage-report
 
   test_functional:
-    executor: notify_queue_consumer/phpqa
+    executor: notify_queue_consumer/php
     steps:
       - checkout
       - setup_remote_docker:
