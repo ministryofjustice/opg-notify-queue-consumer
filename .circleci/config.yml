@@ -96,13 +96,13 @@ jobs:
           command: cp local.env.example local.env
       - restore_cache:
           keys:
-            - composer-v1-{{ checksum "composer.lock" }}
-            - composer-v1
+            - composer-functional-v1-{{ checksum "composer.lock" }}
+            - composer-functional-v1
       - run:
           name: Run composer install
           command: composer install -n --prefer-dist
       - save_cache:
-          key: composer-v1-{{ checksum "composer.lock" }}
+          key: composer-functional-v1-{{ checksum "composer.lock" }}
           paths:
             - vendor
       - run:
