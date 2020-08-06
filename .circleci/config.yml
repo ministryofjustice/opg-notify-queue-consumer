@@ -5,6 +5,8 @@ workflows:
     jobs:
       - test_unit:
           name: Unit Tests
+      - test_functional:
+          name: Functional Tests
       - lint:
           name: Linting
       - static_analysis:
@@ -13,7 +15,7 @@ workflows:
           name: PHP Metrics
       - build:
           name: Build and deploy to Amazon ECR
-          requires: [Unit Tests, Linting, Static Analysis]
+          requires: [Unit Tests, Functional Tests, Linting, Static Analysis]
 
 orbs:
   notify_queue_consumer:
@@ -81,6 +83,23 @@ jobs:
       - store_artifacts:
           path:  ./test-results/coverage
           destination: coverage-report
+
+  test_functional:
+    executor: notify_queue_consumer/python
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: true
+      - run:
+          name: Prep local env variables for docker compose
+          command: cp local.env.example local.env
+      - run:
+          name: Build consumer
+          command: docker-compose build consumer
+      - run:
+          name: Run functional tests
+          command: docker-compose run test-functional
 
   metrics:
     executor: notify_queue_consumer/phpqa
