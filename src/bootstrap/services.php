@@ -21,6 +21,10 @@ use Psr\Log\LoggerInterface;
 /** @var array<mixed> $config */
 /** @var LoggerInterface $psrLoggerAdapter */
 
+if (empty($config)) {
+    throw new InvalidArgumentException('No config found');
+}
+
 $awsS3Client = new S3Client(
     [
         'region' => $config['aws']['region'],

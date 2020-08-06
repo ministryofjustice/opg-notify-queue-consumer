@@ -1,0 +1,7 @@
+parameters:
+	level: 7
+	bootstrapFiles:
+		- /app/vendor/autoload.php
+	paths:
+		- /app/src
+		- /app/public
