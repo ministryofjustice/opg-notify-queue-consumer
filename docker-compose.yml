@@ -5,61 +5,68 @@ services:
 
   consumer:
     image: notify-queue-consumer:latest
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        ENABLE_DEV_DEPS: "true"
     env_file: [local.env]
 
-  test-ci:
-    image: notify-queue-consumer:latest
-    volumes:
-      - ./test-results/:/var/www/test-results
-    command:
-      - "./vendor/bin/phpunit"
-      - "--configuration=phpunit.xml"
-      - "--testsuite=unit"
-      - "--log-junit=/var/www/test-results/unit/results.xml"
-
-  phpstan-ci:
-    image: notify-queue-consumer:latest
-    volumes:
-      - ./test-results:/var/www/test-results
-    command:
-      - "/var/www/vendor/bin/phpstan"
-      - "analyse"
-      - "--level=7"
-      - "/var/www/src"
-
-  test:
-    image: notify-queue-consumer:latest
-    volumes:
-      - .:/var/www
-    command:
-      - "./vendor/bin/phpunit"
-      - "--configuration=phpunit.xml"
-      - "--testsuite=unit"
-      - "--log-junit=/var/www/test-results/unit/results.xml"
+  phpqa:
+    image: jakzal/phpqa:php7.4-alpine
+    build:
+      context: .
+      dockerfile: docker/phpqa/Dockerfile
 
   phpstan:
-    image: notify-queue-consumer:latest
+    image: jakzal/phpqa:php7.4-alpine
     volumes:
-      - .:/var/www
+      - .:/app
     command:
-      - "/var/www/vendor/bin/phpstan"
+      - "phpstan"
       - "analyse"
       - "--level=7"
-      - "/var/www/src"
+      - "/app/src"
 
   lint:
-    image: cytopia/phpcs:latest-php7.4
+    image: jakzal/phpqa:php7.4-alpine
     volumes:
-      - ./src:/data/src
-      - ./public:/data/public
+      - ./src:/app/src
+      - ./public:/app/public
     command:
+      - phpcs
       - -p
       - --report=checkstyle
       - --standard=PSR12
       - --warning-severity=0
-      - /data/src
-      - /data/public
+      - /app/src
+      - /app/public
+
+  phpmd:
+    image: jakzal/phpqa:php7.4-alpine
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    command:
+      - phpmd
+      - /app/src/NotifyQueueConsumer
+      - text
+      - codesize,unusedcode,naming
+
+  test:
+    image: jakzal/phpqa:php7.4-alpine
+    volumes:
+      - .:/app
+    command:
+      - "php"
+      - "-dpcov.enabled=1"
+      - "-dpcov.directory=."
+      - "-dpcov.exclude=\"~vendor~\""
+      - "/app/vendor/bin/phpunit"
+      - "--configuration=/app/tests/phpunit.xml"
+      - "--coverage-text"
+      - "--log-junit=/app/test-results/unit/results.xml"
+      - "--testsuite=unit"
 
   localstack:
     image: localstack/localstack:0.10.5

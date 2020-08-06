@@ -1,9 +1,13 @@
 FROM composer as composer
+
+ARG ENABLE_DEV_DEPS
 # Allow parallel downloads
 RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 COPY composer.json composer.json
 COPY composer.lock composer.lock
-RUN composer install --prefer-dist --no-interaction --no-scripts
+RUN if [ "$ENABLE_DEV_DEPS" = "true" ] ; then composer install --prefer-dist --no-interaction --no-scripts; fi
+RUN if [ "$ENABLE_DEV_DEPS" = "false" ] ; then composer install --prefer-dist --no-interaction --no-scripts --no-dev; fi
+
 RUN composer dumpautoload -o
 
 FROM php:7.4-cli-alpine
@@ -24,7 +28,6 @@ RUN mkdir -p test-results/unit
 COPY src src
 COPY public public
 COPY tests tests
-COPY phpunit.xml phpunit.xml
 
 COPY --from=composer /app/vendor /var/www/vendor
 RUN test -d /var/www/vendor

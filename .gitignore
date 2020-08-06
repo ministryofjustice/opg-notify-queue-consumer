@@ -5,14 +5,18 @@ nbproject
 .buildpath
 .DS_Store
 .idea
+.run
 .project
 .settings
 .vscode
 atlassian-ide-plugin.xml
 jm_behat_report.html
+.php_cs.cache
+.phpunit.result.cache
 
 /build/
 /test-results/
 /vendor/
+/tmp-phpqa/
 
 local.env

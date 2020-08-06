@@ -64,6 +64,20 @@ class ConsumerTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testNoMessageFetchedFailure(): void
+    {
+        $this->queueMock->expects(self::once())->method('next')->willReturn(null);
+        $this->sendToNotifyHandlerMock->expects(self::never())->method('handle');
+        $this->queueMock->expects(self::never())->method('delete');
+        $this->updateDocumentStatusHandlerMock->expects(self::never())->method('handle');
+        $this->loggerMock->expects(self::never())->method('critical');
+
+        $this->consumer->run();
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testFetchMessageFailure(): void
     {
         $this->queueMock->expects(self::once())->method('next')->willThrowException(new Exception('Uh oh...'));

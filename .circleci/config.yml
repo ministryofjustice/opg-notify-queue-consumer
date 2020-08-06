@@ -1,13 +1,19 @@
 version: 2.1
 
 workflows:
-  pr-build-and-test:
+  pr-test-and-build:
     jobs:
-      - test_notify_queue_consumer:
-          name: test_notify_queue_consumer
-      - build_notify_queue_consumer:
-          name: build_notify_queue_consumer
-          requires: [test_notify_queue_consumer]
+      - test_unit:
+          name: Unit Tests
+      - lint:
+          name: Linting
+      - static_analysis:
+          name: Static Analysis
+      - metrics:
+          name: PHP Metrics
+      - build:
+          name: Build and deploy to Amazon ECR
+          requires: [Unit Tests, Linting, Static Analysis]
 
 orbs:
   notify_queue_consumer:
@@ -30,34 +36,103 @@ orbs:
     executors:
       python:
         docker: [image: circleci/python]
+      phpqa:
+        docker: [image: jakzal/phpqa:php7.4-alpine]
 
 jobs:
-  test_notify_queue_consumer:
-    executor: notify_queue_consumer/python
+  test_unit:
+    executor: notify_queue_consumer/phpqa
     steps:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: false
+          docker_layer_caching: true
       - run:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
+      - restore_cache:
+          keys:
+              - composer-v1-{{ checksum "composer.lock" }}
+              - composer-v1
       - run:
-          name: Build container
-          command: docker-compose build consumer
+          name: Run composer install
+          command: composer install -n --prefer-dist
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
       - run:
-          name: Run Linting Checks
-          command: docker-compose run --rm lint
+          name: Run unit tests with coverage
+          command: |
+            php \
+            -dpcov.enabled=1 \
+            -dpcov.directory=./ \
+            -dpcov.exclude=\"~./vendor~\" \
+            ./vendor/bin/phpunit \
+            --configuration=./tests/phpunit.xml \
+            --coverage-text \
+            --log-junit=./test-results/unit/results.xml \
+            --testsuite=unit
       - run:
-          name: Run Static Analysis
-          command: docker-compose run --rm phpstan-ci
-      - run:
-          name: Run Unit Tests
-          command: docker-compose run --rm test-ci
+          name: Check coverage
+          command: php -f scripts/coverage-checker.php test-results/clover/results.xml 100
       - store_test_results:
-          path: test-results
+          path: ./test-results
+      - store_artifacts:
+          path:  ./test-results/coverage
+          destination: coverage-report
 
-  build_notify_queue_consumer:
+  metrics:
+    executor: notify_queue_consumer/phpqa
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: true
+      - run:
+          name: Generate report
+          command: |
+            phpmetrics \
+            --report-html=./test-results/phpmetrics \
+            src/NotifyQueueConsumer
+      - store_artifacts:
+          path:  ./test-results/phpmetrics
+          destination: phpmetrics
+
+  static_analysis:
+    executor: notify_queue_consumer/phpqa
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: true
+      - restore_cache:
+          keys:
+            - composer-v1-{{ checksum "composer.lock" }}
+            - composer-v1
+      - run:
+          name: Run composer install
+          command: composer install -n --prefer-dist
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+      - run:
+          name: Run PHPStan
+          command: phpstan analyse --no-progress --level=7 src
+
+  lint:
+    executor: notify_queue_consumer/phpqa
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: true
+      - run:
+          name: Run PHPCS
+          command: phpcs -p --report=checkstyle --standard=PSR12 --warning-severity=0 src public
+
+  build:
     executor: notify_queue_consumer/python
     parameters:
       container_repo_url:
@@ -72,7 +147,7 @@ jobs:
       - notify_queue_consumer/ecr_login
       - run:
           name: Build
-          command: docker build --file Dockerfile --tag notify-queue-consumer:latest .
+          command: docker build --file docker/Dockerfile --tag notify-queue-consumer:latest .
       - run:
           name: Push container
           command: |
