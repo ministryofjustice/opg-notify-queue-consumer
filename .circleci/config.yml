@@ -85,7 +85,7 @@ jobs:
           destination: coverage-report
 
   test_functional:
-    executor: notify_queue_consumer/python
+    executor: notify_queue_consumer/phpqa
     steps:
       - checkout
       - setup_remote_docker:
