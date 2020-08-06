@@ -68,6 +68,18 @@ services:
       - "--log-junit=/app/test-results/unit/results.xml"
       - "--testsuite=unit"
 
+  test-functional:
+    image: notify-queue-consumer:latest
+    depends_on:
+      - localstack
+    volumes:
+      - .:/app
+    command:
+      - "/app/vendor/bin/phpunit"
+      - "--configuration=/app/tests/phpunit.xml"
+      - "--log-junit=/app/test-results/functional/results.xml"
+      - "--testsuite=functional"
+
   localstack:
     image: localstack/localstack:0.10.5
     environment:
