@@ -73,11 +73,11 @@ services:
     depends_on:
       - localstack
     volumes:
-      - .:/app
+      - .:/var/www
     command:
-      - "/app/vendor/bin/phpunit"
-      - "--configuration=/app/tests/phpunit.xml"
-      - "--log-junit=/app/test-results/functional/results.xml"
+      - "/var/www/vendor/bin/phpunit"
+      - "--configuration=/var/www/tests/phpunit.xml"
+      - "--log-junit=/var/www/test-results/functional/results.xml"
       - "--testsuite=functional"
 
   localstack:
