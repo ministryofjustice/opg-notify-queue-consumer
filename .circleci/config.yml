@@ -56,8 +56,8 @@ jobs:
           command: cp local.env.example local.env
       - restore_cache:
           keys:
-              - composer-v1-{{ checksum "composer.lock" }}
-              - composer-v1
+            - composer-v1-{{ checksum "composer.lock" }}
+            - composer-v1
       - run:
           name: Run composer install
           command: composer install -n --prefer-dist
@@ -88,6 +88,12 @@ jobs:
 
   test_functional:
     executor: notify_queue_consumer/php
+    docker:
+      - image: localstack/localstack:0.10.5
+        environment:
+          DEFAULT_REGION: eu-west-1
+          HOSTNAME_EXTERNAL: localstack
+          SERVICES: sqs,s3
     steps:
       - checkout
       - setup_remote_docker:
