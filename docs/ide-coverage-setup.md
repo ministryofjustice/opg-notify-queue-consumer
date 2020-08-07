@@ -27,7 +27,7 @@ editor.
     2. Test runner options: `--testsuite=unit`
     3. Preferred Coverage Engine: "PCov"
     4. Interpreter: Default project interpreter
-    5. Interpreter options: /opt/project
+    5. Interpreter options: `-dpcov.directory=/opt/project/`
 14. Now when you go to Run or in the top toolbar (if you have it enabled) you can select 
 "Run 'Test Project' with Coverage", and it will run the full test suite and generate a coverage report that integrates 
 with your editor, so you can see the percentage of coverage in each class, with any code that isn't covered highlighted.
