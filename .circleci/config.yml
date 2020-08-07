@@ -96,17 +96,6 @@ jobs:
       - run:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
-      - restore_cache:
-          keys:
-            - composer-functional-v1-{{ checksum "composer.lock" }}
-            - composer-functional-v1
-      - run:
-          name: Run composer install
-          command: composer install -n --prefer-dist
-      - save_cache:
-          key: composer-functional-v1-{{ checksum "composer.lock" }}
-          paths:
-            - vendor
       - run:
           name: Build consumer
           command: docker-compose build consumer
