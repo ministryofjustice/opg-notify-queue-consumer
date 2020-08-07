@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NotifyQueueConsumerTest\Command\Model;
+namespace NotifyQueueConsumerTest\Unit\Command\Model;
 
 use NotifyQueueConsumer\Command\Model\AggregateValidationException;
 use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;

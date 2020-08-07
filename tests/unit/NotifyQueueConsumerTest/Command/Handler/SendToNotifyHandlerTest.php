@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NotifyQueueConsumerTest\Command\Handler;
+namespace NotifyQueueConsumerTest\Unit\Command\Handler;
 
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use UnexpectedValueException;

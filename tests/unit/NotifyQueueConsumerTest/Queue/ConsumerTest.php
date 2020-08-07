@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NotifyQueueConsumerTest\Queue;
+namespace NotifyQueueConsumerTest\Unit\Queue;
 
 use Exception;
 use NotifyQueueConsumer\Command\Model\SendToNotify;

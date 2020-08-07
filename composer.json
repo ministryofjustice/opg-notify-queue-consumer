@@ -21,8 +21,8 @@
   "autoload": {
     "psr-4": {
       "NotifyQueueConsumer\\": "src/NotifyQueueConsumer",
-      "NotifyQueueConsumerTest\\": "tests/unit/NotifyQueueConsumerTest",
-      "NotifyQueueConsumerTest\\Functional\\": "tests/functional/"
+      "NotifyQueueConsumerTest\\Unit\\": "tests/unit/NotifyQueueConsumerTest",
+      "NotifyQueueConsumerTest\\Functional\\": "tests/functional/NotifyQueueConsumerTest"
     }
   },
   "config": {

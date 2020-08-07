@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NotifyQueueConsumerTest\Command\Model;
+namespace NotifyQueueConsumerTest\Unit\Command\Model;
 
 use PHPUnit\Framework\TestCase;
 use NotifyQueueConsumer\Command\Model\AggregateValidationException;
