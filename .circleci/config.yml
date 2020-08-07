@@ -50,7 +50,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
@@ -92,7 +92,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
@@ -109,7 +109,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Generate report
           command: |
@@ -126,7 +126,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false
       - restore_cache:
           keys:
             - composer-v1-{{ checksum "composer.lock" }}
@@ -148,7 +148,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Run PHPCS
           command: phpcs -p --report=checkstyle --standard=PSR12 --warning-severity=0 src public
