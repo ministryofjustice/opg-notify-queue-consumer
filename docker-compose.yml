@@ -79,6 +79,7 @@ services:
       - "--configuration=/var/www/tests/phpunit.xml"
       - "--log-junit=/var/www/test-results/functional/results.xml"
       - "--testsuite=functional"
+    env_file: [local.env]
 
   localstack:
     image: localstack/localstack:0.10.5

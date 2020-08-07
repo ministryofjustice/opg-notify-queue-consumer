@@ -57,7 +57,8 @@ $guzzleClient = new GuzzleClient([]);
 $awsSqsClient = new SqsClient(
     [
         'region' => $config['aws']['region'],
-        'version' => $config['aws']['sqs']['version']
+        'version' => $config['aws']['sqs']['version'],
+        'endpoint' => $config['aws']['sqs']['endpoint'],
     ]
 );
 
