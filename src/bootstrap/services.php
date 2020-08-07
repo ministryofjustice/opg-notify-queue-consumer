@@ -62,7 +62,11 @@ $awsSqsClient = new SqsClient(
     ]
 );
 
-$queue = new SqsAdapter($awsSqsClient, $config['aws']['sqs']['queue_url']);
+$queue = new SqsAdapter(
+    $awsSqsClient,
+    $config['aws']['sqs']['queue_url'],
+    $config['aws']['sqs']['wait_time']
+);
 
 $sendToNotifyHandler = new SendToNotifyHandler(
     $filesystem,

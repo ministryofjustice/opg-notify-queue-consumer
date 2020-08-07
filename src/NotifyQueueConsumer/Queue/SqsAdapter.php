@@ -12,11 +12,13 @@ class SqsAdapter implements QueueInterface
 {
     private SqsClient $client;
     private string $queueUrl;
+    private int $waitTime;
 
-    public function __construct(SqsClient $client, string $queueUrl)
+    public function __construct(SqsClient $client, string $queueUrl, int $waitTime)
     {
         $this->client = $client;
         $this->queueUrl = $queueUrl;
+        $this->waitTime = $waitTime;
     }
 
     public function next(): ?SendToNotify
@@ -26,7 +28,7 @@ class SqsAdapter implements QueueInterface
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
             'QueueUrl' => $this->queueUrl,
-            'WaitTimeSeconds' => 10,
+            'WaitTimeSeconds' => $this->waitTime,
         ]);
 
         if (empty($result->get('Messages')[0])) {

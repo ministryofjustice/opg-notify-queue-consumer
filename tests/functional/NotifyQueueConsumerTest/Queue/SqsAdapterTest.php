@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace NotifyQueueConsumerTest\Functional;
+namespace NotifyQueueConsumerTest\Functional\Queue;
 
-use Aws\Sqs\SqsClient;
 use Exception;
+use PHPUnit\Framework\TestCase;
+use Aws\Sqs\SqsClient;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Queue\SqsAdapter;
-use PHPUnit\Framework\TestCase;
 
-class RetrieveQueueMessageTest extends TestCase
+class SqsAdapterTest extends TestCase
 {
     private SqsClient $awsSqsClient;
-    private string $queueName;
     private string $queueUrl;
     private SqsAdapter $queueAdapter;
 
@@ -24,19 +23,19 @@ class RetrieveQueueMessageTest extends TestCase
         parent::setUp();
 
         $this->awsSqsClient = $awsSqsClient;
-        $this->queueName = md5(__CLASS__ . '_' . time());
-        $createQueueResult = $this->awsSqsClient->createQueue(
-            [
-                'QueueName' => $this->queueName,
-                'Attributes' => [
-                    'VisibilityTimeout' => 0,
-                    'ReceiveMessageWaitTimeSeconds' => 0
-                ],
-            ]
-        );
+        $queueName = md5(__CLASS__ . '_' . time());
+        $createQueueResult = $this->awsSqsClient->createQueue([
+            'QueueName' => $queueName,
+            'Attributes' => [
+                'VisibilityTimeout' => 0,
+                'ReceiveMessageWaitTimeSeconds' => 0,
+            ],
+        ]);
         $this->queueUrl = (string)$createQueueResult->get('QueueUrl');
 
-        $this->queueAdapter = new SqsAdapter($awsSqsClient, $this->queueUrl);
+        // Short wait time so tests run fast...
+        $waitTime = 0;
+        $this->queueAdapter = new SqsAdapter($awsSqsClient, $this->queueUrl, $waitTime);
     }
 
     public function tearDown(): void
@@ -67,6 +66,7 @@ class RetrieveQueueMessageTest extends TestCase
 
     /**
      * @throws Exception
+     * @depends testRetrieveMessage
      */
     public function testDeleteMessage()
     {
@@ -78,13 +78,13 @@ class RetrieveQueueMessageTest extends TestCase
 
         $message = $this->queueAdapter->next();
 
-        self::assertEquals($uuid, $message->getUuid());
+        self::assertNotEmpty($message);
 
         $this->queueAdapter->delete(SendToNotify::fromArray([
             'id' => $message->getId(),
-            'documentId' => $message->getDocumentId(),
-            'uuid' => $message->getUuid(),
-            'filename' => $message->getFilename(),
+            'documentId' => 123,
+            'uuid' => 'any',
+            'filename' => 'any',
         ]));
 
         $message = $this->queueAdapter->next();
