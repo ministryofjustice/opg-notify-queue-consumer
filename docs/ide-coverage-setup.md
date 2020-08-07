@@ -3,6 +3,9 @@
 This guide walks through setting up PHPStorm/IntelliJ with PCov in order to get unit test coverage feedback inside your 
 editor.
 
+Make sure your IDE is up to date, minimum suggested version for IntelliJ is 2020.2, and the Docker and PHP Docker 
+plugins are installed.
+
 ![](images/coverage_example_1.png "IntelliJ coverage example")
 
 1. We're going to use the jakzal/phpqa image for running PHPUnit with PCov:
@@ -31,6 +34,3 @@ editor.
 14. Now when you go to Run or in the top toolbar (if you have it enabled) you can select 
 "Run 'Test Project' with Coverage", and it will run the full test suite and generate a coverage report that integrates 
 with your editor, so you can see the percentage of coverage in each class, with any code that isn't covered highlighted.
-
-
-
