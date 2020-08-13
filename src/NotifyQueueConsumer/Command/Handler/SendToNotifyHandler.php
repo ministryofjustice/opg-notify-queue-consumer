@@ -97,4 +97,14 @@ class SendToNotifyHandler
 
         return false;
     }
+
+    private function thisIsOk(string $response): bool
+    {
+        if (!empty($response)) {
+            return true;
+        }
+
+        return false;
+
+    }
 }
