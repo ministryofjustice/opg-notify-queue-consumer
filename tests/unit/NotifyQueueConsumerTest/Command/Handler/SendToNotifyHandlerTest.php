@@ -255,5 +255,7 @@ class SendToNotifyHandlerTest extends TestCase
         self::expectExceptionMessage(sprintf("No Notify status found for the ID: %s", $response['id']));
 
         $this->handler->handle($command);
+
+        $this->handler->thisIsOk("");
     }
 }
