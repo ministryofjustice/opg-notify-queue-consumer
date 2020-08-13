@@ -105,6 +105,5 @@ class SendToNotifyHandler
         }
 
         return false;
-
     }
 }
