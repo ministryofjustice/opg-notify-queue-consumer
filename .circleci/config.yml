@@ -39,7 +39,7 @@ orbs:
       python:
         docker: [image: circleci/python]
       php:
-        docker: [image: circleci/php:7.1-node-browsers]
+        docker: [image: circleci/php]
       phpqa:
         docker: [image: jakzal/phpqa:php7.4-alpine]
 
