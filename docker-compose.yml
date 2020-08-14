@@ -73,7 +73,7 @@ services:
     depends_on:
       - localstack
     volumes:
-      - .:/var/www
+      - ./src:/var/www
     command:
       - "php"
       - "/var/www/vendor/bin/phpunit"
