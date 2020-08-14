@@ -73,9 +73,9 @@ services:
     depends_on:
       - localstack
     volumes:
-      - ./src:/var/www
+      - .:/var/www
     command:
-      - "/var/www/vendor/bin/phpunit"
+      - "/var/www/vendor/bin/phpunit/phpunit"
       - "--configuration=/var/www/tests/phpunit.xml"
       - "--no-coverage"
       - "--log-junit=/var/www/test-results/functional/results.xml"
