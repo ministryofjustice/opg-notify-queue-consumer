@@ -75,7 +75,6 @@ services:
     volumes:
       - ./src:/var/www
     command:
-      - "php"
       - "/var/www/vendor/bin/phpunit"
       - "--configuration=/var/www/tests/phpunit.xml"
       - "--no-coverage"
