@@ -74,6 +74,7 @@ services:
       - localstack
     volumes:
       - .:/var/www
+    entrypoint: vendor/bin/phpunit
     command:
       - "/var/www/vendor/bin/phpunit"
       - "--configuration=/var/www/tests/phpunit.xml"
