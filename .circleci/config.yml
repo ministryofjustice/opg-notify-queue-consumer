@@ -98,7 +98,7 @@ jobs:
           command: cp local.env.example local.env
       - run:
           name: Run composer install
-          command: composer install --prefer-source --no-interaction
+          command: composer install
       - run:
           name: Build consumer
           command: docker-compose build consumer
