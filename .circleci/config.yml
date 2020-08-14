@@ -87,7 +87,7 @@ jobs:
           destination: coverage-report
 
   test_functional:
-    executor: notify_queue_consumer/php
+    executor: notify_queue_consumer/phpqa
     steps:
       - checkout
       - setup_remote_docker:
@@ -99,11 +99,6 @@ jobs:
       - run:
           name: Run composer install
           command: composer install
-      - save_cache:
-          key: 'composer-packages-{{ .Branch }}-{{ .Revision }}-'
-          paths:
-            - ~/.composer/cache
-            - vendor
       - run:
           name: Build consumer
           command: docker-compose build consumer
