@@ -103,10 +103,8 @@ jobs:
           name: Localstack setup
           command: |
             docker-compose up -d localstack
-            for i in {1..15}; do \
-            docker-compose exec localstack awslocal sqs create-queue --queue-name notify --attributes VisibilityTimeout=30,ReceiveMessageWaitTimeSeconds=0 \
-            && break || sleep 2; done
-            docker-compose exec localstack awslocal --endpoint-url=http://localhost:4572 s3 mb s3://localbucket
+            chmod +x ./scripts/localstack/wait-for-localstack-ready.sh
+            ./scripts/localstack/wait-for-localstack-ready.sh
       - run:
           name: Run functional tests
           command: docker-compose run test-functional-ci
