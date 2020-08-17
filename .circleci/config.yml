@@ -97,14 +97,19 @@ jobs:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
       - run:
-          name: Run composer install
-          command: composer install
-      - run:
-          name: Build consumer
+          name: Build consumer image with dev dependencies
           command: docker-compose build consumer
       - run:
+          name: Localstack Setup
+          command: |
+            docker-compose up -d localstack
+            for i in {1..15}; do \
+            docker-compose exec localstack awslocal sqs create-queue --queue-name notify --attributes VisibilityTimeout=30,ReceiveMessageWaitTimeSeconds=0 \
+            && break || sleep 2; done
+            docker-compose exec localstack awslocal --endpoint-url=http://localhost:4572 s3 mb s3://localbucket
+      - run:
           name: Run functional tests
-          command: docker-compose run test-functional
+          command: docker-compose run test-functional-ci
 
   metrics:
     executor: notify_queue_consumer/phpqa
