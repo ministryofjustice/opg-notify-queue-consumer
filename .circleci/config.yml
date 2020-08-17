@@ -100,7 +100,7 @@ jobs:
           name: Build consumer image with dev dependencies
           command: docker-compose build consumer
       - run:
-          name: Localstack Setup
+          name: Localstack setup
           command: |
             docker-compose up -d localstack
             for i in {1..15}; do \
