@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="../vendor/autoload.php"
+<phpunit bootstrap="bootstrap.php"
          backupGlobals="false"
          backupStaticAttributes="false"
          beStrictAboutTestsThatDoNotTestAnything="true"
@@ -14,6 +14,9 @@
     <testsuites>
         <testsuite name="unit">
             <directory>./unit/</directory>
+        </testsuite>
+        <testsuite name="functional">
+            <directory>./functional/</directory>
         </testsuite>
     </testsuites>
 

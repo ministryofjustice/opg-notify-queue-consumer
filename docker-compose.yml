@@ -25,8 +25,8 @@ services:
     command:
       - "phpstan"
       - "analyse"
-      - "--level=7"
-      - "/app/src"
+      - "-c"
+      - "/app/tests/phpstan.neon"
 
   lint:
     image: jakzal/phpqa:php7.4-alpine
@@ -68,6 +68,30 @@ services:
       - "--log-junit=/app/test-results/unit/results.xml"
       - "--testsuite=unit"
 
+  test-functional:
+    image: notify-queue-consumer:latest
+    depends_on:
+      - localstack
+    volumes:
+      - .:/var/www
+    command:
+      - "/var/www/vendor/bin/phpunit"
+      - "--configuration=/var/www/tests/phpunit.xml"
+      - "--no-coverage"
+      - "--log-junit=/var/www/test-results/functional/results.xml"
+      - "--testsuite=functional"
+    env_file: [local.env]
+
+  test-functional-ci:
+    image: notify-queue-consumer:latest
+    command:
+      - "/var/www/vendor/bin/phpunit"
+      - "--configuration=/var/www/tests/phpunit.xml"
+      - "--no-coverage"
+      - "--log-junit=/var/www/test-results/functional/results.xml"
+      - "--testsuite=functional"
+    env_file: [local.env]
+
   localstack:
     image: localstack/localstack:0.10.5
     environment:
@@ -75,9 +99,6 @@ services:
       HOSTNAME_EXTERNAL: localstack
       SERVICES: sqs,s3
       DEBUG: 1
-    ports:
-      - "4572:4572"
-      - "4576:4576"
     volumes:
       - "./scripts/localstack:/docker-entrypoint-initaws.d"
       - "./tests/fixtures:/tmp/fixtures"

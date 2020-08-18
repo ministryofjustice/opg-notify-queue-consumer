@@ -58,6 +58,10 @@ Add a file
 List all files
       
     docker-compose exec localstack awslocal --endpoint-url=http://localhost:4572 s3 ls s3://localbucket    
+
+List Queues
+
+    docker-compose exec localstack awslocal --endpoint-url=http://localhost:4576 sqs list-queues
     
 Add a message to queue
 

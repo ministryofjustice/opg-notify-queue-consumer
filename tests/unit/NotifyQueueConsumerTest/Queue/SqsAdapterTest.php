@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NotifyQueueConsumerTest\Queue;
+namespace NotifyQueueConsumerTest\Unit\Queue;
 
 use Exception;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
@@ -15,6 +15,7 @@ use UnexpectedValueException;
 
 class SqsAdapterTest extends TestCase
 {
+    private const DEFAULT_WAIT_TIME = 0;
     /**
      * @var SqsClient|MockObject
      */
@@ -42,7 +43,7 @@ class SqsAdapterTest extends TestCase
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
             'QueueUrl' => $this->queueUrl,
-            'WaitTimeSeconds' => 10,
+            'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
         $rawBody = [
             'uuid' => 'asd-123',
@@ -64,7 +65,7 @@ class SqsAdapterTest extends TestCase
 
         $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
 
         $actualResult = $sqsAdapter->next();
 
@@ -84,14 +85,14 @@ class SqsAdapterTest extends TestCase
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
             'QueueUrl' => $this->queueUrl,
-            'WaitTimeSeconds' => 10,
+            'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
         $awsResult->method('get')->with('Messages')->willReturn(null);
 
         $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
 
         $actualResult = $sqsAdapter->next();
 
@@ -111,7 +112,7 @@ class SqsAdapterTest extends TestCase
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
             'QueueUrl' => $this->queueUrl,
-            'WaitTimeSeconds' => 10,
+            'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -122,7 +123,7 @@ class SqsAdapterTest extends TestCase
 
         $this->sqsClientMock->method('receiveMessage')->with($config)->willReturn($awsResult);
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
 
         self::expectException(UnexpectedValueException::class);
 
@@ -162,7 +163,7 @@ class SqsAdapterTest extends TestCase
                 'ReceiptHandle' => $command->getId(),
             ]);
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
 
         $sqsAdapter->delete($command);
     }

@@ -17,8 +17,10 @@ return [
             ]
         ],
         'sqs' => [
-            'queue_url' => getenv('AWS_SQS_ENDPOINT_URL') ?: null,
+            'queue_url' => getenv('AWS_SQS_QUEUE_URL') ?: null,
             'version' => '2012-11-05', // TODO can this be `latest`?
+            'endpoint' => getenv('AWS_SQS_ENDPOINT_URL') ?: null,
+            'wait_time' => (int)(getenv('AWS_SQS_QUEUE_WAIT_TIME') ?: 0),
         ],
     ],
     'consumer' => [
@@ -26,8 +28,8 @@ return [
             ? 1 : (int)getenv('OPG_NOTIFY_QUEUE_CONSUMER_SLEEP_TIME_SECONDS')
     ],
     'notify' => [
-        'api_key' => getenv('OPG_NOTIFY_API_KEY') === false ? '8aaa7cd4-b7af-4f49-90be-88d4815ecb72' : getenv('OPG_NOTIFY_API_KEY'),
-        'service_id' => getenv('OPG_NOTIFY_SERVICE_ID') === false ? '8aaa7cd4-b7af-4f49-90be-88d4815ecb72' : getenv('OPG_NOTIFY_SERVICE_ID'),
+        'api_key' => getenv('OPG_NOTIFY_API_KEY') === false ?
+            '8aaa7cd4-b7af-4f49-90be-88d4815ecb72' : getenv('OPG_NOTIFY_API_KEY'),
     ],
     'sirius' => [
         'update_status_endpoint' => getenv('OPG_SIRIUS_UPDATE_STATUS_ENDPOINT') ?: '/update-status',

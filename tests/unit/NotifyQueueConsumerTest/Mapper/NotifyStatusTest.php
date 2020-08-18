@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NotifyQueueConsumerTest\Mapper;
+namespace NotifyQueueConsumerTest\Unit\Mapper;
 
 use NotifyQueueConsumer\Mapper\NotifyStatus;
 use PHPUnit\Framework\TestCase;

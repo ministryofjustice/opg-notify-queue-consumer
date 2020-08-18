@@ -5,6 +5,8 @@ workflows:
     jobs:
       - test_unit:
           name: Unit Tests
+      - test_functional:
+          name: Functional Tests
       - lint:
           name: Linting
       - static_analysis:
@@ -13,7 +15,7 @@ workflows:
           name: PHP Metrics
       - build:
           name: Build and deploy to Amazon ECR
-          requires: [Unit Tests, Linting, Static Analysis]
+          requires: [Unit Tests, Functional Tests, Linting, Static Analysis]
 
 orbs:
   notify_queue_consumer:
@@ -36,6 +38,8 @@ orbs:
     executors:
       python:
         docker: [image: circleci/python]
+      php:
+        docker: [image: circleci/php]
       phpqa:
         docker: [image: jakzal/phpqa:php7.4-alpine]
 
@@ -46,14 +50,14 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Prep local env variables for docker compose
           command: cp local.env.example local.env
       - restore_cache:
           keys:
-              - composer-v1-{{ checksum "composer.lock" }}
-              - composer-v1
+            - composer-v1-{{ checksum "composer.lock" }}
+            - composer-v1
       - run:
           name: Run composer install
           command: composer install -n --prefer-dist
@@ -82,13 +86,36 @@ jobs:
           path:  ./test-results/coverage
           destination: coverage-report
 
+  test_functional:
+    executor: notify_queue_consumer/php
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: false
+      - run:
+          name: Prep local env variables for docker compose
+          command: cp local.env.example local.env
+      - run:
+          name: Build consumer image with dev dependencies
+          command: docker-compose build consumer
+      - run:
+          name: Localstack setup
+          command: |
+            docker-compose up -d localstack
+            chmod +x ./scripts/localstack/wait-for-localstack-ready.sh
+            ./scripts/localstack/wait-for-localstack-ready.sh
+      - run:
+          name: Run functional tests
+          command: docker-compose run test-functional-ci
+
   metrics:
     executor: notify_queue_consumer/phpqa
     steps:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Generate report
           command: |
@@ -105,7 +132,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false
       - restore_cache:
           keys:
             - composer-v1-{{ checksum "composer.lock" }}
@@ -127,7 +154,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Run PHPCS
           command: phpcs -p --report=checkstyle --standard=PSR12 --warning-severity=0 src public
