@@ -45,10 +45,7 @@ $filesystem = new Filesystem($adapter);
 $notifyClient = new Client(
     [
         'apiKey' => $config['notify']['api_key'],
-        'httpClient' => new CurlClient(
-            Psr17FactoryDiscovery::findResponseFactory(),
-            Psr17FactoryDiscovery::findStreamFactory()
-        ),
+        'httpClient' => new GuzzleClient(),
     ]
 );
 
