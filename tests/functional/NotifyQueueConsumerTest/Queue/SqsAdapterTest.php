@@ -18,6 +18,8 @@ class SqsAdapterTest extends TestCase
 
     public function setUp(): void
     {
+        var_dump(file_get_contents("http://localhost:9123"));
+
         global $awsSqsClient;
 
         parent::setUp();

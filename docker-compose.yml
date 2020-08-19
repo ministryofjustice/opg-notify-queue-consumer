@@ -12,6 +12,16 @@ services:
         ENABLE_DEV_DEPS: "true"
     env_file: [local.env]
 
+  test-mock-service:
+    image: notify-test-mock-service:latest
+    build:
+      context: .
+      dockerfile: docker/test-mock-service/Dockerfile
+    volumes:
+      - ./docker/test-mock-service/public:/var/www
+    ports:
+      - "9123:9123"
+
   phpqa:
     image: jakzal/phpqa:php7.4-alpine
     build:
@@ -72,6 +82,7 @@ services:
     image: notify-queue-consumer:latest
     depends_on:
       - localstack
+      - test-mock-service
     volumes:
       - .:/var/www
     command:
