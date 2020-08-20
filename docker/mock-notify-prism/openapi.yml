@@ -7,7 +7,29 @@ servers:
   - url: https://api.notifications.service.gov.uk
     description: Main (production) server
 paths:
-  /v2/notifications?reference={reference}:
+  "/v2/notifications/letter":
+    post:
+      summary: Send a precompiled letter
+      description: something
+      responses:
+        '201':
+          description: Simple post example - note that request body isn't mocked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  postage:
+                    type: string
+                    default: second
+                  reference:
+                    type: string
+                    default: client-defined-reference
+
+  "/v2/notifications?reference={reference}":
     get:
       summary: Get the status of multiple messages
       description: https://docs.notifications.service.gov.uk/php.html#get-the-status-of-multiple-messages
