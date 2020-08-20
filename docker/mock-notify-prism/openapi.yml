@@ -7,10 +7,28 @@ servers:
   - url: https://api.notifications.service.gov.uk
     description: Main (production) server
 paths:
+  "/v2/notifications/{id}":
+    get:
+      summary: Check status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 9a83b0bb-a534-41a5-849f-dbc39aee4d3d
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+
   "/v2/notifications/letter":
     post:
       summary: Send a precompiled letter
-      description: something
       responses:
         '201':
           description: Simple post example - note that request body isn't mocked
