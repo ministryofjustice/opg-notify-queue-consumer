@@ -102,3 +102,10 @@ services:
     volumes:
       - "./scripts/localstack:/docker-entrypoint-initaws.d"
       - "./tests/fixtures:/tmp/fixtures"
+
+  mock-notify:
+    image: stoplight/prism:3
+    volumes:
+      - "./docker/mock-notify:/app/mock-notify"
+    ports:
+    - "4010:4010"

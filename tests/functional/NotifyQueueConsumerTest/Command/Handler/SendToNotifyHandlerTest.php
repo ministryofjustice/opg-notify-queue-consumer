@@ -56,18 +56,8 @@ class SendToNotifyHandlerTest extends TestCase
                 'documentId' => '1234',
             ]
         );
-
-        $notifyClient = new NotifyClient(
-            [
-                'apiKey' => $config['notify']['api_key'],
-                'httpClient' => new GuzzleClient(),
-                'baseUrl' => 'http://host.docker.internal:9123',
-            ]
-        );
         $handler = new SendToNotifyHandler($this->filesystem, $notifyClient);
-
         $updateDocumentStatus = $handler->handle($command);
-
 
         self::assertNotEmpty($updateDocumentStatus->getNotifyId());
         self::assertNotEmpty($updateDocumentStatus->getNotifyStatus());

@@ -46,6 +46,7 @@ $notifyClient = new Client(
     [
         'apiKey' => $config['notify']['api_key'],
         'httpClient' => new GuzzleClient(),
+        'baseUrl' => $config['notify']['base_url'],
     ]
 );
 

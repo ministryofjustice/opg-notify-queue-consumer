@@ -71,15 +71,15 @@ paths:
                     items:
                       $ref: '#/components/schemas/Notification'
               examples:
+                none:
+                  summary: Return a notification
+                  value:
+                    notifications: []
                 one:
                   summary: No matching notification found
                   value:
                     notifications:
                       - id: 9a83b0bb-a534-41a5-849f-dbc39aee4d3d
-                none:
-                  summary: Return a notification
-                  value:
-                    notifications: []
 
 components:
   # https://swagger.io/docs/specification/components/
