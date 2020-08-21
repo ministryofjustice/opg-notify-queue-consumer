@@ -102,9 +102,15 @@ jobs:
       - run:
           name: Localstack setup
           command: |
+            docker pull willwill/wait-for-it
             docker-compose up -d localstack
-            chmod +x ./scripts/localstack/wait-for-localstack-ready.sh
-            ./scripts/localstack/wait-for-localstack-ready.sh
+            docker run willwill/wait-for-it localstack:4572 -- echo "s3 is up"
+            docker run willwill/wait-for-it localstack:4576 -- echo "sqs is up"
+      - run:
+          name: Mock notify
+          command: |
+            docker build --file docker/mock-notify/Dockerfile --tag mock-notify:latest .
+            docker run --init --rm -it -p "4010:4010" -d mock-notify mock -h 0.0.0.0 "/app/mock-notify/openapi.yml"
       - run:
           name: Run functional tests
           command: docker-compose run test-functional-ci

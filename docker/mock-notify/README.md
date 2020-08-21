@@ -17,6 +17,7 @@ Append &__example=..., &__code=500, etc to the url
     
 ## References
 
+- https://11sigma.com/blog/2019-10-11--prism-tutorial
 - https://medium.com/@m_arlandy/contract-testing-for-microservices-using-swagger-prism-and-dredd-efdd463b9433
 - https://github.com/apiaryio/dredd
 - https://medium.com/@marc.calder/creating-meaningful-api-mocks-without-re-writing-the-whole-api-bb4054525214

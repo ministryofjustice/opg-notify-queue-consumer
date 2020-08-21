@@ -72,6 +72,7 @@ services:
     image: notify-queue-consumer:latest
     depends_on:
       - localstack
+      - mock-notify
     volumes:
       - .:/var/www
     command:
@@ -105,7 +106,15 @@ services:
 
   mock-notify:
     image: stoplight/prism:3
+    build:
+      context: .
+      dockerfile: docker/mock-notify/Dockerfile
+    command:
+      - "mock"
+      - "-h"
+      - "0.0.0.0"
+      - "/app/mock-notify/openapi.yml"
     volumes:
       - "./docker/mock-notify:/app/mock-notify"
     ports:
-    - "4010:4010"
+      - "4010:4010"

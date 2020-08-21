@@ -4,8 +4,10 @@ info:
   description: Backwards engineered and limited to what we need to mock; deprecate if notifications provide an api spec
   version: 0.1.0
 servers:
-  - url: https://api.notifications.service.gov.uk
-    description: Main (production) server
+  - url: http://localhost:4010
+    description: Local Prism server
+#  - url: https://api.notifications.service.gov.uk
+#    description: Main (production) server
 paths:
   "/v2/notifications/{id}":
     get:
