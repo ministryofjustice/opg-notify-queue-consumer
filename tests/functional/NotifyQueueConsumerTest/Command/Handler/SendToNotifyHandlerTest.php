@@ -23,12 +23,18 @@ class SendToNotifyHandlerTest extends TestCase
     public function setUp(): void
     {
         // These services are defined in src/bootstrap/services.php and are included in tests/bootstrap.php
-        global $filesystem, $notifyClient;
+        global $filesystem, $notifyClient, $awsS3Client, $config;
 
         parent::setUp();
 
         $this->filesystem = $filesystem;
 //        $this->handler = new SendToNotifyHandler($this->filesystem, $notifyClient);
+
+        if (!$awsS3Client->doesBucketExist($config['aws']['s3']['bucket'])) {
+            $awsS3Client->createBucket([
+                'Bucket' => $config['aws']['s3']['bucket'],
+            ]);
+        }
     }
 
     public function tearDown(): void
@@ -87,4 +93,3 @@ class SendToNotifyHandlerTest extends TestCase
 //        $this->handler->handle($command);
 //    }
 }
-

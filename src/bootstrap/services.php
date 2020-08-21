@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Http\Client\Curl\Client as CurlClient;
 use Http\Discovery\Psr17FactoryDiscovery;
 use Alphagov\Notifications\Client;
 use GuzzleHttp\Client as GuzzleClient;

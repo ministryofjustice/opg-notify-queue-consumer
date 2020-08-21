@@ -99,18 +99,29 @@ jobs:
       - run:
           name: Build consumer image with dev dependencies
           command: docker-compose build consumer
+#      - run:
+#          name: Localstack setup
+#          command: |
+#            docker pull willwill/wait-for-it
+#            docker-compose up -d localstack
+##            docker run willwill/wait-for-it -t 5 localstack:4572
+##            docker run willwill/wait-for-it -t 5 localstack:4576
       - run:
           name: Localstack setup
           command: |
-            docker pull willwill/wait-for-it
             docker-compose up -d localstack
-            docker run willwill/wait-for-it localstack:4572 -- echo "s3 is up"
-            docker run willwill/wait-for-it localstack:4576 -- echo "sqs is up"
+            chmod +x ./scripts/localstack/wait-for-localstack-ready.sh
+            ./scripts/localstack/wait-for-localstack-ready.sh
       - run:
           name: Mock notify
           command: |
-            docker build --file docker/mock-notify/Dockerfile --tag mock-notify:latest .
-            docker run --init --rm -it -p "4010:4010" -d mock-notify mock -h 0.0.0.0 "/app/mock-notify/openapi.yml"
+            docker-compose up --build --force-recreate -d mock-notify-ci
+            sleep 5
+            docker ps
+#            docker build --file docker/mock-notify/Dockerfile --tag mock-notify:latest .
+#            docker run --rm -itd -p "4010:4010" mock-notify mock -h 0.0.0.0 "/app/mock-notify/openapi.yml"
+#            docker run willwill/wait-for-it -t 5 localhost:4010
+#            curl -X GET "http://localhost:4010/v2/notifications/9a83b0bb-a534-41a5-849f-dbc39aee4d3d" -H  "accept: application/json"
       - run:
           name: Run functional tests
           command: docker-compose run test-functional-ci

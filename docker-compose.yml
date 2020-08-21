@@ -82,9 +82,14 @@ services:
       - "--log-junit=/var/www/test-results/functional/results.xml"
       - "--testsuite=functional"
     env_file: [local.env]
+    networks:
+      - internal
 
   test-functional-ci:
     image: notify-queue-consumer:latest
+    depends_on:
+      - localstack
+      - mock-notify-ci
     command:
       - "/var/www/vendor/bin/phpunit"
       - "--configuration=/var/www/tests/phpunit.xml"
@@ -92,6 +97,8 @@ services:
       - "--log-junit=/var/www/test-results/functional/results.xml"
       - "--testsuite=functional"
     env_file: [local.env]
+    networks:
+      - internal
 
   localstack:
     image: localstack/localstack:0.10.5
@@ -103,9 +110,12 @@ services:
     volumes:
       - "./scripts/localstack:/docker-entrypoint-initaws.d"
       - "./tests/fixtures:/tmp/fixtures"
+    networks:
+      - internal
 
   mock-notify:
     image: stoplight/prism:3
+    container_name: mock-notify
     build:
       context: .
       dockerfile: docker/mock-notify/Dockerfile
@@ -118,3 +128,25 @@ services:
       - "./docker/mock-notify:/app/mock-notify"
     ports:
       - "4010:4010"
+    networks:
+      - internal
+
+  mock-notify-ci:
+    image: stoplight/prism:3
+    container_name: mock-notify
+    build:
+      context: .
+      dockerfile: docker/mock-notify/Dockerfile
+    command:
+      - "mock"
+      - "-h"
+      - "0.0.0.0"
+      - "/app/mock-notify/openapi.yml"
+    ports:
+      - "4010:4010"
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
