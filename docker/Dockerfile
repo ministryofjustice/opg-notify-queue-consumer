@@ -1,6 +1,6 @@
 FROM composer as composer
 
-ARG ENABLE_DEV_DEPS
+ARG ENABLE_DEV_DEPS=false
 # Allow parallel downloads
 RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 COPY composer.json composer.json
