@@ -73,6 +73,7 @@ services:
     depends_on:
       - localstack
       - mock-notify
+      - mock-sirius
     volumes:
       - .:/var/www
     command:
@@ -108,7 +109,7 @@ services:
       - "./tests/fixtures:/tmp/fixtures"
 
   mock-notify:
-    image: stoplight/prism:3
+    image: mock-notify:latest
     container_name: mock-notify
     build:
       context: .
@@ -123,8 +124,26 @@ services:
     ports:
       - "4010:4010"
 
+  mock-sirius:
+    image: mock-sirius:latest
+    container_name: mock-sirius
+    build:
+      context: .
+      dockerfile: docker/mock-sirius/Dockerfile
+    command:
+      - "mock"
+      - "-p"
+      - "4011"
+      - "-h"
+      - "0.0.0.0"
+      - "/app/mock-sirius/openapi.yml"
+    volumes:
+      - "./docker/mock-sirius:/app/mock-sirius"
+    ports:
+      - "4011:4011"
+
   mock-notify-ci:
-    image: stoplight/prism:3
+    image: mock-notify:latest
     container_name: mock-notify
     build:
       context: .
@@ -136,3 +155,19 @@ services:
       - "/app/mock-notify/openapi.yml"
     ports:
       - "4010:4010"
+
+  mock-sirius-ci:
+    image: mock-sirius:latest
+    container_name: mock-sirius
+    build:
+      context: .
+      dockerfile: docker/mock-sirius/Dockerfile
+    command:
+      - "mock"
+      - "-p"
+      - "4011"
+      - "-h"
+      - "0.0.0.0"
+      - "/app/mock-sirius/openapi.yml"
+    ports:
+      - "4011:4011"

@@ -22,12 +22,21 @@ local native equivalent
 
 ### Running
 
-     docker-compose up localstack
-     docker-compose up consumer
+     docker-compose --project-name notify-queue-consumer up localstack
+     docker-compose --project-name notify-queue-consumer up consumer
 
 ## Testing
 
-    docker-compose run --rm test
+Unit tests
+
+    docker-compose --project-name notify-queue-consumer run --rm test
+
+Functional tests
+    
+    docker-compose --project-name notify-queue-consumer up -d localstack
+    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate mock-notify
+    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate mock-sirius
+    docker-compose --project-name notify-queue-consumer run --rm test-functional
     
 ### Coverage
 
@@ -35,13 +44,13 @@ See [IDE PHPUnit coverage integration setup](docs/ide-coverage-setup.md)
     
 ## Check Linting / Static Analysis
 
-    docker-compose run --rm lint    
-    docker-compose run --rm phpstan
+    docker-compose --project-name notify-queue-consumer run --rm lint    
+    docker-compose --project-name notify-queue-consumer run --rm phpstan
     
 #### Check the Localstack SQS Queue has been created
     
-    docker-compose up localstack
-    docker-compose exec localstack awslocal sqs list-queues
+    docker-compose --project-name notify-queue-consumer up localstack
+    docker-compose --project-name notify-queue-consumer exec localstack awslocal sqs list-queues
 
 Create an S3 bucket
 

@@ -41,10 +41,12 @@ $adapter = new AwsS3Adapter(
 );
 $filesystem = new Filesystem($adapter);
 
+$notifyGuzzleClient = new GuzzleClient();
+
 $notifyClient = new Client(
     [
         'apiKey' => $config['notify']['api_key'],
-        'httpClient' => new GuzzleClient(),
+        'httpClient' => $notifyGuzzleClient,
         'baseUrl' => $config['notify']['base_url'],
     ]
 );

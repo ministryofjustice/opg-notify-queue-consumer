@@ -27,6 +27,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Notification'
+              examples:
+                validation-failed:
+                  summary: Validation failed
+                  value:
+                    status: validation-failed
+                    id: 9a83b0bb-a534-41a5-849f-dbc39aee4d3d
+                    reference: "1234"
+                pending-virus-check:
+                  summary: Pending virus check
+                  value:
+                    status: pending-virus-check
+                    id: 9a83b0bb-a534-41a5-849f-dbc39aee4d3d
+                    reference: "1234"
 
   "/v2/notifications/letter":
     post:
@@ -98,9 +111,14 @@ components:
         status:
           type: string
           enum:
-            - sending
+            - pending-virus-check
+            - accepted
             - delivered
+            - received
+            - failed
             - permanent-failure
             - temporary-failure
             - technical-failure
-          default: sending
+            - virus-scan-failed
+            - validation-failed
+          default: accepted
