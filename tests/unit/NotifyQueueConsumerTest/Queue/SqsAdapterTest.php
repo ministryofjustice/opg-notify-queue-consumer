@@ -46,9 +46,11 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
         $rawBody = [
-            'uuid' => 'asd-123',
-            'filename' => 'this_is_a_test.pdf',
-            'documentId' => '1234'
+            'message' => [
+                'uuid' => 'asd-123',
+                'filename' => 'this_is_a_test.pdf',
+                'documentId' => '1234'
+            ]
         ];
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -56,9 +58,9 @@ class SqsAdapterTest extends TestCase
         ];
         $expectedResult = SendToNotify::fromArray([
             'id' => $rawData['ReceiptHandle'],
-            'uuid' => $rawBody['uuid'],
-            'filename' => $rawBody['filename'],
-            'documentId' => $rawBody['documentId'],
+            'uuid' => $rawBody['message']['uuid'],
+            'filename' => $rawBody['message']['filename'],
+            'documentId' => $rawBody['message']['documentId'],
         ]);
 
         $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
@@ -136,9 +138,10 @@ class SqsAdapterTest extends TestCase
     public function invalidMessageProvider(): array
     {
         return [
-            [['filename' => 'this_is_a_test.pdf', 'documentId' => '1234']],
-            [['uuid' => 'asd-123', 'documentId' => '1234']],
-            [['uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf']],
+            [['message' => ['filename' => 'this_is_a_test.pdf', 'documentId' => '1234']]],
+            [['message' => ['uuid' => 'asd-123', 'documentId' => '1234']]],
+            [['message' => ['uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf']]],
+            [['message' => []]],
             [[]],
         ];
     }

@@ -43,9 +43,9 @@ class SqsAdapter implements QueueInterface
 
         return SendToNotify::fromArray([
             'id' => $raw['ReceiptHandle'],
-            'uuid' => $body['uuid'],
-            'filename' => $body['filename'],
-            'documentId' => $body['documentId'],
+            'uuid' => $body['message']['uuid'],
+            'filename' => $body['message']['filename'],
+            'documentId' => $body['message']['documentId'],
         ]);
     }
 
@@ -64,18 +64,22 @@ class SqsAdapter implements QueueInterface
     private function validateBody($body): void
     {
         if (empty($body)) {
+            throw new UnexpectedValueException('Empty body');
+        }
+
+        if (empty($body['message'])) {
             throw new UnexpectedValueException('Empty message');
         }
 
-        if (empty($body['uuid'])) {
+        if (empty($body['message']['uuid'])) {
             throw new UnexpectedValueException('Missing "uuid"');
         }
 
-        if (empty($body['filename'])) {
+        if (empty($body['message']['filename'])) {
             throw new UnexpectedValueException('Missing "filename"');
         }
 
-        if (empty($body['documentId'])) {
+        if (empty($body['message']['documentId'])) {
             throw new UnexpectedValueException('Missing "documentId"');
         }
     }
