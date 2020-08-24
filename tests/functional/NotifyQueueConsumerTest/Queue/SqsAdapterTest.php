@@ -98,7 +98,7 @@ class SqsAdapterTest extends TestCase
             [
                 'QueueUrl' => $this->queueUrl,
                 'MessageBody' => sprintf(
-                    '{"uuid":"%s","filename":"%s","documentId":"%d"}',
+                    '{"message":{"uuid":"%s","filename":"%s","documentId":"%d"}}',
                     $uuid,
                     $filename,
                     $documentId
