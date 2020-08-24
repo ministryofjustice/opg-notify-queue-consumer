@@ -103,9 +103,9 @@ class ConsumerTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testRunNotifyValidationFailure()
+    public function testRunNotifyValidationFailureUpdateStatusSuccess()
     {
-        // Modify the uri so we tell the mock server which response we want
+        // Modify the uri so we tell the Prism mock server which response we want
         $this->guzzleHandlerStack->push(GuzzleMiddleware::mapRequest(function (RequestInterface $request) {
             $method = $request->getMethod();
 
@@ -125,6 +125,44 @@ class ConsumerTest extends TestCase
             'Deleting processed message',
             'Updating document status',
             'Success',
+        ];
+
+        $this->consumer->run();
+
+        self::assertNotEmpty($this->logger->records);
+
+        foreach ($expectedLogMessageSequence as $i => $expectedMessage) {
+            self::assertEquals(
+                $expectedMessage,
+                $this->logger->records[$i]['message'],
+                var_export($this->logger->records, true)
+            );
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testRunNotifyMessageExistsDuplicateFailure()
+    {
+        // Modify the uri so we tell the Prism mock server which response we want
+        $this->guzzleHandlerStack->push(GuzzleMiddleware::mapRequest(function (RequestInterface $request) {
+            $method = $request->getMethod();
+
+            if (strpos((string)$request->getUri(), '/v2/notifications?reference=') !== false && $method === 'GET') {
+                $query = $request->getUri()->getQuery() . '&__example=one';
+                $request = $request->withUri($request->getUri()->withQuery($query));
+            }
+            return $request;
+        }));
+        $this->createMessageWithFile((string)Uuid::uuid4(), 1234);
+
+        $this->awsSqsClient->getQueueAttributes(['QueueUrl' => $this->queueUrl]);
+
+        $expectedLogMessageSequence = [
+            'Asking for next message',
+            'Sending to Notify',
+            'Deleting duplicate message',
         ];
 
         $this->consumer->run();

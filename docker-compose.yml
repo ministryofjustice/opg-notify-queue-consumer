@@ -89,6 +89,7 @@ services:
     depends_on:
       - localstack
       - mock-notify-ci
+      - mock-sirius-ci
     command:
       - "/var/www/vendor/bin/phpunit"
       - "--configuration=/var/www/tests/phpunit.xml"
