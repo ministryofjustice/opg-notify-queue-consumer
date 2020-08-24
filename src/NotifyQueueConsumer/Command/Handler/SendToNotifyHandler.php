@@ -11,6 +11,7 @@ use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use UnexpectedValueException;
+use Alphagov\Notifications\Exception;
 
 class SendToNotifyHandler
 {
@@ -27,6 +28,7 @@ class SendToNotifyHandler
      * @param SendToNotify $sendToNotifyCommand
      * @return UpdateDocumentStatus
      * @throws FileNotFoundException
+     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
     public function handle(SendToNotify $sendToNotifyCommand): UpdateDocumentStatus
     {
@@ -58,6 +60,7 @@ class SendToNotifyHandler
     /**
      * @param string $reference
      * @param string $contents
+     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      * @return array<string,string>
      */
     private function sendToNotify(string $reference, string $contents): array

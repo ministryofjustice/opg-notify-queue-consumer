@@ -110,8 +110,7 @@ class ConsumerTest extends TestCase
             $method = $request->getMethod();
 
             if (strpos((string)$request->getUri(), '/v2/notifications/') !== false && $method === 'GET') {
-                $query = $request->getUri()->getQuery() . '&__example=validation-failed';
-                $request = $request->withUri($request->getUri()->withQuery($query));
+                $request = $request->withAddedHeader('Prefer', 'example=validation-failed');
             }
             return $request;
         }));
@@ -143,6 +142,43 @@ class ConsumerTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testRunNotifyValidationFailureExceptionFailure()
+    {
+        // Modify the uri so we tell the Prism mock server which response we want
+        $this->guzzleHandlerStack->push(GuzzleMiddleware::mapRequest(function (RequestInterface $request) {
+            $method = $request->getMethod();
+
+            if (strpos((string)$request->getUri(), '/v2/notifications/letter') !== false && $method === 'POST') {
+                $request = $request->withAddedHeader('Prefer', 'code=400');
+            }
+            return $request;
+        }));
+        $this->createMessageWithFile((string)Uuid::uuid4(), 1234);
+
+        $this->awsSqsClient->getQueueAttributes(['QueueUrl' => $this->queueUrl]);
+
+        $expectedLogMessageSequence = [
+            'Asking for next message',
+            'Sending to Notify',
+            'Error processing message',
+        ];
+
+        $this->consumer->run();
+
+        self::assertNotEmpty($this->logger->records);
+
+        foreach ($expectedLogMessageSequence as $i => $expectedMessage) {
+            self::assertEquals(
+                $expectedMessage,
+                $this->logger->records[$i]['message'],
+                var_export($this->logger->records, true)
+            );
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testRunNotifyMessageExistsDuplicateFailure()
     {
         // Modify the uri so we tell the Prism mock server which response we want
@@ -150,9 +186,9 @@ class ConsumerTest extends TestCase
             $method = $request->getMethod();
 
             if (strpos((string)$request->getUri(), '/v2/notifications?reference=') !== false && $method === 'GET') {
-                $query = $request->getUri()->getQuery() . '&__example=one';
-                $request = $request->withUri($request->getUri()->withQuery($query));
+                $request = $request->withAddedHeader('Prefer', 'example=one');
             }
+
             return $request;
         }));
         $this->createMessageWithFile((string)Uuid::uuid4(), 1234);

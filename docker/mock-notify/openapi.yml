@@ -61,6 +61,23 @@ paths:
                   reference:
                     type: string
                     default: client-defined-reference
+        # {"errors":[{"error":"AuthError","message":"Invalid token: API key not found"}],"status_code":403}
+        '400':
+          description: Error response example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NotifyError'
+                  status_code:
+                    type: int
+                    enum:
+                      - 400
+                      - 429
 
   "/v2/notifications?reference={reference}":
     get:
@@ -122,3 +139,16 @@ components:
             - virus-scan-failed
             - validation-failed
           default: accepted
+    NotifyError:
+      type: object
+      properties:
+        error:
+          type: string
+          enum:
+            - ValidationError
+            - BadRequestError
+            - RateLimitError
+            - TooManyRequestsError
+        message:
+          type: string
+          example: postage invalid. It must be either first or second.
