@@ -1,14 +1,7 @@
 [![ministryofjustice](https://circleci.com/gh/ministryofjustice/opg-notify-queue-consumer.svg?style=svg)](https://github.com/ministryofjustice/opg-notify-queue-consumer)
 
-## Local setup
-
-Add the following alias to your shell - this will allow you to use a 
-[jakzal/phpqa](https://hub.docker.com/r/jakzal/phpqa/) container for running common php tools
-
-    alias phpqa='docker run --init -it --rm -v "$(pwd):/project" -v "$(pwd)/tmp-phpqa:/tmp" -w /project jakzal/phpqa:php7.4-alpine'
-    
-*macOS note*: If you find commands like composer too slow due to the known issues with file mounts, then try using your 
-local native equivalent 
+Queue consumer; messages represent a PDF letter to be sent to the Notify (Notifications) API for printing, 
+updates Sirius with status.
 
 ### Building
 
@@ -22,8 +15,13 @@ local native equivalent
 
 ### Running
 
-     docker-compose --project-name notify-queue-consumer up localstack
-     docker-compose --project-name notify-queue-consumer up consumer
+    docker-compose --project-name notify-queue-consumer up localstack
+    docker-compose --project-name notify-queue-consumer up consumer
+    
+If you are not developing against a local or test version of Notify or Sirius you can run the mock services with:
+
+    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate mock-notify
+    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate mock-sirius
 
 ## Testing
 
@@ -46,47 +44,10 @@ See [IDE PHPUnit coverage integration setup](docs/ide-coverage-setup.md)
 
     docker-compose --project-name notify-queue-consumer run --rm lint    
     docker-compose --project-name notify-queue-consumer run --rm phpstan
-    
-#### Check the Localstack SQS Queue has been created
-    
-    docker-compose --project-name notify-queue-consumer up localstack
-    docker-compose --project-name notify-queue-consumer exec localstack awslocal sqs list-queues
-
-Create an S3 bucket
-
-    docker-compose exec localstack awslocal --endpoint-url=http://localstack:4572 s3 mb s3://localbucket
-
-Check it exists
-
-    docker-compose exec localstack awslocal --endpoint-url=http://localstack:4572 s3 ls
-    
-Add a file
-
-    docker-compose exec localstack awslocal --endpoint-url=http://localstack:4572 s3 cp /tmp/fixtures/sample_doc.pdf s3://localbucket  
-    
-List all files
-      
-    docker-compose exec localstack awslocal --endpoint-url=http://localstack:4572 s3 ls s3://localbucket    
-
-List Queues
-
-    docker-compose exec localstack awslocal --endpoint-url=http://localstack:4576 sqs list-queues
-    
-Add a message to queue
-
-    docker-compose exec localstack awslocal --endpoint-url=http://localstack:4576 sqs send-message --queue-url http://localstack:4576/queue/notify --message-body '{"uuid":"asd-123","filename":"this_is_a_test.pdf","documentId":"1234"}'
-    
-Receive a message
-    
-    docker-compose exec localstack awslocal --endpoint-url=http://localstack:4576 sqs receive-message --queue-url http://localstack:4576/queue/notify
-    
-Delete a message
-    
-    docker-compose exec localstack awslocal --endpoint-url=http://localstack:4576 sqs delete-message --queue-url http://localstack:4576/queue/notify --receipt-handle <HANDLE>
-
-
+   
 ## References
 
+- [Localstack useful commands ](docs/localstack.md)
 - https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/welcome.html
 - https://docs.notifications.service.gov.uk/php.html#send-a-precompiled-letter
 - http://docs.guzzlephp.org/en/stable/
