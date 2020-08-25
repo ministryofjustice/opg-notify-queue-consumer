@@ -106,6 +106,14 @@ jobs:
             chmod +x ./scripts/localstack/wait-for-localstack-ready.sh
             ./scripts/localstack/wait-for-localstack-ready.sh
       - run:
+          name: Start Mock Notify
+          command: |
+            docker-compose up --build --force-recreate -d mock-notify-ci
+      - run:
+          name: Start Mock Sirius
+          command: |
+            docker-compose up --build --force-recreate -d mock-sirius-ci
+      - run:
           name: Run functional tests
           command: docker-compose run test-functional-ci
 

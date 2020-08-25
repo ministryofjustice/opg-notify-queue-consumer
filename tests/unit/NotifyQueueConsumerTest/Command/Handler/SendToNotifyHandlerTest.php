@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace NotifyQueueConsumerTest\Unit\Command\Handler;
 
+use Alphagov\Notifications\Exception as NotifyException;
+use Exception;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
+use Psr\Http\Message\ResponseInterface;
 use UnexpectedValueException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -51,7 +54,7 @@ class SendToNotifyHandlerTest extends TestCase
             'filename' => 'document.pdf',
             'documentId' => '456',
         ];
-        $contents = "abcdef";
+        $contents = "pdf content";
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
             "reference" => $data['uuid'],
@@ -60,18 +63,18 @@ class SendToNotifyHandlerTest extends TestCase
         $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
         $notifyStatus = "sending";
         $statusResponse = [
-              "id" => $notifyId,
-              "reference" => $data['uuid'],
-              "line_1" => "742 Evergreen Terrace ",
-              "line_2" => "Springfield",
-              "postcode" => "S1M 2SO",
-              "type" => "letter",
-              "status" => $notifyStatus,
-              "body" => "",
-              "created_at" => "",
-              "created_by_name" => "",
-              "sent_at" => "",
-              "completed_at" => "",
+            "id" => $notifyId,
+            "reference" => $data['uuid'],
+            "line_1" => "742 Evergreen Terrace ",
+            "line_2" => "Springfield",
+            "postcode" => "S1M 2SO",
+            "type" => "letter",
+            "status" => $notifyStatus,
+            "body" => "",
+            "created_at" => "",
+            "created_by_name" => "",
+            "sent_at" => "",
+            "completed_at" => "",
         ];
         $payload = [
             "documentId" => $data['documentId'],
@@ -111,6 +114,66 @@ class SendToNotifyHandlerTest extends TestCase
         self::assertEquals($payload['notifySendId'], $command->getNotifyId());
     }
 
+    /**
+     * @param Exception $notifyException
+     * @throws FileNotFoundException
+     * @dataProvider notifyExceptionProvider
+     */
+    public function testSendToNotifyBubblesUpApiExceptionFailure(Exception $notifyException): void
+    {
+        $data = [
+            'id' => '123',
+            'uuid' => 'asd-456',
+            'filename' => 'document.pdf',
+            'documentId' => '456',
+        ];
+        $contents = "some content";
+        $command = SendToNotify::fromArray($data);
+
+        $this->mockFilesystem
+            ->expects(self::once())
+            ->method('read')
+            ->with($data['filename'])
+            ->willReturn($contents);
+
+        // https://docs.notifications.service.gov.uk/php.html#send-a-precompiled-letter-error-codes
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('sendPrecompiledLetter')
+            ->willThrowException($notifyException);
+
+        self::expectException(get_class($notifyException));
+
+        $this->handler->handle($command);
+    }
+
+    /**
+     * @return array<array<Exception>>
+     */
+    public function notifyExceptionProvider(): array
+    {
+        $httpResponse = $this->createMock(ResponseInterface::class);
+
+        return [
+            [
+                new NotifyException\ApiException(
+                    "ValidationError",
+                    400,
+                    [
+                        'errors' => [
+                            [
+                                'error' => 'ValidationError',
+                                'message' => 'postage invalid. It must be either first or second.'
+                            ]
+                        ]
+                    ],
+                    $httpResponse
+                )
+            ],
+            [new NotifyException\NotifyException('something went wrong')],
+            [new NotifyException\UnexpectedValueException('something went wrong')],
+        ];
+    }
 
     /**
      * @throws FileNotFoundException
@@ -139,11 +202,13 @@ class SendToNotifyHandlerTest extends TestCase
             ->expects(self::once())
             ->method('listNotifications')
             ->with(['reference' => $response['reference']])
-            ->willReturn([
-                'notifications' => [
-                    ['id' => $notifyId],
-                ],
-            ]);
+            ->willReturn(
+                [
+                    'notifications' => [
+                        ['id' => $notifyId],
+                    ],
+                ]
+            );
 
         self::expectException(DuplicateMessageException::class);
 

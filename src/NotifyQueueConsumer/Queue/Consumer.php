@@ -60,6 +60,8 @@ class Consumer
 
             $this->logger->info('Updating document status', $logExtras);
             $this->updateDocumentStatusHandler->handle($updateDocumentStatusCommand);
+
+            $this->logger->info('Success', $logExtras);
         } catch (DuplicateMessageException $e) {
             $this->logger->info('Deleting duplicate message', $logExtras);
             $this->queue->delete($sendToNotifyCommand);

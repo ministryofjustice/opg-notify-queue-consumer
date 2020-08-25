@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Http\Client\Curl\Client as CurlClient;
 use Http\Discovery\Psr17FactoryDiscovery;
 use Alphagov\Notifications\Client;
 use GuzzleHttp\Client as GuzzleClient;
@@ -42,13 +41,13 @@ $adapter = new AwsS3Adapter(
 );
 $filesystem = new Filesystem($adapter);
 
+$notifyGuzzleClient = new GuzzleClient();
+
 $notifyClient = new Client(
     [
         'apiKey' => $config['notify']['api_key'],
-        'httpClient' => new CurlClient(
-            Psr17FactoryDiscovery::findResponseFactory(),
-            Psr17FactoryDiscovery::findStreamFactory()
-        ),
+        'httpClient' => $notifyGuzzleClient,
+        'baseUrl' => $config['notify']['base_url'],
     ]
 );
 

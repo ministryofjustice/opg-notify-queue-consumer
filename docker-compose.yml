@@ -72,6 +72,8 @@ services:
     image: notify-queue-consumer:latest
     depends_on:
       - localstack
+      - mock-notify
+      - mock-sirius
     volumes:
       - .:/var/www
     command:
@@ -84,6 +86,10 @@ services:
 
   test-functional-ci:
     image: notify-queue-consumer:latest
+    depends_on:
+      - localstack
+      - mock-notify-ci
+      - mock-sirius-ci
     command:
       - "/var/www/vendor/bin/phpunit"
       - "--configuration=/var/www/tests/phpunit.xml"
@@ -102,3 +108,67 @@ services:
     volumes:
       - "./scripts/localstack:/docker-entrypoint-initaws.d"
       - "./tests/fixtures:/tmp/fixtures"
+
+  mock-notify:
+    image: mock-notify:latest
+    container_name: mock-notify
+    build:
+      context: .
+      dockerfile: docker/mock-notify/Dockerfile
+    command:
+      - "mock"
+      - "-h"
+      - "0.0.0.0"
+      - "/app/mock-notify/openapi.yml"
+    volumes:
+      - "./docker/mock-notify:/app/mock-notify"
+    ports:
+      - "4010:4010"
+
+  mock-sirius:
+    image: mock-sirius:latest
+    container_name: mock-sirius
+    build:
+      context: .
+      dockerfile: docker/mock-sirius/Dockerfile
+    command:
+      - "mock"
+      - "-p"
+      - "4011"
+      - "-h"
+      - "0.0.0.0"
+      - "/app/mock-sirius/openapi.yml"
+    volumes:
+      - "./docker/mock-sirius:/app/mock-sirius"
+    ports:
+      - "4011:4011"
+
+  mock-notify-ci:
+    image: mock-notify:latest
+    container_name: mock-notify
+    build:
+      context: .
+      dockerfile: docker/mock-notify/Dockerfile
+    command:
+      - "mock"
+      - "-h"
+      - "0.0.0.0"
+      - "/app/mock-notify/openapi.yml"
+    ports:
+      - "4010:4010"
+
+  mock-sirius-ci:
+    image: mock-sirius:latest
+    container_name: mock-sirius
+    build:
+      context: .
+      dockerfile: docker/mock-sirius/Dockerfile
+    command:
+      - "mock"
+      - "-p"
+      - "4011"
+      - "-h"
+      - "0.0.0.0"
+      - "/app/mock-sirius/openapi.yml"
+    ports:
+      - "4011:4011"

@@ -5,8 +5,8 @@ ARG ENABLE_DEV_DEPS=false
 RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 COPY composer.json composer.json
 COPY composer.lock composer.lock
-RUN if [ "$ENABLE_DEV_DEPS" = "true" ] ; then composer install --prefer-dist --no-interaction --no-scripts; fi
-RUN if [ "$ENABLE_DEV_DEPS" = "false" ] ; then composer install --prefer-dist --no-interaction --no-scripts --no-dev; fi
+RUN if [ "$ENABLE_DEV_DEPS" = "true" ] ; then composer install --prefer-dist --no-interaction --no-scripts; else \
+    composer install --prefer-dist --no-interaction --no-scripts --no-dev; fi
 
 RUN composer dumpautoload -o
 

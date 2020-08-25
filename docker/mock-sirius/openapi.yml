@@ -1,0 +1,112 @@
+openapi: 3.0.0
+info:
+  title: Sirius API
+  description: Simplified Sirius public api
+  version: 0.1.0
+servers:
+  - url: http://localhost:4011
+    description: Local Prism server
+paths:
+  "/update-send-status":
+    put:
+      tags:
+        - Document status
+      description: Update the state of the letter in the database after the queue consumer successfully processes a letter
+      operationId: updateSendStatus
+      parameters:
+        - name: request
+          in: body
+          description: The document with associated Notify ID and status
+          required: true
+          schema:
+            type: object
+            required:
+              - documentId
+              - notifySendId
+              - notifyStatus
+            properties:
+              documentId:
+                type: integer
+                example: 11
+              notifySendId:
+                type: string
+                format: uuid
+                example: "740e5834-3a29-46b4-9a6f-16142fde533a"
+              notifyStatus:
+                type: string
+                enum:
+                  - queued
+                  - posting
+                  - rejected
+                  - posted
+                example: posting
+      responses:
+        '204':
+          description: The status was updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+
+components:
+  # https://swagger.io/docs/specification/components/
+  schemas:
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          default: client-defined-reference
+        status:
+          type: string
+          enum:
+            - sending
+            - delivered
+            - permanent-failure
+            - temporary-failure
+            - technical-failure
+          default: sending
+    Error:
+      type: object
+      required:
+        - validation_errors
+        - status
+        - detail
+      properties:
+        validation_errors:
+          type: object
+          description: All validation errors are returned in this property. There is a child property named after the request property that faled validation e.g. appointmentType which itself has a property for each type of failed validation with a description
+        type:
+          type: string
+          description: a URL to a document describing the error condition (optional, and "about:blank" is assumed if none is provided; should resolve to a human-readable document; Apigility always provides this)
+          example: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+        title:
+          type: string
+          description: a brief title for the error condition (required; and should be the same for every problem of the same type; Apigility always provides this)
+          example: Bad Request
+        status:
+          type: string
+          description: the HTTP status code for the current request (optional; Apigility always provides this)
+          example: '400'
+        detail:
+          type: string
+          description: error details specific to this request (optional; Apigility requires it for each problem)
+          example: Payload failed validation
+        instance:
+          type: string
+          description: URI identifying the specific instance of this problem (optional; Apigility currently does not provide this)
