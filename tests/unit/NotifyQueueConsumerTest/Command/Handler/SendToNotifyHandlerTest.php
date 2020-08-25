@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace NotifyQueueConsumerTest\Unit\Command\Handler;
 
-use Alphagov\Notifications\Exception\ApiException;
+use Alphagov\Notifications\Exception as NotifyException;
+use Exception;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use Psr\Http\Message\ResponseInterface;
 use UnexpectedValueException;
@@ -53,7 +54,7 @@ class SendToNotifyHandlerTest extends TestCase
             'filename' => 'document.pdf',
             'documentId' => '456',
         ];
-        $contents = "abcdef";
+        $contents = "pdf content";
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
             "reference" => $data['uuid'],
@@ -114,9 +115,11 @@ class SendToNotifyHandlerTest extends TestCase
     }
 
     /**
+     * @param Exception $notifyException
      * @throws FileNotFoundException
+     * @dataProvider notifyExceptionProvider
      */
-    public function testSendToNotifyThrowsApiExceptionFailure(): void
+    public function testSendToNotifyBubblesUpApiExceptionFailure(Exception $notifyException): void
     {
         $data = [
             'id' => '123',
@@ -124,9 +127,8 @@ class SendToNotifyHandlerTest extends TestCase
             'filename' => 'document.pdf',
             'documentId' => '456',
         ];
-        $contents = "abcdef";
+        $contents = "some content";
         $command = SendToNotify::fromArray($data);
-        $httpResponse = $this->createMock(ResponseInterface::class);
 
         $this->mockFilesystem
             ->expects(self::once())
@@ -138,8 +140,23 @@ class SendToNotifyHandlerTest extends TestCase
         $this->mockNotifyClient
             ->expects(self::once())
             ->method('sendPrecompiledLetter')
-            ->willThrowException(
-                new ApiException(
+            ->willThrowException($notifyException);
+
+        self::expectException(get_class($notifyException));
+
+        $this->handler->handle($command);
+    }
+
+    /**
+     * @return array<array<Exception>>
+     */
+    public function notifyExceptionProvider(): array
+    {
+        $httpResponse = $this->createMock(ResponseInterface::class);
+
+        return [
+            [
+                new NotifyException\ApiException(
                     "ValidationError",
                     400,
                     [
@@ -152,11 +169,10 @@ class SendToNotifyHandlerTest extends TestCase
                     ],
                     $httpResponse
                 )
-            );
-
-        self::expectException(ApiException::class);
-
-        $this->handler->handle($command);
+            ],
+            [new NotifyException\NotifyException('something went wrong')],
+            [new NotifyException\UnexpectedValueException('something went wrong')],
+        ];
     }
 
     /**
@@ -186,11 +202,13 @@ class SendToNotifyHandlerTest extends TestCase
             ->expects(self::once())
             ->method('listNotifications')
             ->with(['reference' => $response['reference']])
-            ->willReturn([
-                             'notifications' => [
-                                 ['id' => $notifyId],
-                             ],
-                         ]);
+            ->willReturn(
+                [
+                    'notifications' => [
+                        ['id' => $notifyId],
+                    ],
+                ]
+            );
 
         self::expectException(DuplicateMessageException::class);
 

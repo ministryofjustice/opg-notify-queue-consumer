@@ -61,7 +61,6 @@ paths:
                   reference:
                     type: string
                     default: client-defined-reference
-        # {"errors":[{"error":"AuthError","message":"Invalid token: API key not found"}],"status_code":403}
         '400':
           description: Error response example
           content:

@@ -27,7 +27,6 @@ class ConsumerTest extends TestCase
     private string $queueUrl;
     private Consumer $consumer;
     private TestLogger $logger;
-    private GuzzleClient $notifyGuzzleClient;
     private HandlerStack $guzzleHandlerStack;
 
     public function setUp(): void
@@ -71,11 +70,11 @@ class ConsumerTest extends TestCase
 
         $this->guzzleHandlerStack = HandlerStack::create();
 
-        $this->notifyGuzzleClient = new GuzzleClient(['handler' => $this->guzzleHandlerStack]);
+        $notifyGuzzleClient = new GuzzleClient(['handler' => $this->guzzleHandlerStack]);
         $notifyClient = new NotifyClient(
             [
                 'apiKey' => $config['notify']['api_key'],
-                'httpClient' => $this->notifyGuzzleClient,
+                'httpClient' => $notifyGuzzleClient,
                 'baseUrl' => $config['notify']['base_url'],
             ]
         );
