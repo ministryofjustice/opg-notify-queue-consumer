@@ -20,8 +20,8 @@ updates Sirius with status.
     
 If you are not developing against a local or test version of Notify or Sirius you can run the mock services with:
 
-    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate mock-notify
-    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate mock-sirius
+    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-notify
+    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-sirius
 
 ## Testing
 
@@ -32,8 +32,8 @@ Unit tests
 Functional tests
     
     docker-compose --project-name notify-queue-consumer up -d localstack
-    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate mock-notify
-    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate mock-sirius
+    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-notify
+    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-sirius
     docker-compose --project-name notify-queue-consumer run --rm test-functional
     
 ### Coverage

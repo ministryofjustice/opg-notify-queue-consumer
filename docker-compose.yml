@@ -72,8 +72,8 @@ services:
     image: notify-queue-consumer:latest
     depends_on:
       - localstack
-      - mock-notify
-      - mock-sirius
+      - consumer-mock-notify
+      - consumer-mock-sirius
     volumes:
       - .:/var/www
     command:
@@ -109,9 +109,9 @@ services:
       - "./scripts/localstack:/docker-entrypoint-initaws.d"
       - "./tests/fixtures:/tmp/fixtures"
 
-  mock-notify:
-    image: mock-notify:latest
-    container_name: mock-notify
+  consumer-mock-notify:
+    image: consumer-notify:latest
+    container_name: consumer-notify
     build:
       context: .
       dockerfile: docker/mock-notify/Dockerfile
@@ -125,9 +125,9 @@ services:
     ports:
       - "4010:4010"
 
-  mock-sirius:
-    image: mock-sirius:latest
-    container_name: mock-sirius
+  consumer-mock-sirius:
+    image: consumer-mock-sirius:latest
+    container_name: consumer-mock-sirius
     build:
       context: .
       dockerfile: docker/mock-sirius/Dockerfile
