@@ -34,7 +34,12 @@ if (isset($config['aws']['s3']['use_path_style_endpoint']) && $config['aws']['s3
     $s3ClientConfig['use_path_style_endpoint'] = $config['aws']['s3']['use_path_style_endpoint'];
 }
 
-$awsS3Client = new S3Client($s3ClientConfig);
+try {
+    $awsS3Client = new S3Client($s3ClientConfig);
+} catch (Throwable $ex) {
+    $psrLoggerAdapter->critical('Could not create S3 client. S3 config: ' . print_r($s3ClientConfig, true));
+    throw $ex;
+}
 
 $adapter = new AwsS3Adapter(
     $awsS3Client,
