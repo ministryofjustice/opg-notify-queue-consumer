@@ -24,14 +24,22 @@ if (empty($config)) {
     throw new InvalidArgumentException('No config found');
 }
 
-$awsS3Client = new S3Client(
-    [
-        'region' => $config['aws']['region'],
-        'version' => $config['aws']['s3']['version'],
-        'endpoint' => $config['aws']['s3']['endpoint'],
-        'use_path_style_endpoint' => $config['aws']['s3']['use_path_style_endpoint'],
-    ]
-);
+$s3ClientConfig = [
+    'region' => $config['aws']['region'],
+    'version' => $config['aws']['s3']['version'],
+];
+
+if (isset($config['aws']['s3']['use_path_style_endpoint']) && $config['aws']['s3']['use_path_style_endpoint'] == true) {
+    $s3ClientConfig['endpoint'] = $config['aws']['s3']['endpoint'];
+    $s3ClientConfig['use_path_style_endpoint'] = $config['aws']['s3']['use_path_style_endpoint'];
+}
+
+try {
+    $awsS3Client = new S3Client($s3ClientConfig);
+} catch (Throwable $ex) {
+    $psrLoggerAdapter->critical('Could not create S3 client. S3 config: ' . print_r($s3ClientConfig, true));
+    throw $ex;
+}
 
 $adapter = new AwsS3Adapter(
     $awsS3Client,

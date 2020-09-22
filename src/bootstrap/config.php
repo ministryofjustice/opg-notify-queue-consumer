@@ -11,7 +11,7 @@ return [
             'endpoint' => getenv('AWS_S3_ENDPOINT_URL') ?: null,
             'version' => 'latest',
             'use_path_style_endpoint' => getenv('AWS_S3_USE_PATH_STYLE_ENDPOINT') ?
-                boolval(getenv('AWS_S3_USE_PATH_STYLE_ENDPOINT')) : false,
+                filter_var(getenv('AWS_S3_USE_PATH_STYLE_ENDPOINT'), FILTER_VALIDATE_BOOLEAN) : false,
             'bucket' => getenv('AWS_S3_BUCKET') ?: 'localbucket',
             'prefix' => '/',
             'options' => [
