@@ -1,8 +1,6 @@
 FROM composer as composer
 
 ARG ENABLE_DEV_DEPS=false
-# Allow parallel downloads
-RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 COPY composer.json composer.json
 COPY composer.lock composer.lock
 RUN if [ "$ENABLE_DEV_DEPS" = "true" ] ; then composer install --prefer-dist --no-interaction --no-scripts; else \
