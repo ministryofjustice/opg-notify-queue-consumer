@@ -14,6 +14,7 @@ use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Queue\Consumer;
 use NotifyQueueConsumer\Queue\SqsAdapter;
+use NotifyStatusPoller\Authentication\JwtAuthenticator;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\Test\TestLogger;
@@ -78,6 +79,7 @@ class ConsumerTest extends TestCase
                 'baseUrl' => $config['notify']['base_url'],
             ]
         );
+
         $sendToNotifyHandler = new SendToNotifyHandler(
             $filesystem,
             $notifyClient
