@@ -27,7 +27,7 @@ If you are not developing against a local or test version of Notify or Sirius yo
 
 Unit tests
 
-    docker-compose --project-name notify-queue-consumer run --rm test
+    docker-compose --project-name notify-queue-consumer  run --rm test
 
 Functional tests
     

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NotifyQueueConsumerTest\Unit\Command\Handler;
 
+use NotifyQueueConsumer\Authentication\JwtAuthenticator;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 use Psr\Http\Message\ResponseInterface;
@@ -17,6 +18,7 @@ class UpdateDocumentStatusHandlerTest extends TestCase
 {
     private const ENDPOINT = '/update-status';
     private $mockGuzzleClient;
+    private $mockAuthenticator;
     private $mockNotifyStatusMapper;
 
     private UpdateDocumentStatusHandler $handler;
@@ -27,9 +29,11 @@ class UpdateDocumentStatusHandlerTest extends TestCase
 
         $this->mockNotifyStatusMapper = $this->createMock(NotifyStatus::class);
         $this->mockGuzzleClient = $this->createMock(GuzzleClient::class);
+        $this->mockAuthenticator = $this->createMock(JwtAuthenticator::class);
         $this->handler = new UpdateDocumentStatusHandler(
             $this->mockNotifyStatusMapper,
             $this->mockGuzzleClient,
+            $this->mockAuthenticator,
             self::ENDPOINT
         );
     }
@@ -60,7 +64,7 @@ class UpdateDocumentStatusHandlerTest extends TestCase
         $this->mockGuzzleClient
             ->expects(self::once())
             ->method('put')
-            ->with(self::ENDPOINT, ['json' => $payload])
+            ->with(self::ENDPOINT, ['headers' => $this->mockAuthenticator->createToken(), 'json' => $payload])
             ->willReturn($mockResponse);
 
         $this->handler->handle($command);
@@ -92,7 +96,7 @@ class UpdateDocumentStatusHandlerTest extends TestCase
         $this->mockGuzzleClient
             ->expects(self::once())
             ->method('put')
-            ->with(self::ENDPOINT, ['json' => $payload])
+            ->with(self::ENDPOINT, ['headers' => $this->mockAuthenticator->createToken(), 'json' => $payload])
             ->willReturn($mockResponse);
 
         self::expectException(UnexpectedValueException::class);
