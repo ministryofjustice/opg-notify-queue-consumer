@@ -6,6 +6,7 @@ namespace NotifyQueueConsumerTest\Unit\Command\Handler;
 
 use Alphagov\Notifications\Exception as NotifyException;
 use Exception;
+use NotifyQueueConsumer\Exception\NotificationNotFoundException;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use Psr\Http\Message\ResponseInterface;
 use UnexpectedValueException;
@@ -316,7 +317,7 @@ class SendToNotifyHandlerTest extends TestCase
             ->with($response['id'])
             ->willReturn(null);
 
-        self::expectException(UnexpectedValueException::class);
+        self::expectException(NotificationNotFoundException::class);
         self::expectExceptionMessage(sprintf("No Notify status found for the ID: %s", $response['id']));
 
         $this->handler->handle($command);

@@ -13,6 +13,8 @@ paths:
         - Document status
       description: Update the state of the letter in the database after the queue consumer successfully processes a letter
       operationId: updateSendStatus
+      security:
+        - bearerAuth: []
       parameters:
         - name: request
           in: body
@@ -57,6 +59,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '500':
           description: Unexpected error
 
@@ -110,3 +114,15 @@ components:
         instance:
           type: string
           description: URI identifying the specific instance of this problem (optional; Apigility currently does not provide this)
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

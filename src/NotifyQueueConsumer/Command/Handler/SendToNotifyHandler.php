@@ -9,6 +9,7 @@ use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
+use NotifyQueueConsumer\Exception\NotificationNotFoundException;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use UnexpectedValueException;
 use Alphagov\Notifications\Exception;
@@ -60,8 +61,9 @@ class SendToNotifyHandler
     /**
      * @param string $reference
      * @param string $contents
-     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      * @return array<string,string>
+     * @throws NotificationNotFoundException
+     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
     private function sendToNotify(string $reference, string $contents): array
     {
@@ -74,7 +76,7 @@ class SendToNotifyHandler
         $statusResponse = $this->notifyClient->getNotification($sendResponse['id']);
 
         if (empty($statusResponse['status'])) {
-            throw new UnexpectedValueException(
+            throw new NotificationNotFoundException(
                 sprintf("No Notify status found for the ID: %s", $sendResponse['id'])
             );
         }

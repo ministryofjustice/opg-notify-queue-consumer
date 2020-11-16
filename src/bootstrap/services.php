@@ -14,6 +14,7 @@ use NotifyQueueConsumer\Command\Handler\UpdateDocumentStatusHandler;
 use NotifyQueueConsumer\Queue\Consumer;
 use NotifyQueueConsumer\Queue\SqsAdapter;
 use NotifyQueueConsumer\Mapper\NotifyStatus;
+use NotifyStatusPoller\Authentication\JwtAuthenticator;
 use Psr\Log\LoggerInterface;
 
 // Make IDEs not show errors...
@@ -72,9 +73,15 @@ $sendToNotifyHandler = new SendToNotifyHandler(
     $notifyClient
 );
 
+$jwtAuthenticator = new JwtAuthenticator(
+    $config['sirius']['jwt_secret'],
+    $config['sirius']['session_data']
+);
+
 $updateDocumentStatusHandler = new UpdateDocumentStatusHandler(
     new NotifyStatus(),
     $guzzleClient,
+    $jwtAuthenticator,
     $config['sirius']['update_status_endpoint']
 );
 
