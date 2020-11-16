@@ -40,7 +40,7 @@ paths:
                     status: pending-virus-check
                     id: 9a83b0bb-a534-41a5-849f-dbc39aee4d3d
                     reference: "1234"
-        '404':
+        '400':
           description: Error
           content:
             application/json:
@@ -54,8 +54,8 @@ paths:
                   status_code:
                     type: int
                     enum:
-                      - 400
                       - 403
+                      - 404
 
   "/v2/notifications/letter":
     post:
@@ -77,7 +77,7 @@ paths:
                   reference:
                     type: string
                     default: client-defined-reference
-        '404':
+        '400':
           description: Error response example
           content:
             application/json:
@@ -91,7 +91,6 @@ paths:
                   status_code:
                     type: int
                     enum:
-                      - 400
                       - 429
 
   "/v2/notifications?reference={reference}":
