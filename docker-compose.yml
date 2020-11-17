@@ -110,8 +110,8 @@ services:
       - "./tests/fixtures:/tmp/fixtures"
 
   consumer-mock-notify:
-    image: consumer-notify:latest
-    container_name: consumer-notify
+    image: consumer-mock-notify:latest
+    container_name: consumer-mock-notify
     build:
       context: .
       dockerfile: docker/mock-notify/Dockerfile
