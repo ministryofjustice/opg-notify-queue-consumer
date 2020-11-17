@@ -9,6 +9,7 @@ use Aws\S3\S3Client;
 use Aws\Sqs\SqsClient;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
+use NotifyQueueConsumer\Authentication\JwtAuthenticator;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Command\Handler\UpdateDocumentStatusHandler;
 use NotifyQueueConsumer\Queue\Consumer;
@@ -80,9 +81,15 @@ $sendToNotifyHandler = new SendToNotifyHandler(
     $notifyClient
 );
 
+$jwtAuthenticator = new JwtAuthenticator(
+    $config['sirius']['jwt_secret'],
+    $config['sirius']['session_data']
+);
+
 $updateDocumentStatusHandler = new UpdateDocumentStatusHandler(
     new NotifyStatus(),
     $guzzleClient,
+    $jwtAuthenticator,
     $config['sirius']['update_status_endpoint']
 );
 

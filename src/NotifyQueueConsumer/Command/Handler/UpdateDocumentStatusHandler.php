@@ -6,6 +6,7 @@ namespace NotifyQueueConsumer\Command\Handler;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
+use NotifyQueueConsumer\Authentication\JwtAuthenticator;
 use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
 use NotifyQueueConsumer\Mapper\NotifyStatus;
 use UnexpectedValueException;
@@ -14,15 +15,18 @@ class UpdateDocumentStatusHandler
 {
     private NotifyStatus $notifyStatusMapper;
     private GuzzleClient $guzzleClient;
+    private JwtAuthenticator $jwtAuthenticator;
     private string $updateEndpointUrl;
 
     public function __construct(
         NotifyStatus $notifyStatusMapper,
         GuzzleClient $guzzleClient,
+        JwtAuthenticator $jwtAuthenticator,
         string $updateEndpointUrl
     ) {
         $this->notifyStatusMapper = $notifyStatusMapper;
         $this->guzzleClient = $guzzleClient;
+        $this->jwtAuthenticator = $jwtAuthenticator;
         $this->updateEndpointUrl = $updateEndpointUrl;
     }
 
@@ -40,7 +44,7 @@ class UpdateDocumentStatusHandler
 
         $guzzleResponse = $this->guzzleClient->put(
             $this->updateEndpointUrl,
-            ['json' => $payload]
+            ['headers' => $this->jwtAuthenticator->createToken(), 'json' => $payload]
         );
 
         if ($guzzleResponse->getStatusCode() !== 204) {

@@ -40,6 +40,22 @@ paths:
                     status: pending-virus-check
                     id: 9a83b0bb-a534-41a5-849f-dbc39aee4d3d
                     reference: "1234"
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NotifyApiError'
+                  status_code:
+                    type: int
+                    enum:
+                      - 403
+                      - 404
 
   "/v2/notifications/letter":
     post:
@@ -75,7 +91,6 @@ paths:
                   status_code:
                     type: int
                     enum:
-                      - 400
                       - 429
 
   "/v2/notifications?reference={reference}":
@@ -151,3 +166,15 @@ components:
         message:
           type: string
           example: postage invalid. It must be either first or second.
+    NotifyApiError:
+      type: object
+      properties:
+        error:
+          type: string
+          enum:
+            - NoResultFound
+            - AuthError
+            - ValidationError
+        message:
+          type: string
+          example: No result found
