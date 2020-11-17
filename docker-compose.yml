@@ -111,7 +111,7 @@ services:
 
   consumer-mock-notify:
     image: consumer-mock-notify:latest
-    container_name: consumer-mock-notify
+    container_name: consumer-notify
     build:
       context: .
       dockerfile: docker/mock-notify/Dockerfile
@@ -127,7 +127,7 @@ services:
 
   consumer-mock-sirius:
     image: consumer-mock-sirius:latest
-    container_name: consumer-mock-sirius
+    container_name: consumer-sirius
     build:
       context: .
       dockerfile: docker/mock-sirius/Dockerfile
