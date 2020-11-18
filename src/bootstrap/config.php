@@ -38,6 +38,6 @@ return [
     'sirius' => [
         'update_status_endpoint' => getenv('OPG_SIRIUS_UPDATE_STATUS_ENDPOINT') ?: '/update-status',
         'jwt_secret' => getenv('JWT_SECRET') === false ? 'THiSiSaSeCrEt' : getenv('JWT_SECRET'),
-        'session_data' => getenv('SESSION_DATA') === false ? 'publicapi@opgtest.com' : getenv('SESSION_DATA')
+        'api_user_email' => getenv('API_USER_EMAIL') === false ? 'publicapi@opgtest.com' : getenv('API_USER_EMAIL')
     ],
 ];
