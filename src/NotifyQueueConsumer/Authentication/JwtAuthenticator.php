@@ -11,12 +11,12 @@ use Lcobucci\JWT\Signer\Key;
 class JwtAuthenticator
 {
     private string $jwtSecret;
-    private string $sessionData;
+    private string $apiUserEmail;
 
-    public function __construct(string $jwtSecret, string $sessionData)
+    public function __construct(string $jwtSecret, string $apiUserEmail)
     {
         $this->jwtSecret = $jwtSecret;
-        $this->sessionData = $sessionData;
+        $this->apiUserEmail = $apiUserEmail;
     }
 
     /**
@@ -27,7 +27,7 @@ class JwtAuthenticator
     public function createToken()
     {
         $token = (new Builder())
-            ->withClaim('session-data', $this->sessionData)
+            ->withClaim('session-data', $this->apiUserEmail)
             ->issuedAt(time())
             ->expiresAt(time() + 600)
             ->getToken(new Sha256(), new Key($this->jwtSecret));

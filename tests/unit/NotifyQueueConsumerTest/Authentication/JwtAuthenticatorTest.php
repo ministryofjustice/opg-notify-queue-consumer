@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class JwtAuthenticatorTest extends TestCase
 {
     private const JWT_SECRET = 'test';
-    private const SESSION_DATA = 'test@test.com';
+    private const API_USER_EMAIL = 'test@test.com';
 
     private JwtAuthenticator $authenticator;
 
@@ -20,7 +20,7 @@ class JwtAuthenticatorTest extends TestCase
         parent::setUp();
         $this->authenticator = new JwtAuthenticator(
             self::JWT_SECRET,
-            self::SESSION_DATA
+            self::API_USER_EMAIL
         );
     }
 
@@ -35,7 +35,7 @@ class JwtAuthenticatorTest extends TestCase
         $decodedJwt=(array)JWT::decode($jwtToken,self::JWT_SECRET, array('HS256'));
 
         self::assertArrayHasKey('session-data', $decodedJwt);
-        self::assertEquals(self::SESSION_DATA, $decodedJwt['session-data']);
+        self::assertEquals(self::API_USER_EMAIL, $decodedJwt['session-data']);
         self::assertArrayHasKey('iat', $decodedJwt);
         self::assertArrayHasKey('exp', $decodedJwt);
     }
