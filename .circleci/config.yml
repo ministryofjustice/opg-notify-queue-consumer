@@ -111,7 +111,6 @@ jobs:
           name: Start Mock Notify
           command: |
             docker-compose up --build --force-recreate -d mock-notify-ci
-            chmod +x ./scripts/localstack/wait-for-localstack-ready.sh
             ./scripts/wait-for-prism.sh consumer-mock-notify
       - run:
           name: Start Mock Sirius
