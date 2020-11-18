@@ -109,10 +109,12 @@ jobs:
           name: Start Mock Notify
           command: |
             docker-compose up --build --force-recreate -d mock-notify-ci
+            ./scripts/wait-for-prism.sh consumer-mock-notify
       - run:
           name: Start Mock Sirius
           command: |
             docker-compose up --build --force-recreate -d mock-sirius-ci
+            ./scripts/wait-for-prism.sh consumer-mock-sirius
       - run:
           name: Run functional tests
           command: docker-compose run test-functional-ci
