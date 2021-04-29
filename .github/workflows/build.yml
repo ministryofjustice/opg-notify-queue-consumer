@@ -45,9 +45,9 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-v1-{{ checksum "composer.lock" }}
+          key: composer-v1-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            composer-v1-{{ checksum "composer.lock" }}
+            composer-v1-${{ hashFiles('**/composer.lock') }}
             composer-v1
       - name: Run composer install
         run: composer install -n --prefer-dist
@@ -112,13 +112,13 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-v1-{{ checksum "composer.lock" }}
+          key: composer-v1-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            composer-v1-{{ checksum "composer.lock" }}
+            composer-v1-${{ hashFiles('**/composer.lock') }}
             composer-v1
       - name: Run composer install
         run: composer install -n --prefer-dist
-        
+
       - name: Run PHPStan
         run: |
           phpstan analyse --no-progress --level=7 src
