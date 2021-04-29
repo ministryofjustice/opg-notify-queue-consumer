@@ -1,0 +1,214 @@
+name: Test & Build
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+
+  lint:
+    name: PHPCS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: phpcs
+      - name: Run PHPCS
+        run: | 
+          phpcs -p --report=checkstyle --standard=PSR12 --warning-severity=0 src public
+
+  test-unit:
+    name: Unit Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer:v1
+      - run: |
+          cp local.env.example local.env
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-v1-{{ checksum "composer.lock" }}
+          restore-keys: |
+            composer-v1-{{ checksum "composer.lock" }}
+            composer-v1
+      - name: Run composer install
+        run: composer install -n --prefer-dist
+      
+      - name: Run Unit Tests
+        run: |
+          php \
+            -dpcov.enabled=1 \
+            -dpcov.directory=./ \
+            -dpcov.exclude=\"~./vendor~\" \
+            ./vendor/bin/phpunit \
+            --configuration=./tests/phpunit.xml \
+            --coverage-text \
+            --log-junit=./test-results/unit/results.xml \
+            --testsuite=unit
+      - name: Check Coverage
+        run: |
+          php -f scripts/coverage-checker.php test-results/clover/results.xml 100
+  
+  test-functional:
+    name: Functional Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          cp local.env.example local.env
+          chmod +x scripts/wait-for-prism.sh
+      - name: Build consumer dev image
+        run: |
+          docker-compose build consumer
+      - name: Setup Localstack
+        run: |
+          docker-compose up -d localstack
+          chmod +x ./scripts/localstack/wait-for-localstack-ready.sh
+          ./scripts/localstack/wait-for-localstack-ready.sh
+      - name: Start Mock Notify
+        run: |
+          docker-compose up --build --force-recreate -d mock-notify-ci
+          ./scripts/wait-for-prism.sh consumer-mock-notify
+      - name: Start Mock Sirius
+        run: |
+          docker-compose up --build --force-recreate -d mock-sirius-ci
+          ./scripts/wait-for-prism.sh consumer-mock-sirius
+      
+      - name: Run Functional Tests
+        run: |
+          docker-compose run test-functional-ci
+  
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer:v1 , phpstan
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-v1-{{ checksum "composer.lock" }}
+          restore-keys: |
+            composer-v1-{{ checksum "composer.lock" }}
+            composer-v1
+      - name: Run composer install
+        run: composer install -n --prefer-dist
+        
+      - name: Run PHPStan
+        run: |
+          phpstan analyse --no-progress --level=7 src
+  
+  build:
+    name: "Build & Push Containers"
+    runs-on: ubuntu-latest
+    needs: ['lint', 'test-unit', 'test-functional', 'static-analysis' ]
+    outputs:
+      tag: ${{ steps.bump_version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: Extract branch name
+        run: echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
+        id: extract_branch
+      - uses: unfor19/install-aws-cli-action@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_SHARED }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SHARED }}
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::311462405659:role/shared-ci
+          role-duration-seconds: 3600
+          role-session-name: GitHubActions
+
+      - name: Build Container
+        run: |
+          docker build --file docker/Dockerfile --tag notify-queue-consumer:latest .
+    
+      - name: Bump version
+        id: bump_version
+        uses: anothrNick/github-tag-action@1.33.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INITIAL_VERSION: 1.0.0
+          DEFAULT_BUMP: minor
+          PRERELEASE_SUFFIX: ${{ env.BRANCH_NAME }}
+          RELEASE_BRANCHES: main
+          WITH_V: true
+      
+      - name: ECR Login
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: 311462405659
+      
+      - name: Push Container
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          NOTIFY_CONSUMER_ECR_REPOSITORY: notify-queue-consumer
+        run: |
+          docker tag notify-queue-consumer:latest $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY:latest
+          docker tag notify-queue-consumer:latest $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
+          if [ $BRANCH_NAME == "main" ]; then
+            # We want all of the tags pushed
+            docker push $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY
+          else
+            docker push $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
+          fi
+      
+  push-tags:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_SHARED }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SHARED }}
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::997462338508:role/shared-ci
+          role-duration-seconds: 3600
+          role-session-name: GitHubActions
+
+      - name: Install AWS CLI
+        id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1
+
+      - name: Push Tag to Parameter Store
+        run: |
+          aws ssm put-parameter --name "opg-notify-queue-consumer-latest-green-build" --type "String" --value "${{ needs.build.outputs.tag}}" --overwrite --region=eu-west-1
+
+      - name: Trigger Dev Deploy
+        shell: bash
+        run: curl -u ${{ secrets.JENKINS_API_USER }}:${{ secrets.JENKINS_API_TOKEN }} "https://${{ secrets.JENKINS_URL }}/job/Sirius/job/Deploy_to_Development/build?token=${{ secrets.JENKINS_API_TOKEN_NAME }}&cause=Triggered+by+opg-notify-queue-consumer"
+
+
