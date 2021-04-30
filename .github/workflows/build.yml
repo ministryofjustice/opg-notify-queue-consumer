@@ -96,6 +96,26 @@ jobs:
         run: |
           docker-compose run test-functional-ci
   
+  metrics:
+    name: Metrics
+    runs-on: ubuntu-latest
+    # uses this container as setup-php doesn't support phpmetrics yet
+    container: phpqa:php7.4-alpine
+    steps:
+      - uses: actions/checkout@v2
+      - name: Generate report
+        run: |
+          phpmetrics \
+          --report-html=./test-results/phpmetrics \
+          src/NotifyQueueConsumer
+
+      - name: Upload Metrics
+        uses: actions/upload-artifact@v2
+        with:
+          name: phpmetrics
+          path: |
+            ./test-results/phpmetrics
+
   static-analysis:
     name: Static Analysis
     runs-on: ubuntu-latest
