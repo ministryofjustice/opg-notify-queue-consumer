@@ -11,7 +11,7 @@ updates:
       separator: "-"
 
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/docker"
     schedule:
       interval: "daily"
       time: "10:00"
