@@ -24,7 +24,7 @@ jobs:
           php-version: '7.4'
           tools: phpcs
       - name: Run PHPCS
-        run: | 
+        run: |
           phpcs -p --report=checkstyle --standard=PSR12 --warning-severity=0 src public
 
   test-unit:
@@ -51,7 +51,7 @@ jobs:
             composer-v1
       - name: Run composer install
         run: composer install -n --prefer-dist
-      
+
       - name: Run Unit Tests
         run: |
           php \
@@ -66,14 +66,14 @@ jobs:
       - name: Check Coverage
         run: |
           php -f scripts/coverage-checker.php test-results/clover/results.xml 100
-      
+
       - name: Upload Coverage
         uses: actions/upload-artifact@v2
         with:
           name: coverage-report
           path: |
             ./test-results/coverage
-  
+
   test-functional:
     name: Functional Testing
     runs-on: ubuntu-latest
@@ -98,11 +98,11 @@ jobs:
         run: |
           docker-compose up --build --force-recreate -d mock-sirius-ci
           ./scripts/wait-for-prism.sh consumer-mock-sirius
-      
+
       - name: Run Functional Tests
         run: |
           docker-compose run test-functional-ci
-  
+
   metrics:
     name: Metrics
     runs-on: ubuntu-latest
@@ -148,7 +148,7 @@ jobs:
       - name: Run PHPStan
         run: |
           phpstan analyse --no-progress --level=7 src
-  
+
   build:
     name: "Build & Push Containers"
     runs-on: ubuntu-latest
@@ -160,14 +160,19 @@ jobs:
         with:
           fetch-depth: '0'
       - name: Extract branch name
-        run: echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
+        run: |
+          if [ "${{ github.head_ref }}" == "" ]; then
+            echo BRANCH_NAME=main >> $GITHUB_ENV
+          else
+            echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
+          fi
         id: extract_branch
       - uses: unfor19/install-aws-cli-action@v1
 
       - name: Build Container
         run: |
           docker build --file docker/Dockerfile --tag notify-queue-consumer:latest .
-    
+
       - name: Bump version
         id: bump_version
         uses: anothrNick/github-tag-action@1.33.0
@@ -178,7 +183,7 @@ jobs:
           PRERELEASE_SUFFIX: ${{ env.BRANCH_NAME }}
           RELEASE_BRANCHES: main
           WITH_V: true
-      
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -194,21 +199,22 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         with:
           registries: 311462405659
-      
+
       - name: Push Container
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           NOTIFY_CONSUMER_ECR_REPOSITORY: notify-queue-consumer
         run: |
-          docker tag notify-queue-consumer:latest $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY:latest
           docker tag notify-queue-consumer:latest $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
+          docker tag notify-queue-consumer:latest $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY:latest
           if [ $BRANCH_NAME == "main" ]; then
+            docker tag notify-queue-consumer:latest $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY:main-${{ steps.bump_version.outputs.tag }}
             # We want all of the tags pushed
             docker push $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY
           else
             docker push $ECR_REGISTRY/$NOTIFY_CONSUMER_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
           fi
-      
+
   push-tags:
     runs-on: ubuntu-latest
     needs: build
@@ -237,5 +243,3 @@ jobs:
       - name: Trigger Dev Deploy
         shell: bash
         run: curl -u ${{ secrets.JENKINS_API_USER }}:${{ secrets.JENKINS_API_TOKEN }} "https://${{ secrets.JENKINS_URL }}/job/Sirius/job/Deploy_to_Development/build?token=${{ secrets.JENKINS_API_TOKEN_NAME }}&cause=Triggered+by+opg-notify-queue-consumer"
-
-
