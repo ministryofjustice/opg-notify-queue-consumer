@@ -61,16 +61,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.185.6",
+            "version": "3.185.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "35310302912fdc3b4a0e829b84424c41e3fd9727"
+                "reference": "fee396b3e137cc2ec9ae94159d01dd1ed15d8c40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/35310302912fdc3b4a0e829b84424c41e3fd9727",
-                "reference": "35310302912fdc3b4a0e829b84424c41e3fd9727",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/fee396b3e137cc2ec9ae94159d01dd1ed15d8c40",
+                "reference": "fee396b3e137cc2ec9ae94159d01dd1ed15d8c40",
                 "shasum": ""
             },
             "require": {
@@ -142,7 +142,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2021-07-02T18:13:18+00:00"
+            "time": "2021-07-12T18:13:46+00:00"
         },
         {
             "name": "container-interop/container-interop",
