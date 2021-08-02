@@ -35,6 +35,9 @@ class NotifyStatusTest extends TestCase
             ['pending-virus-check', 'queued'],
             ['accepted', 'posting'],
             ['received', 'posted'],
+            ['cancelled', 'rejected'],
+            ['technical-failure', 'rejected'],
+            ['permanent-failure', 'rejected'],
         ];
     }
 
