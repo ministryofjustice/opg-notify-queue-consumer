@@ -20,6 +20,9 @@ class NotifyStatus
         'pending-virus-check' => self::SIRIUS_QUEUED,
         'accepted' => self::SIRIUS_POSTING,
         'received' => self::SIRIUS_POSTED,
+        'cancelled' => self::SIRIUS_REJECTED,
+        'technical-failure' => self::SIRIUS_REJECTED,
+        'permanent-failure' => self::SIRIUS_REJECTED,
     ];
 
     public function toSirius(string $notifyStatus): string
