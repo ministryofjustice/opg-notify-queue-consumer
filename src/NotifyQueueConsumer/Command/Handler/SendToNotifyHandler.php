@@ -49,7 +49,7 @@ class SendToNotifyHandler
         }
 
         // 3. Send to notify
-        if ($sendToNotifyCommand->getDocumentType() === 'INVOICE') {
+        if ($sendToNotifyCommand->getDocumentType() === 'invoice') {
             $response = $this->sendInvoiceToNotify(
                 $sendToNotifyCommand->getUuid(),
                 $sendToNotifyCommand->getRecipientName(),
