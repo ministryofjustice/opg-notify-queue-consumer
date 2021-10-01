@@ -92,9 +92,4 @@ class SendToNotify
     {
         return $this->recipientEmail;
     }
-
-    public function getSendBy(): ?string
-    {
-        return $this->sendBy;
-    }
 }
