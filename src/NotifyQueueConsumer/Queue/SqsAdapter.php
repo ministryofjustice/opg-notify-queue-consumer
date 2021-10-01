@@ -86,7 +86,7 @@ class SqsAdapter implements QueueInterface
             'documentType',
         ];
 
-        if (isset($message['documentType']) && $message['documentType'] === 'INVOICE') {
+        if (isset($message['documentType']) && $message['documentType'] === 'invoice') {
             $requiredFields = array_merge($requiredFields, [
                 'recipientEmail',
                 'recipientName',

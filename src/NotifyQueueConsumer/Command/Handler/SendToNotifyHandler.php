@@ -49,7 +49,7 @@ class SendToNotifyHandler
         }
 
         // 3. Send to notify
-        if ($sendToNotifyCommand->getDocumentType() === 'INVOICE') {
+        if ($sendToNotifyCommand->getDocumentType() === 'invoice') {
             $response = $this->sendInvoiceToNotify(
                 $sendToNotifyCommand->getUuid(),
                 $sendToNotifyCommand->getRecipientName(),
@@ -97,8 +97,18 @@ class SendToNotifyHandler
         ];
     }
 
+    /**
+     * @param string $reference
+     * @param string $recipientName
+     * @param string $recipientEmail
+     * @param string $contents
+     *
+     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
+     * @return array<string,string>
+     */
     private function sendInvoiceToNotify(string $reference, string $recipientName, string $recipientEmail, string $contents): array
     {
+
         $data = [
             'name' => $recipientName,
             'link_to_file' => $this->notifyClient->prepareUpload($contents)
