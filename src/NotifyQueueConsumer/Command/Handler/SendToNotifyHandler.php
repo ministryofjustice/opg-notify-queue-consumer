@@ -48,6 +48,7 @@ class SendToNotifyHandler
             throw new UnexpectedValueException("Cannot read PDF");
         }
 
+
         // 3. Send to notify
         if ($sendToNotifyCommand->getDocumentType() === 'invoice') {
             $response = $this->sendInvoiceToNotify(
