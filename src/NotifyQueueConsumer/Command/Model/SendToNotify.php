@@ -10,7 +10,7 @@ class SendToNotify
     protected string $uuid;
     protected string $filename;
     protected int $documentId;
-    protected string $documentType;
+    protected ?string $documentType;
     protected ?string $recipientName;
     protected ?string $recipientEmail;
     protected ?string $sendBy;
@@ -78,7 +78,7 @@ class SendToNotify
         return $this->documentId;
     }
 
-    public function getDocumentType(): string
+    public function getDocumentType(): ?string
     {
         return $this->documentType;
     }

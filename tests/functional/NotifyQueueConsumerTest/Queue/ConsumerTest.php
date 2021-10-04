@@ -227,7 +227,7 @@ class ConsumerTest extends TestCase
                     '{"message":{"uuid":"%s","filename":"%s","documentId":"%d"}}',
                     $uuid,
                     $destination,
-                    $documentId
+                    $documentId,
                 ),
             ]
         );
