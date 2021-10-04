@@ -60,7 +60,7 @@ services:
     command:
       - "php"
       - "-dpcov.enabled=1"
-      - "-dpcov.directory=."
+      - "-dpcov.directory=/app"
       - "-dpcov.exclude=\"~vendor~\""
       - "/app/vendor/bin/phpunit"
       - "--configuration=/app/tests/phpunit.xml"
