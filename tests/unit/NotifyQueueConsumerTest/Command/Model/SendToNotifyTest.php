@@ -17,6 +17,7 @@ class SendToNotifyTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => '1234',
+            'documentType' => '',
         ];
 
         $command = SendToNotify::fromArray($data);

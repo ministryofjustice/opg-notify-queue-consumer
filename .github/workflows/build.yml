@@ -52,17 +52,9 @@ jobs:
       - name: Run composer install
         run: composer install -n --prefer-dist
 
-      - name: Run Unit Tests
-        run: |
-          php \
-            -dpcov.enabled=1 \
-            -dpcov.directory=./ \
-            -dpcov.exclude=\"~./vendor~\" \
-            ./vendor/bin/phpunit \
-            --configuration=./tests/phpunit.xml \
-            --coverage-text \
-            --log-junit=./test-results/unit/results.xml \
-            --testsuite=unit
+      - name: Run Unit Tests Docker
+        run: docker-compose --project-name notify-queue-consumer run --rm test
+
       - name: Check Coverage
         run: |
           php -f scripts/coverage-checker.php test-results/clover/results.xml 100

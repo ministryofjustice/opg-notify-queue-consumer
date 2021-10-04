@@ -23,6 +23,10 @@ class NotifyStatus
         'cancelled' => self::SIRIUS_REJECTED,
         'technical-failure' => self::SIRIUS_REJECTED,
         'permanent-failure' => self::SIRIUS_REJECTED,
+        'temporary-failure' => self::SIRIUS_REJECTED,
+        'created' => self::SIRIUS_POSTING,
+        'sending' => self::SIRIUS_POSTING,
+        'delivered' => self::SIRIUS_POSTED
     ];
 
     public function toSirius(string $notifyStatus): string
