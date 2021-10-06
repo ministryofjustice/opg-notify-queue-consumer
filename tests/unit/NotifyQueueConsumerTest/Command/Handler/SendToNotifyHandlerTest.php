@@ -46,13 +46,14 @@ class SendToNotifyHandlerTest extends TestCase
     /**
      * @throws FileNotFoundException
      */
-    public function testRetrieveQueueMessageSendToNotifyAndReturnCommandSuccess(): void
+    public function testRetrieveQueueMessageSendToNotifyLetterAndReturnCommandSuccess(): void
     {
         $data = [
             'id' => '123',
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => '456',
+            'documentType' => '',
         ];
         $contents = "pdf content";
         $response = [
@@ -115,6 +116,105 @@ class SendToNotifyHandlerTest extends TestCase
     }
 
     /**
+     * @throws FileNotFoundException
+     */
+    public function testRetrieveQueueMessageSendToNotifyEmailAndReturnCommandSuccess(): void
+    {
+        $data = [
+            'id' => '123',
+            'uuid' => 'asd-456',
+            'filename' => 'invoice.pdf',
+            'documentId' => '456',
+            'documentType' => 'invoice',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'email'
+        ];
+
+        $contents = "pdf content";
+
+        $prepareUploadResponse = [
+            'file' => 'cGRmIGNvbnRlbnQ=',
+            'is_csv' => false
+        ];
+
+        $personalisationData = [
+            'name' => $data['recipientName'],
+            'link_to_file' => $prepareUploadResponse
+        ];
+
+        $response = [
+            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
+            "reference" => $data['uuid']
+        ];
+
+        $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
+
+        $notifyStatus = "sending";
+
+        $statusResponse = [
+            "id" => $notifyId,
+            "reference" => $data['uuid'],
+            "status" => $notifyStatus,
+            "content" => [
+                "subject" => "Test",
+                "body" => "More testing",
+                "from_email" => "me@test.com"
+            ],
+            "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
+            "template" => [
+                "id" => "daef7d83-9874-4dd8-ac60-d92646e7aaaa",
+                "version" => 1,
+                "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
+            ]
+        ];
+
+        $payload = [
+            "documentId" => $data['documentId'],
+            "notifySendId" => $notifyId,
+            "notifyStatus" => $notifyStatus,
+        ];
+
+        $command = SendToNotify::fromArray($data);
+
+        $this->mockFilesystem
+            ->expects(self::once())
+            ->method('read')
+            ->with($data['filename'])
+            ->willReturn($contents);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('prepareUpload')
+            ->with($contents)
+            ->willReturn($prepareUploadResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('sendEmail')
+            ->with($data['recipientEmail'], SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE, $personalisationData, $data['uuid'])
+            ->willReturn($response);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('getNotification')
+            ->with($response['id'])
+            ->willReturn($statusResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('listNotifications')
+            ->with(['reference' => $response['reference']])
+            ->willReturn([]);
+
+        $command = $this->handler->handle($command);
+
+        self::assertEquals($payload['documentId'], $command->getDocumentId());
+        self::assertEquals($payload['notifyStatus'], $command->getNotifyStatus());
+        self::assertEquals($payload['notifySendId'], $command->getNotifyId());
+    }
+
+    /**
      * @param Exception $notifyException
      * @throws FileNotFoundException
      * @dataProvider notifyExceptionProvider
@@ -126,6 +226,7 @@ class SendToNotifyHandlerTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => '456',
+            'documentType' => '',
         ];
         $contents = "some content";
         $command = SendToNotify::fromArray($data);
@@ -185,6 +286,7 @@ class SendToNotifyHandlerTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => '456',
+            'documentType' => '',
         ];
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
@@ -224,7 +326,8 @@ class SendToNotifyHandlerTest extends TestCase
             'id' => "123",
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
-            'documentId' => 456
+            'documentId' => 456,
+            'documentType' => '',
         ];
 
         $command = SendToNotify::fromArray($data);
@@ -246,7 +349,8 @@ class SendToNotifyHandlerTest extends TestCase
             'id' => '123',
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
-            'documentId' => 456
+            'documentId' => 456,
+            'documentType' => '',
         ];
 
         $contents = "some content";
@@ -285,7 +389,8 @@ class SendToNotifyHandlerTest extends TestCase
             'id' => '123',
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
-            'documentId' => 456
+            'documentId' => 456,
+            'documentType' => '',
         ];
 
         $contents = "some content";
@@ -320,5 +425,147 @@ class SendToNotifyHandlerTest extends TestCase
         self::expectExceptionMessage(sprintf("No Notify status found for the ID: %s", $response['id']));
 
         $this->handler->handle($command);
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoNotifyIdReturned(): void
+    {
+        $data = [
+            'id' => '123',
+            'uuid' => 'asd-456',
+            'filename' => 'invoice.pdf',
+            'documentId' => '456',
+            'documentType' => 'invoice',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'email'
+        ];
+
+        $contents = "pdf content";
+
+        $prepareUploadResponse = [
+            'file' => 'cGRmIGNvbnRlbnQ=',
+            'is_csv' => false
+        ];
+
+        $personalisationData = [
+            'name' => $data['recipientName'],
+            'link_to_file' => $prepareUploadResponse
+        ];
+
+        $response = [
+            "reference" => $data['uuid']
+        ];
+
+
+        $command = SendToNotify::fromArray($data);
+
+        $this->mockFilesystem
+            ->expects(self::once())
+            ->method('read')
+            ->with($data['filename'])
+            ->willReturn($contents);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('prepareUpload')
+            ->with($contents)
+            ->willReturn($prepareUploadResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('sendEmail')
+            ->with($data['recipientEmail'], SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE, $personalisationData, $data['uuid'])
+            ->willReturn($response);
+
+        self:$this->expectException(UnexpectedValueException::class);
+
+        $this->handler->handle($command);
+
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoStatusRetrieved(): void
+    {
+        $data = [
+            'id' => '123',
+            'uuid' => 'asd-456',
+            'filename' => 'invoice.pdf',
+            'documentId' => '456',
+            'documentType' => 'invoice',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'email'
+        ];
+
+        $contents = "pdf content";
+
+        $prepareUploadResponse = [
+            'file' => 'cGRmIGNvbnRlbnQ=',
+            'is_csv' => false
+        ];
+
+        $personalisationData = [
+            'name' => $data['recipientName'],
+            'link_to_file' => $prepareUploadResponse
+        ];
+
+        $response = [
+            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
+            "reference" => $data['uuid']
+        ];
+
+        $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
+
+        $statusResponse = [
+            "id" => $notifyId,
+            "reference" => $data['uuid'],
+            "content" => [
+                "subject" => "Test",
+                "body" => "More testing",
+                "from_email" => "me@test.com"
+            ],
+            "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
+            "template" => [
+                "id" => "daef7d83-9874-4dd8-ac60-d92646e7aaaa",
+                "version" => 1,
+                "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
+            ]
+        ];
+
+        $command = SendToNotify::fromArray($data);
+
+        $this->mockFilesystem
+            ->expects(self::once())
+            ->method('read')
+            ->with($data['filename'])
+            ->willReturn($contents);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('prepareUpload')
+            ->with($contents)
+            ->willReturn($prepareUploadResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('sendEmail')
+            ->with($data['recipientEmail'], SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE, $personalisationData, $data['uuid'])
+            ->willReturn($response);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('getNotification')
+            ->with($response['id'])
+            ->willReturn($statusResponse);
+
+        self:$this->expectException(UnexpectedValueException::class);
+
+        $this->handler->handle($command);
+
     }
 }

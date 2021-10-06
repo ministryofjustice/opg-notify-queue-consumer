@@ -9,6 +9,7 @@ use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Command\Handler\UpdateDocumentStatusHandler;
+use NotifyQueueConsumer\Logging\Context;
 use NotifyQueueConsumer\Queue\Consumer;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use NotifyQueueConsumer\Queue\QueueInterface;
@@ -133,9 +134,10 @@ class ConsumerTest extends TestCase
         $this->queueMock->expects(self::once())->method('delete')->with($command);
         $this->updateDocumentStatusHandlerMock->expects(self::never())->method('handle');
         $this->loggerMock
-            ->expects(self::at(2))
+            ->expects(self::atMost(3))
             ->method('info')
-            ->with('Deleting duplicate message', self::anything());
+            ->withConsecutive(['Asking for next message'],['Sending to Notify'],['Deleting duplicate message'])
+            ->willReturnOnConsecutiveCalls(['context' => Context::NOTIFY_CONSUMER]);
 
         $this->consumer->run();
     }
@@ -167,6 +169,7 @@ class ConsumerTest extends TestCase
             'uuid' => 'asd-123',
             'filename' => 'this_is_a_test.pdf',
             'documentId' => '4545',
+            'documentType' => '',
         ]);
     }
 
