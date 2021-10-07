@@ -53,7 +53,10 @@ class SendToNotifyHandlerTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => '456',
-            'documentType' => '',
+            'documentType' => null,
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'post'
         ];
         $contents = "pdf content";
         $response = [
@@ -227,6 +230,9 @@ class SendToNotifyHandlerTest extends TestCase
             'filename' => 'document.pdf',
             'documentId' => '456',
             'documentType' => '',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'post'
         ];
         $contents = "some content";
         $command = SendToNotify::fromArray($data);
@@ -287,6 +293,9 @@ class SendToNotifyHandlerTest extends TestCase
             'filename' => 'document.pdf',
             'documentId' => '456',
             'documentType' => '',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'post'
         ];
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
@@ -328,6 +337,9 @@ class SendToNotifyHandlerTest extends TestCase
             'filename' => 'document.pdf',
             'documentId' => 456,
             'documentType' => '',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'post'
         ];
 
         $command = SendToNotify::fromArray($data);
@@ -351,6 +363,9 @@ class SendToNotifyHandlerTest extends TestCase
             'filename' => 'document.pdf',
             'documentId' => 456,
             'documentType' => '',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'post'
         ];
 
         $contents = "some content";
@@ -391,6 +406,9 @@ class SendToNotifyHandlerTest extends TestCase
             'filename' => 'document.pdf',
             'documentId' => 456,
             'documentType' => '',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'post'
         ];
 
         $contents = "some content";

@@ -105,8 +105,7 @@ class ConsumerTest extends TestCase
             ->expects(self::once())
             ->method('handle')
             ->with($command)
-            ->willThrowException(new Exception('Uh oh...'))
-        ;
+            ->willThrowException(new Exception('Uh oh...'));
         $this->queueMock->expects(self::never())->method('delete');
         $this->updateDocumentStatusHandlerMock->expects(self::never())->method('handle');
         $this->loggerMock
@@ -129,14 +128,13 @@ class ConsumerTest extends TestCase
             ->expects(self::once())
             ->method('handle')
             ->with($command)
-            ->willThrowException(new DuplicateMessageException())
-        ;
+            ->willThrowException(new DuplicateMessageException());
         $this->queueMock->expects(self::once())->method('delete')->with($command);
         $this->updateDocumentStatusHandlerMock->expects(self::never())->method('handle');
         $this->loggerMock
             ->expects(self::atMost(3))
             ->method('info')
-            ->withConsecutive(['Asking for next message'],['Sending to Notify'],['Deleting duplicate message'])
+            ->withConsecutive(['Asking for next message'], ['Sending to Notify'], ['Deleting duplicate message'])
             ->willReturnOnConsecutiveCalls(['context' => Context::NOTIFY_CONSUMER]);
 
         $this->consumer->run();
@@ -164,21 +162,28 @@ class ConsumerTest extends TestCase
 
     private function createSendToNotifyCommand(): SendToNotify
     {
-        return SendToNotify::fromArray([
-            'id' => '1',
-            'uuid' => 'asd-123',
-            'filename' => 'this_is_a_test.pdf',
-            'documentId' => '4545',
-            'documentType' => '',
-        ]);
+        return SendToNotify::fromArray(
+            [
+                'id' => '1',
+                'uuid' => 'asd-123',
+                'filename' => 'this_is_a_test.pdf',
+                'documentId' => '4545',
+                'documentType' => 'letter',
+                'recipientEmail' => 'test@test.com',
+                'recipientName' => 'Test Test',
+                'sendBy' => 'post'
+            ]
+        );
     }
 
     private function createUpdateDocumentStatusCommand(): UpdateDocumentStatus
     {
-        return UpdateDocumentStatus::fromArray([
-            'notifyId' => '1',
-            'notifyStatus' => 'accepted',
-            'documentId' => '4545',
-        ]);
+        return UpdateDocumentStatus::fromArray(
+            [
+                'notifyId' => '1',
+                'notifyStatus' => 'accepted',
+                'documentId' => '4545',
+            ]
+        );
     }
 }

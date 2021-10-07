@@ -17,7 +17,10 @@ class SendToNotifyTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => '1234',
-            'documentType' => '',
+            'documentType' => 'letter',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => 'post'
         ];
 
         $command = SendToNotify::fromArray($data);

@@ -11,9 +11,9 @@ class SendToNotify
     protected string $filename;
     protected int $documentId;
     protected ?string $documentType;
-    protected ?string $recipientName;
-    protected ?string $recipientEmail;
-    protected ?string $sendBy;
+    protected string $recipientName;
+    protected string $recipientEmail;
+    protected string $sendBy;
 
     private function __construct()
     {
@@ -78,18 +78,18 @@ class SendToNotify
         return $this->documentId;
     }
 
-    public function getDocumentType(): ?string
-    {
-        return $this->documentType;
-    }
-
-    public function getRecipientName(): ?string
+    public function getRecipientName(): string
     {
         return $this->recipientName;
     }
 
-    public function getRecipientEmail(): ?string
+    public function getRecipientEmail(): string
     {
         return $this->recipientEmail;
+    }
+
+    public function getSendBy(): string
+    {
+        return $this->sendBy;
     }
 }

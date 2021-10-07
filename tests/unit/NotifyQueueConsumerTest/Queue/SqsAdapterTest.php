@@ -51,19 +51,27 @@ class SqsAdapterTest extends TestCase
                 'filename' => 'this_is_a_test.pdf',
                 'documentId' => '1234',
                 'documentType' => 'letter',
+                'recipientEmail' => 'test@test.com',
+                'recipientName' => 'Test Test',
+                'sendBy' => 'post'
             ]
         ];
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
             'Body' => json_encode($rawBody),
         ];
-        $expectedResult = SendToNotify::fromArray([
-            'id' => $rawData['ReceiptHandle'],
-            'uuid' => $rawBody['message']['uuid'],
-            'filename' => $rawBody['message']['filename'],
-            'documentId' => $rawBody['message']['documentId'],
-            'documentType' => $rawBody['message']['documentType']
-        ]);
+        $expectedResult = SendToNotify::fromArray(
+            [
+                'id' => $rawData['ReceiptHandle'],
+                'uuid' => $rawBody['message']['uuid'],
+                'filename' => $rawBody['message']['filename'],
+                'documentId' => $rawBody['message']['documentId'],
+                'documentType' => $rawBody['message']['documentType'],
+                'recipientEmail' => $rawBody['message']['recipientEmail'],
+                'recipientName' => $rawBody['message']['recipientName'],
+                'sendBy' => $rawBody['message']['sendBy'],
+            ]
+        );
 
         $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
 
@@ -106,16 +114,18 @@ class SqsAdapterTest extends TestCase
             'ReceiptHandle' => 'handle-12345',
             'Body' => json_encode($rawBody),
         ];
-        $expectedResult = SendToNotify::fromArray([
-            'id' => $rawData['ReceiptHandle'],
-            'uuid' => $rawBody['message']['uuid'],
-            'filename' => $rawBody['message']['filename'],
-            'documentId' => $rawBody['message']['documentId'],
-            'documentType' => $rawBody['message']['documentType'],
-            'recipientEmail' => $rawBody['message']['recipientEmail'],
-            'recipientName' => $rawBody['message']['recipientName'],
-            'sendBy' => $rawBody['message']['sendBy']
-        ]);
+        $expectedResult = SendToNotify::fromArray(
+            [
+                'id' => $rawData['ReceiptHandle'],
+                'uuid' => $rawBody['message']['uuid'],
+                'filename' => $rawBody['message']['filename'],
+                'documentId' => $rawBody['message']['documentId'],
+                'documentType' => $rawBody['message']['documentType'],
+                'recipientEmail' => $rawBody['message']['recipientEmail'],
+                'recipientName' => $rawBody['message']['recipientName'],
+                'sendBy' => $rawBody['message']['sendBy']
+            ]
+        );
 
         $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
 
@@ -205,21 +215,28 @@ class SqsAdapterTest extends TestCase
      */
     public function testDeleteSuccess(): void
     {
-        $command = SendToNotify::fromArray([
-            'id' => 'handle-85736',
-            'uuid' => 'uuid-8537',
-            'filename' => 'file.pdf',
-            'documentId' => '1234',
-            'documentType' => '',
-        ]);
+        $command = SendToNotify::fromArray(
+            [
+                'id' => 'handle-85736',
+                'uuid' => 'uuid-8537',
+                'filename' => 'file.pdf',
+                'documentId' => '1234',
+                'documentType' => '',
+                'recipientEmail' => 'test@test.com',
+                'recipientName' => 'Test Test',
+                'sendBy' => 'post'
+            ]
+        );
 
         $this->sqsClientMock
             ->expects(self::once())
             ->method('deleteMessage')
-            ->with([
-                'QueueUrl' => $this->queueUrl,
-                'ReceiptHandle' => $command->getId(),
-            ]);
+            ->with(
+                [
+                    'QueueUrl' => $this->queueUrl,
+                    'ReceiptHandle' => $command->getId(),
+                ]
+            );
 
         $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
 

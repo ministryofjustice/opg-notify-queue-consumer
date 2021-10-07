@@ -48,10 +48,10 @@ class SqsAdapter implements QueueInterface
             'uuid' => $message['uuid'],
             'filename' => $message['filename'],
             'documentId' => $message['documentId'],
-            'documentType' => $message['documentType'] ?? null,
-            'recipientEmail' => $message['recipientEmail'] ?? null,
-            'recipientName' => $message['recipientName'] ?? null,
-            'sendBy' => $message['sendBy'] ?? null,
+            'documentType' => $message['documentType'],
+            'recipientEmail' => $message['recipientEmail'],
+            'recipientName' => $message['recipientName'],
+            'sendBy' => $message['sendBy'],
         ]);
     }
 
