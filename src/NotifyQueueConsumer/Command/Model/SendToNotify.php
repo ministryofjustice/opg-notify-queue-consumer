@@ -12,7 +12,7 @@ class SendToNotify
     protected int $documentId;
     protected ?string $documentType;
     protected string $recipientName;
-    protected string $recipientEmail;
+    protected ?string $recipientEmail;
     protected string $sendBy;
 
     private function __construct()
@@ -83,7 +83,7 @@ class SendToNotify
         return $this->recipientName;
     }
 
-    public function getRecipientEmail(): string
+    public function getRecipientEmail(): ?string
     {
         return $this->recipientEmail;
     }
