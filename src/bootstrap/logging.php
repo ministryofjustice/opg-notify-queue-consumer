@@ -47,10 +47,9 @@ function exception_handler(Throwable $e): void
  * @param string       $errstr
  * @param string       $errfile
  * @param int          $errline
- * @param array<mixed> $errcontext Deprecated - do not use
  * @return bool
  */
-function error_handler($errno, $errstr, $errfile, $errline, $errcontext): bool
+function error_handler($errno, $errstr, $errfile, $errline): bool
 {
     global $psrLoggerAdapter;
 
