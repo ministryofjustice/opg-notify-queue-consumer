@@ -41,11 +41,17 @@ class SqsAdapter implements QueueInterface
 
         $this->validateBody($body);
 
+        $message = $body['message'];
+
         return SendToNotify::fromArray([
             'id' => $raw['ReceiptHandle'],
-            'uuid' => $body['message']['uuid'],
-            'filename' => $body['message']['filename'],
-            'documentId' => $body['message']['documentId'],
+            'uuid' => $message['uuid'],
+            'filename' => $message['filename'],
+            'documentId' => $message['documentId'],
+            'documentType' => $message['documentType'],
+            'recipientEmail' => $message['recipientEmail'],
+            'recipientName' => $message['recipientName'],
+            'sendBy' => $message['sendBy'],
         ]);
     }
 
@@ -71,16 +77,27 @@ class SqsAdapter implements QueueInterface
             throw new UnexpectedValueException('Empty message');
         }
 
-        if (empty($body['message']['uuid'])) {
-            throw new UnexpectedValueException('Missing "uuid"');
+        $message = $body['message'];
+
+        $requiredFields = [
+            'uuid',
+            'filename',
+            'documentId',
+        ];
+
+        if (isset($message['documentType']) && $message['documentType'] === 'invoice') {
+            $requiredFields = array_merge($requiredFields, [
+                'documentType',
+                'recipientEmail',
+                'recipientName',
+                'sendBy',
+            ]);
         }
 
-        if (empty($body['message']['filename'])) {
-            throw new UnexpectedValueException('Missing "filename"');
-        }
-
-        if (empty($body['message']['documentId'])) {
-            throw new UnexpectedValueException('Missing "documentId"');
+        foreach ($requiredFields as $requiredField) {
+            if (empty($body['message'][$requiredField])) {
+                throw new UnexpectedValueException('Missing "' . $requiredField . '"');
+            }
         }
     }
 }
