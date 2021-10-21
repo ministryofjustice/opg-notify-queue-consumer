@@ -232,7 +232,7 @@ class ConsumerTest extends TestCase
                     null,
                     '',
                     'Test name',
-                    'post',
+                    ['method' => 'post', 'documentType' => 'letter'],
                 ),
             ]
         );

@@ -13,7 +13,7 @@ class SendToNotify
     protected ?string $documentType;
     protected string $recipientName;
     protected ?string $recipientEmail;
-    protected string $sendBy;
+    protected array $sendBy;
 
     private function __construct()
     {
@@ -88,7 +88,7 @@ class SendToNotify
         return $this->recipientEmail;
     }
 
-    public function getSendBy(): string
+    public function getSendBy(): array
     {
         return $this->sendBy;
     }

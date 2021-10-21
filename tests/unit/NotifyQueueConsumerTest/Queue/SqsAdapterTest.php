@@ -53,7 +53,10 @@ class SqsAdapterTest extends TestCase
                 'documentType' => 'letter',
                 'recipientEmail' => 'test@test.com',
                 'recipientName' => 'Test Test',
-                'sendBy' => 'post'
+                'sendBy' => [
+                    'method' => 'post',
+                    'documentType' => 'letter'
+                ]
             ]
         ];
         $rawData = [
@@ -107,7 +110,10 @@ class SqsAdapterTest extends TestCase
                 'documentType' => 'invoice',
                 'recipientEmail' => 'test@test.com',
                 'recipientName' => 'Test Test',
-                'sendBy' => 'email'
+                'sendBy' => [
+                    'method' => 'email',
+                    'documentType' => 'invoice'
+                ]
             ]
         ];
         $rawData = [
@@ -224,7 +230,10 @@ class SqsAdapterTest extends TestCase
                 'documentType' => '',
                 'recipientEmail' => 'test@test.com',
                 'recipientName' => 'Test Test',
-                'sendBy' => 'post'
+                'sendBy' => [
+                    'method' => 'post',
+                    'documentType' => 'letter'
+                ]
             ]
         );
 
