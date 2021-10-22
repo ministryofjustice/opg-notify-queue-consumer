@@ -56,7 +56,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => null,
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'post'
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
         ];
         $contents = "pdf content";
         $response = [
@@ -131,7 +134,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => 'invoice',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'email'
+            'sendBy' => [
+                'method' => 'email',
+                'documentType' => 'invoice'
+            ]
         ];
 
         $contents = "pdf content";
@@ -232,7 +238,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'post'
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
         ];
         $contents = "some content";
         $command = SendToNotify::fromArray($data);
@@ -295,7 +304,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'post'
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
         ];
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
@@ -339,7 +351,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'post'
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
         ];
 
         $command = SendToNotify::fromArray($data);
@@ -365,7 +380,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'post'
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
         ];
 
         $contents = "some content";
@@ -408,7 +426,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'post'
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
         ];
 
         $contents = "some content";
@@ -458,7 +479,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => 'invoice',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'email'
+            'sendBy' => [
+                'method' => 'email',
+                'documentType' => 'invoice'
+            ]
         ];
 
         $contents = "pdf content";
@@ -517,7 +541,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => 'invoice',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'email'
+            'sendBy' => [
+                'method' => 'email',
+                'documentType' => 'invoice'
+            ]
         ];
 
         $contents = "pdf content";
