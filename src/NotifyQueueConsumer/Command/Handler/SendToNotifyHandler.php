@@ -55,6 +55,8 @@ class SendToNotifyHandler
                 $sendToNotifyCommand->getUuid(),
                 $sendToNotifyCommand->getRecipientName(),
                 $sendToNotifyCommand->getRecipientEmail(),
+                $sendToNotifyCommand->getClientFirstname(),
+                $sendToNotifyCommand->getClientSurname(),
                 $contents
             );
         } else {
@@ -113,10 +115,14 @@ class SendToNotifyHandler
         string $reference,
         string $recipientName,
         string $recipientEmail,
+        string $clientFirstName,
+        string $clientSurname,
         string $contents
     ): array {
         $data = [
             'name' => $recipientName,
+            'client_first_name' => $clientFirstName,
+            'client_surname' => $clientSurname,
             'link_to_file' => $this->notifyClient->prepareUpload($contents)
         ];
 
