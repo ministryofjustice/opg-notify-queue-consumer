@@ -50,10 +50,15 @@ class SqsAdapterTest extends TestCase
                 'uuid' => 'asd-123',
                 'filename' => 'this_is_a_test.pdf',
                 'documentId' => '1234',
-                'documentType' => 'letter',
-                'recipientEmail' => 'test@test.com',
-                'recipientName' => 'Test Test',
-                'sendBy' => 'post'
+                'documentType' => null,
+                'recipientEmail' => null,
+                'recipientName' => null,
+                'clientFirstName' => null,
+                'clientSurname' => null,
+                'sendBy' => [
+                    'method' => 'post',
+                    'documentType' => 'letter'
+                ]
             ]
         ];
         $rawData = [
@@ -69,6 +74,69 @@ class SqsAdapterTest extends TestCase
                 'documentType' => $rawBody['message']['documentType'],
                 'recipientEmail' => $rawBody['message']['recipientEmail'],
                 'recipientName' => $rawBody['message']['recipientName'],
+                'clientFirstName' => $rawBody['message']['clientFirstName'],
+                'clientSurname' => $rawBody['message']['clientSurname'],
+                'sendBy' => $rawBody['message']['sendBy'],
+            ]
+        );
+
+        $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
+
+        $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
+
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
+
+        $actualResult = $sqsAdapter->next();
+
+        self::assertEquals($expectedResult->getId(), $actualResult->getId());
+        self::assertEquals($expectedResult->getUuid(), $actualResult->getUuid());
+        self::assertEquals($expectedResult->getFilename(), $actualResult->getFilename());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testNextReturnsMessageSuccessLPALetter(): void
+    {
+        $awsResult = $this->createMock(Result::class);
+        $config = [
+            'AttributeNames' => ['SentTimestamp'],
+            'MaxNumberOfMessages' => 1,
+            'MessageAttributeNames' => ['All'],
+            'QueueUrl' => $this->queueUrl,
+            'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
+        ];
+        $rawBody = [
+            'message' => [
+                'uuid' => 'asd-123',
+                'filename' => 'this_is_a_test.pdf',
+                'documentId' => '1234',
+                'documentType' => null,
+                'recipientEmail' => null,
+                'recipientName' => null,
+                'clientFirstName' => null,
+                'clientSurname' => null,
+                'sendBy' => [
+                    'method' => 'post',
+                    'documentType' => 'letter'
+                ]
+            ]
+        ];
+        $rawData = [
+            'ReceiptHandle' => 'handle-12345',
+            'Body' => json_encode($rawBody),
+        ];
+        $expectedResult = SendToNotify::fromArray(
+            [
+                'id' => $rawData['ReceiptHandle'],
+                'uuid' => $rawBody['message']['uuid'],
+                'filename' => $rawBody['message']['filename'],
+                'documentId' => $rawBody['message']['documentId'],
+                'documentType' => $rawBody['message']['documentType'],
+                'recipientEmail' => $rawBody['message']['recipientEmail'],
+                'recipientName' => $rawBody['message']['recipientName'],
+                'clientFirstName' => $rawBody['message']['clientFirstName'],
+                'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
             ]
         );
@@ -107,7 +175,12 @@ class SqsAdapterTest extends TestCase
                 'documentType' => 'invoice',
                 'recipientEmail' => 'test@test.com',
                 'recipientName' => 'Test Test',
-                'sendBy' => 'email'
+                'clientFirstName' => 'Test2',
+                'clientSurname' => 'Test2',
+                'sendBy' => [
+                    'method' => 'email',
+                    'documentType' => 'invoice'
+                ]
             ]
         ];
         $rawData = [
@@ -123,6 +196,8 @@ class SqsAdapterTest extends TestCase
                 'documentType' => $rawBody['message']['documentType'],
                 'recipientEmail' => $rawBody['message']['recipientEmail'],
                 'recipientName' => $rawBody['message']['recipientName'],
+                'clientFirstName' => $rawBody['message']['clientFirstName'],
+                'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy']
             ]
         );
@@ -221,10 +296,15 @@ class SqsAdapterTest extends TestCase
                 'uuid' => 'uuid-8537',
                 'filename' => 'file.pdf',
                 'documentId' => '1234',
-                'documentType' => '',
-                'recipientEmail' => 'test@test.com',
-                'recipientName' => 'Test Test',
-                'sendBy' => 'post'
+                'documentType' => null,
+                'recipientEmail' => null,
+                'recipientName' => null,
+                'clientFirstName' => null,
+                'clientSurname' => null,
+                'sendBy' => [
+                    'method' => 'post',
+                    'documentType' => 'letter'
+                ]
             ]
         );
 

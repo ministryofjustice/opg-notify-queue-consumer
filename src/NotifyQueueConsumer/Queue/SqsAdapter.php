@@ -52,6 +52,8 @@ class SqsAdapter implements QueueInterface
             'recipientEmail' => $message['recipientEmail'],
             'recipientName' => $message['recipientName'],
             'sendBy' => $message['sendBy'],
+            'clientFirstName' => $message['clientFirstName'],
+            'clientSurname' => $message['clientSurname']
         ]);
     }
 
