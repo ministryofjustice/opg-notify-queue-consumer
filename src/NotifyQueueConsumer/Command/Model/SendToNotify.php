@@ -13,14 +13,19 @@ class SendToNotify
     protected ?string $documentType;
     protected string $recipientName;
     protected ?string $recipientEmail;
-    protected string $sendBy;
+    protected ?string $clientFirstName;
+    protected ?string $clientSurname;
+    /**
+     * @var array<string,string>
+     */
+    protected array $sendBy;
 
     private function __construct()
     {
     }
 
     /**
-     * @param array<string,string> $data
+     * @param array<mixed> $data
      * @return self
      */
     public static function fromArray(array $data): self
@@ -53,6 +58,8 @@ class SendToNotify
         $instance->documentType = $data['documentType'];
         $instance->recipientName = $data['recipientName'];
         $instance->recipientEmail = $data['recipientEmail'];
+        $instance->clientFirstName = $data['clientFirstName'];
+        $instance->clientSurname = $data['clientSurname'];
         $instance->sendBy = $data['sendBy'];
 
         return $instance;
@@ -88,7 +95,20 @@ class SendToNotify
         return $this->recipientEmail;
     }
 
-    public function getSendBy(): string
+    public function getClientFirstName(): ?string
+    {
+        return $this->clientFirstName;
+    }
+
+    public function getClientSurname(): ?string
+    {
+        return $this->clientSurname;
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    public function getSendBy(): array
     {
         return $this->sendBy;
     }
