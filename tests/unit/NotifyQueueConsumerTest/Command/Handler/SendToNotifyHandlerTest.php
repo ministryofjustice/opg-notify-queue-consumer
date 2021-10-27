@@ -48,16 +48,8 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyLetterAndReturnCommandSuccess(): void
     {
-        $data = [
-            'id' => '123',
-            'uuid' => 'asd-456',
-            'filename' => 'document.pdf',
-            'documentId' => '456',
-            'documentType' => null,
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => 'post'
-        ];
+        $data = $this->getLetterData(null);
+
         $contents = "pdf content";
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
@@ -123,27 +115,13 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailAndReturnCommandSuccess(): void
     {
-        $data = [
-            'id' => '123',
-            'uuid' => 'asd-456',
-            'filename' => 'invoice.pdf',
-            'documentId' => '456',
-            'documentType' => 'invoice',
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => 'email'
-        ];
+        $data =  $this->getEmailData();
 
         $contents = "pdf content";
 
         $prepareUploadResponse = [
             'file' => 'cGRmIGNvbnRlbnQ=',
             'is_csv' => false
-        ];
-
-        $personalisationData = [
-            'name' => $data['recipientName'],
-            'link_to_file' => $prepareUploadResponse
         ];
 
         $response = [
@@ -195,7 +173,12 @@ class SendToNotifyHandlerTest extends TestCase
         $this->mockNotifyClient
             ->expects(self::once())
             ->method('sendEmail')
-            ->with($data['recipientEmail'], SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE, $personalisationData, $data['uuid'])
+            ->with(
+                $data['recipientEmail'],
+                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE,
+                $this->getPersonalisationData($data, $prepareUploadResponse),
+                $data['uuid']
+            )
             ->willReturn($response);
 
         $this->mockNotifyClient
@@ -232,7 +215,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'post'
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
         ];
         $contents = "some content";
         $command = SendToNotify::fromArray($data);
@@ -295,7 +281,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'post'
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
         ];
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
@@ -339,7 +328,10 @@ class SendToNotifyHandlerTest extends TestCase
             'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
-            'sendBy' => 'post'
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
         ];
 
         $command = SendToNotify::fromArray($data);
@@ -357,16 +349,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testNotifyResponseIdNotFoundFailure(): void
     {
-        $data = [
-            'id' => '123',
-            'uuid' => 'asd-456',
-            'filename' => 'document.pdf',
-            'documentId' => 456,
-            'documentType' => '',
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => 'post'
-        ];
+        $data = $this->getLetterData();
 
         $contents = "some content";
 
@@ -400,17 +383,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testNotifyStatusNotFoundFailure(): void
     {
-        $data = [
-            'id' => '123',
-            'uuid' => 'asd-456',
-            'filename' => 'document.pdf',
-            'documentId' => 456,
-            'documentType' => '',
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => 'post'
-        ];
-
+        $data = $this->getLetterData();
         $contents = "some content";
 
         $response = [
@@ -450,27 +423,13 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoNotifyIdReturned(): void
     {
-        $data = [
-            'id' => '123',
-            'uuid' => 'asd-456',
-            'filename' => 'invoice.pdf',
-            'documentId' => '456',
-            'documentType' => 'invoice',
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => 'email'
-        ];
+        $data = $this->getEmailData();
 
         $contents = "pdf content";
 
         $prepareUploadResponse = [
             'file' => 'cGRmIGNvbnRlbnQ=',
             'is_csv' => false
-        ];
-
-        $personalisationData = [
-            'name' => $data['recipientName'],
-            'link_to_file' => $prepareUploadResponse
         ];
 
         $response = [
@@ -495,13 +454,18 @@ class SendToNotifyHandlerTest extends TestCase
         $this->mockNotifyClient
             ->expects(self::once())
             ->method('sendEmail')
-            ->with($data['recipientEmail'], SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE, $personalisationData, $data['uuid'])
+            ->with(
+                $data['recipientEmail'],
+                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE,
+                $this->getPersonalisationData($data, $prepareUploadResponse),
+                $data['uuid']
+            )
             ->willReturn($response);
 
-        self:$this->expectException(UnexpectedValueException::class);
+        self:
+        $this->expectException(UnexpectedValueException::class);
 
         $this->handler->handle($command);
-
     }
 
     /**
@@ -509,27 +473,13 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoStatusRetrieved(): void
     {
-        $data = [
-            'id' => '123',
-            'uuid' => 'asd-456',
-            'filename' => 'invoice.pdf',
-            'documentId' => '456',
-            'documentType' => 'invoice',
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => 'email'
-        ];
+        $data = $this->getEmailData();
 
         $contents = "pdf content";
 
         $prepareUploadResponse = [
             'file' => 'cGRmIGNvbnRlbnQ=',
             'is_csv' => false
-        ];
-
-        $personalisationData = [
-            'name' => $data['recipientName'],
-            'link_to_file' => $prepareUploadResponse
         ];
 
         $response = [
@@ -572,7 +522,12 @@ class SendToNotifyHandlerTest extends TestCase
         $this->mockNotifyClient
             ->expects(self::once())
             ->method('sendEmail')
-            ->with($data['recipientEmail'], SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE, $personalisationData, $data['uuid'])
+            ->with(
+                $data['recipientEmail'],
+                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE,
+                $this->getPersonalisationData($data, $prepareUploadResponse),
+                $data['uuid']
+            )
             ->willReturn($response);
 
         $this->mockNotifyClient
@@ -581,9 +536,55 @@ class SendToNotifyHandlerTest extends TestCase
             ->with($response['id'])
             ->willReturn($statusResponse);
 
-        self:$this->expectException(UnexpectedValueException::class);
+        self:
+        $this->expectException(UnexpectedValueException::class);
 
         $this->handler->handle($command);
+    }
 
+    public function getPersonalisationData(array $data, array $prepareUploadResponse): array
+    {
+        return [
+            'name' => $data['recipientName'],
+            'client_first_name' => $data['clientFirstName'],
+            'client_surname' => $data['clientSurname'],
+            'link_to_file' => $prepareUploadResponse
+        ];
+    }
+
+    public function getEmailData(): array
+    {
+        return [
+            'id' => '123',
+            'uuid' => 'asd-456',
+            'filename' => 'invoice.pdf',
+            'documentId' => '456',
+            'documentType' => 'invoice',
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'clientFirstName' => 'Test2',
+            'clientSurname' => 'Test Surname',
+            'sendBy' => [
+                'method' => 'email',
+                'documentType' => 'invoice'
+            ]
+        ];
+    }
+
+    public function getLetterData(?string $documentType = ''): array
+    {
+        return [
+            'id' => '123',
+            'uuid' => 'asd-456',
+            'filename' => 'document.pdf',
+            'documentId' => 456,
+            'documentType' => $documentType,
+            'recipientEmail' => 'test@test.com',
+            'recipientName' => 'Test Test',
+            'sendBy' => [
+                'method' => 'post',
+                'documentType' => 'letter'
+            ]
+        ];
     }
 }
