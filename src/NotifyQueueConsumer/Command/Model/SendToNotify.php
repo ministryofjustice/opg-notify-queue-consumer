@@ -11,7 +11,7 @@ class SendToNotify
     protected string $filename;
     protected int $documentId;
     protected ?string $documentType;
-    protected string $recipientName;
+    protected ?string $recipientName;
     protected ?string $recipientEmail;
     protected ?string $clientFirstName;
     protected ?string $clientSurname;
@@ -85,7 +85,7 @@ class SendToNotify
         return $this->documentId;
     }
 
-    public function getRecipientName(): string
+    public function getRecipientName(): ?string
     {
         return $this->recipientName;
     }

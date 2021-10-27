@@ -107,9 +107,9 @@ class SqsAdapterTest extends TestCase
                 'uuid' => 'asd-123',
                 'filename' => 'this_is_a_test.pdf',
                 'documentId' => '1234',
-                'documentType' => 'LPA',
+                'documentType' => null,
                 'recipientEmail' => null,
-                'recipientName' => 'Test Test',
+                'recipientName' => null,
                 'sendBy' => [
                     'method' => 'post',
                     'documentType' => 'letter'
