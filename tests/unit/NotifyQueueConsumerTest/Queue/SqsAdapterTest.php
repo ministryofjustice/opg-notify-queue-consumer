@@ -50,9 +50,11 @@ class SqsAdapterTest extends TestCase
                 'uuid' => 'asd-123',
                 'filename' => 'this_is_a_test.pdf',
                 'documentId' => '1234',
-                'documentType' => 'letter',
-                'recipientEmail' => 'test@test.com',
-                'recipientName' => 'Test Test',
+                'documentType' => null,
+                'recipientEmail' => null,
+                'recipientName' => null,
+                'clientFirstName' => null,
+                'clientSurname' => null,
                 'sendBy' => [
                     'method' => 'post',
                     'documentType' => 'letter'
@@ -72,6 +74,8 @@ class SqsAdapterTest extends TestCase
                 'documentType' => $rawBody['message']['documentType'],
                 'recipientEmail' => $rawBody['message']['recipientEmail'],
                 'recipientName' => $rawBody['message']['recipientName'],
+                'clientFirstName' => $rawBody['message']['clientFirstName'],
+                'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
             ]
         );
@@ -110,6 +114,8 @@ class SqsAdapterTest extends TestCase
                 'documentType' => null,
                 'recipientEmail' => null,
                 'recipientName' => null,
+                'clientFirstName' => null,
+                'clientSurname' => null,
                 'sendBy' => [
                     'method' => 'post',
                     'documentType' => 'letter'
@@ -129,6 +135,8 @@ class SqsAdapterTest extends TestCase
                 'documentType' => $rawBody['message']['documentType'],
                 'recipientEmail' => $rawBody['message']['recipientEmail'],
                 'recipientName' => $rawBody['message']['recipientName'],
+                'clientFirstName' => $rawBody['message']['clientFirstName'],
+                'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
             ]
         );
@@ -167,6 +175,8 @@ class SqsAdapterTest extends TestCase
                 'documentType' => 'invoice',
                 'recipientEmail' => 'test@test.com',
                 'recipientName' => 'Test Test',
+                'clientFirstName' => 'Test2',
+                'clientSurname' => 'Test2',
                 'sendBy' => [
                     'method' => 'email',
                     'documentType' => 'invoice'
@@ -186,6 +196,8 @@ class SqsAdapterTest extends TestCase
                 'documentType' => $rawBody['message']['documentType'],
                 'recipientEmail' => $rawBody['message']['recipientEmail'],
                 'recipientName' => $rawBody['message']['recipientName'],
+                'clientFirstName' => $rawBody['message']['clientFirstName'],
+                'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy']
             ]
         );
@@ -284,9 +296,11 @@ class SqsAdapterTest extends TestCase
                 'uuid' => 'uuid-8537',
                 'filename' => 'file.pdf',
                 'documentId' => '1234',
-                'documentType' => '',
-                'recipientEmail' => 'test@test.com',
-                'recipientName' => 'Test Test',
+                'documentType' => null,
+                'recipientEmail' => null,
+                'recipientName' => null,
+                'clientFirstName' => null,
+                'clientSurname' => null,
                 'sendBy' => [
                     'method' => 'post',
                     'documentType' => 'letter'
