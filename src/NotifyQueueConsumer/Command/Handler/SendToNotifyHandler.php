@@ -48,13 +48,15 @@ class SendToNotifyHandler
             throw new UnexpectedValueException("Cannot read PDF");
         }
 
-
         // 3. Send to notify
-        if ($sendToNotifyCommand->getSendBy() === 'email') {
+        $sendBy = $sendToNotifyCommand->getSendBy();
+        if ($sendBy['method'] === 'email' && $sendBy['documentType'] === 'invoice') {
             $response = $this->sendInvoiceToNotify(
                 $sendToNotifyCommand->getUuid(),
                 $sendToNotifyCommand->getRecipientName(),
                 $sendToNotifyCommand->getRecipientEmail(),
+                $sendToNotifyCommand->getClientFirstname(),
+                $sendToNotifyCommand->getClientSurname(),
                 $contents
             );
         } else {
@@ -63,18 +65,20 @@ class SendToNotifyHandler
 
         list('id' => $notifyId, 'status' => $notifyStatus) = $response;
 
-        return UpdateDocumentStatus::fromArray([
-            'notifyId' => $notifyId,
-            'notifyStatus' => $notifyStatus,
-            'documentId' => $sendToNotifyCommand->getDocumentId(),
-        ]);
+        return UpdateDocumentStatus::fromArray(
+            [
+                'notifyId' => $notifyId,
+                'notifyStatus' => $notifyStatus,
+                'documentId' => $sendToNotifyCommand->getDocumentId(),
+            ]
+        );
     }
 
     /**
      * @param string $reference
      * @param string $contents
-     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      * @return array<string,string>
+     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
     private function sendLetterToNotify(string $reference, string $contents): array
     {
@@ -104,18 +108,30 @@ class SendToNotifyHandler
      * @param string $recipientEmail
      * @param string $contents
      *
-     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      * @return array<string,string>
+     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
-    private function sendInvoiceToNotify(string $reference, string $recipientName, string $recipientEmail, string $contents): array
-    {
-
+    private function sendInvoiceToNotify(
+        string $reference,
+        string $recipientName,
+        string $recipientEmail,
+        string $clientFirstName,
+        string $clientSurname,
+        string $contents
+    ): array {
         $data = [
             'name' => $recipientName,
+            'client_first_name' => $clientFirstName,
+            'client_surname' => $clientSurname,
             'link_to_file' => $this->notifyClient->prepareUpload($contents)
         ];
 
-        $sendResponse = $this->notifyClient->sendEmail($recipientEmail, self::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE, $data, $reference);
+        $sendResponse = $this->notifyClient->sendEmail(
+            $recipientEmail,
+            self::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE,
+            $data,
+            $reference
+        );
 
         if (empty($sendResponse['id'])) {
             throw new UnexpectedValueException("No Notify id returned");
