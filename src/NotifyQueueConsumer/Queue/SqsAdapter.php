@@ -48,7 +48,6 @@ class SqsAdapter implements QueueInterface
             'uuid' => $message['uuid'],
             'filename' => $message['filename'],
             'documentId' => $message['documentId'],
-            'documentType' => $message['documentType'],
             'recipientEmail' => $message['recipientEmail'],
             'recipientName' => $message['recipientName'],
             'sendBy' => $message['sendBy'],
@@ -87,9 +86,8 @@ class SqsAdapter implements QueueInterface
             'documentId',
         ];
 
-        if (isset($message['documentType']) && $message['documentType'] === 'invoice') {
+        if ($message['sendBy']['documentType'] === 'invoice') {
             $requiredFields = array_merge($requiredFields, [
-                'documentType',
                 'recipientEmail',
                 'recipientName',
                 'sendBy',

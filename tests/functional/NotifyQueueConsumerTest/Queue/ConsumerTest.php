@@ -224,13 +224,12 @@ class ConsumerTest extends TestCase
             [
                 'QueueUrl' => $this->queueUrl,
                 'MessageBody' => sprintf(
-                    '{"message":{"uuid":"%s","filename":"%s","documentId":"%d", "documentType":"%s", 
+                    '{"message":{"uuid":"%s","filename":"%s","documentId":"%d", 
                     "recipientEmail":"%s", "recipientName":"%s", "clientFirstName":"%s", "clientSurname":"%s",
                     "sendBy":{"method": "post", "documentType": "letter"}}}',
                     $uuid,
                     $destination,
                     $documentId,
-                    null,
                     '',
                     'Test name',
                     'Test2',

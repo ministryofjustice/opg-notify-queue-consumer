@@ -212,7 +212,6 @@ class SendToNotifyHandlerTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => '456',
-            'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
             'sendBy' => [
@@ -278,7 +277,6 @@ class SendToNotifyHandlerTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => '456',
-            'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
             'sendBy' => [
@@ -325,7 +323,6 @@ class SendToNotifyHandlerTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => 456,
-            'documentType' => '',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
             'sendBy' => [
@@ -559,7 +556,6 @@ class SendToNotifyHandlerTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'invoice.pdf',
             'documentId' => '456',
-            'documentType' => 'invoice',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
             'clientFirstName' => 'Test2',
@@ -578,7 +574,6 @@ class SendToNotifyHandlerTest extends TestCase
             'uuid' => 'asd-456',
             'filename' => 'document.pdf',
             'documentId' => 456,
-            'documentType' => $documentType,
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
             'sendBy' => [

@@ -10,7 +10,6 @@ class SendToNotify
     protected string $uuid;
     protected string $filename;
     protected int $documentId;
-    protected ?string $documentType;
     protected ?string $recipientName;
     protected ?string $recipientEmail;
     protected ?string $clientFirstName;
@@ -55,7 +54,6 @@ class SendToNotify
         $instance->uuid = $data['uuid'];
         $instance->filename = $data['filename'];
         $instance->documentId = (int)$data['documentId'];
-        $instance->documentType = $data['documentType'];
         $instance->recipientName = $data['recipientName'];
         $instance->recipientEmail = $data['recipientEmail'];
         $instance->clientFirstName = $data['clientFirstName'];

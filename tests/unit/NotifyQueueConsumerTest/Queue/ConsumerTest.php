@@ -168,7 +168,6 @@ class ConsumerTest extends TestCase
                 'uuid' => 'asd-123',
                 'filename' => 'this_is_a_test.pdf',
                 'documentId' => '4545',
-                'documentType' => 'letter',
                 'recipientEmail' => 'test@test.com',
                 'recipientName' => 'Test Test',
                 'sendBy' => [
