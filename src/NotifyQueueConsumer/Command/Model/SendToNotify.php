@@ -10,17 +10,21 @@ class SendToNotify
     protected string $uuid;
     protected string $filename;
     protected int $documentId;
-    protected ?string $documentType;
-    protected string $recipientName;
+    protected ?string $recipientName;
     protected ?string $recipientEmail;
-    protected string $sendBy;
+    protected ?string $clientFirstName;
+    protected ?string $clientSurname;
+    /**
+     * @var array<string,string>
+     */
+    protected array $sendBy;
 
     private function __construct()
     {
     }
 
     /**
-     * @param array<string,string> $data
+     * @param array<mixed> $data
      * @return self
      */
     public static function fromArray(array $data): self
@@ -50,9 +54,10 @@ class SendToNotify
         $instance->uuid = $data['uuid'];
         $instance->filename = $data['filename'];
         $instance->documentId = (int)$data['documentId'];
-        $instance->documentType = $data['documentType'];
         $instance->recipientName = $data['recipientName'];
         $instance->recipientEmail = $data['recipientEmail'];
+        $instance->clientFirstName = $data['clientFirstName'];
+        $instance->clientSurname = $data['clientSurname'];
         $instance->sendBy = $data['sendBy'];
 
         return $instance;
@@ -78,7 +83,7 @@ class SendToNotify
         return $this->documentId;
     }
 
-    public function getRecipientName(): string
+    public function getRecipientName(): ?string
     {
         return $this->recipientName;
     }
@@ -88,7 +93,20 @@ class SendToNotify
         return $this->recipientEmail;
     }
 
-    public function getSendBy(): string
+    public function getClientFirstName(): ?string
+    {
+        return $this->clientFirstName;
+    }
+
+    public function getClientSurname(): ?string
+    {
+        return $this->clientSurname;
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    public function getSendBy(): array
     {
         return $this->sendBy;
     }

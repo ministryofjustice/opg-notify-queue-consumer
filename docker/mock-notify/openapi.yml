@@ -93,6 +93,50 @@ paths:
                     enum:
                       - 429
 
+  "/v2/notifications/email":
+    post:
+      summary: Send an email with an attachment
+      parameters:
+        - name: body
+          in: body
+          description: Request body needed by Notify for an email with an attachment,
+          required: true
+          schema:
+            $ref: "#/components/schemas/Email"
+      responses:
+        '201':
+          description: Simple post example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    default: 740e5834-3a29-46b4-9a6f-16142fde533a
+                  reference:
+                    type: string
+                    default: STRING
+                  uri:
+                    type: string
+                    default: https://api.notifications.service.gov.uk/v2/notifications/740e5834-3a29-46b4-9a6f-16142fde533a
+        '400':
+          description: Error response example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NotifyError'
+                  status_code:
+                    type: int
+                    enum:
+                      - 429
+
   "/v2/notifications?reference={reference}":
     get:
       summary: Get the status of multiple messages
@@ -120,7 +164,7 @@ paths:
                 none:
                   summary: Return a notification
                   value:
-                    notifications: []
+                    notifications: [ ]
                 one:
                   summary: No matching notification found
                   value:
@@ -144,6 +188,8 @@ components:
           enum:
             - pending-virus-check
             - accepted
+            - created
+            - sending
             - delivered
             - received
             - failed
@@ -178,3 +224,30 @@ components:
         message:
           type: string
           example: No result found
+    Email:
+      required:
+        email_address,
+        template_id,
+        personalisation
+      properties:
+        email_address:
+          type: string
+          example: test@test.com
+        template_id:
+          type: string
+          example: daef7d83-9874-4dd8-ac60-d92646e7aaaa
+        personalisation:
+          type: object
+          properties:
+            first_name:
+              type: string
+              example: Amala
+            application_date:
+              type: string
+              example: 2018-01-01
+            link_to_file:
+              type: object
+              properties:
+                file:
+                  type: string
+                  example: file as base64 encoded string
