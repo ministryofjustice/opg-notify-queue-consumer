@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace NotifyQueueConsumer\Authentication;
 
-use Lcobucci\JWT\Builder;
+use DateTimeImmutable;
+use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\Signer\Key;
+use Lcobucci\JWT\Signer\Key\InMemory;
 
 class JwtAuthenticator
 {
@@ -26,14 +27,18 @@ class JwtAuthenticator
      */
     public function createToken()
     {
-        $token = (new Builder())
+        $now = new DateTimeImmutable();
+        $now = $now->setTime(intval($now->format('G')), intval($now->format('i')), intval($now->format('s')));
+        $config = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText($this->jwtSecret));
+
+        $token = $config->builder()
             ->withClaim('session-data', $this->apiUserEmail)
-            ->issuedAt(time())
-            ->expiresAt(time() + 600)
-            ->getToken(new Sha256(), new Key($this->jwtSecret));
+            ->issuedAt($now)
+            ->expiresAt($now->modify('+10 minutes'))
+            ->getToken($config->signer(), $config->signingKey());
 
         return [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $token->toString(),
             'Content-Type' => 'application/json'
         ];
     }
