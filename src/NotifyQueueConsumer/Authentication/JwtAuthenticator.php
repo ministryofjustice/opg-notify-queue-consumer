@@ -28,11 +28,12 @@ class JwtAuthenticator
     public function createToken()
     {
         $now = new DateTimeImmutable();
+        $now = $now->setTime(intval($now->format('G')), intval($now->format('i')), intval($now->format('s')));
         $config = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText($this->jwtSecret));
 
         $token = $config->builder()
             ->withClaim('session-data', $this->apiUserEmail)
-            ->issuedAt($now->modify('- 1 minutes'))
+            ->issuedAt($now)
             ->expiresAt($now->modify('+10 minutes'))
             ->getToken($config->signer(), $config->signingKey());
 
