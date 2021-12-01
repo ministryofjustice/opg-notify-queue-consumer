@@ -113,7 +113,7 @@ class ConsumerTest extends TestCase
             }
             return $request;
         }));
-        $this->createMessageWithFile((string)Uuid::uuid4(), 1234);
+        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, null);
 
         $this->awsSqsClient->getQueueAttributes(['QueueUrl' => $this->queueUrl]);
 
@@ -152,7 +152,7 @@ class ConsumerTest extends TestCase
             }
             return $request;
         }));
-        $this->createMessageWithFile((string)Uuid::uuid4(), 1234);
+        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, null);
 
         $this->awsSqsClient->getQueueAttributes(['QueueUrl' => $this->queueUrl]);
 
@@ -190,7 +190,7 @@ class ConsumerTest extends TestCase
 
             return $request;
         }));
-        $this->createMessageWithFile((string)Uuid::uuid4(), 1234);
+        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, null);
 
         $this->awsSqsClient->getQueueAttributes(['QueueUrl' => $this->queueUrl]);
 
@@ -213,7 +213,7 @@ class ConsumerTest extends TestCase
         }
     }
 
-    private function createMessageWithFile(string $uuid, int $documentId): void
+    private function createMessageWithFile(string $uuid, int $documentId, ?string $letterType): void
     {
         $content = file_get_contents(self::TEST_FILE_PATH);
         $destination = basename(self::TEST_FILE_PATH);
@@ -226,7 +226,7 @@ class ConsumerTest extends TestCase
                 'MessageBody' => sprintf(
                     '{"message":{"uuid":"%s","filename":"%s","documentId":"%d", 
                     "recipientEmail":"%s", "recipientName":"%s", "clientFirstName":"%s", "clientSurname":"%s",
-                    "sendBy":{"method": "post", "documentType": "letter"} "letterType":"%s"}}',
+                    "sendBy":{"method": "post", "documentType": "letter"}, "letterType":"%s"}}',
                     $uuid,
                     $destination,
                     $documentId,
@@ -234,7 +234,7 @@ class ConsumerTest extends TestCase
                     'Test name',
                     'Test2',
                     'Test Surname',
-                    'ff1',
+                    $letterType,
                 ),
             ]
         );

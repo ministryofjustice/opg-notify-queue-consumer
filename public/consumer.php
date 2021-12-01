@@ -19,7 +19,6 @@ require_once __DIR__ . '/../src/bootstrap/logging.php';
 // Initialise dependencies before starting the consumer
 try {
     require_once __DIR__ . '/../src/bootstrap/services.php';
-
     while ($doRunLoop) {
         $consumer->run();
 

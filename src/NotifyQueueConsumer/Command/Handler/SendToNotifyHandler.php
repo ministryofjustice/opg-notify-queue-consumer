@@ -13,8 +13,6 @@ use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use UnexpectedValueException;
 use Alphagov\Notifications\Exception;
 
-use function PHPUnit\Framework\matches;
-
 class SendToNotifyHandler
 {
     private Filesystem $filesystem;
