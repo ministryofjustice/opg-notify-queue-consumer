@@ -115,7 +115,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailAndReturnCommandSuccess(): void
     {
-        $data =  $this->getEmailData();
+        $data =  $this->getEmailData('ff1');
 
         $contents = "pdf content";
 
@@ -175,7 +175,97 @@ class SendToNotifyHandlerTest extends TestCase
             ->method('sendEmail')
             ->with(
                 $data['recipientEmail'],
-                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE,
+                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE,
+                $this->getPersonalisationData($data, $prepareUploadResponse),
+                $data['uuid']
+            )
+            ->willReturn($response);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('getNotification')
+            ->with($response['id'])
+            ->willReturn($statusResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('listNotifications')
+            ->with(['reference' => $response['reference']])
+            ->willReturn([]);
+
+        $command = $this->handler->handle($command);
+
+        self::assertEquals($payload['documentId'], $command->getDocumentId());
+        self::assertEquals($payload['notifyStatus'], $command->getNotifyStatus());
+        self::assertEquals($payload['notifySendId'], $command->getNotifyId());
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    public function testRetrieveQueueMessageSendToNotifyEmailAndReturnCommandSuccessA6(): void
+    {
+        $data =  $this->getEmailData('a6');
+
+        $contents = "pdf content";
+
+        $prepareUploadResponse = [
+            'file' => 'cGRmIGNvbnRlbnQ=',
+            'is_csv' => false
+        ];
+
+        $response = [
+            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
+            "reference" => $data['uuid']
+        ];
+
+        $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
+
+        $notifyStatus = "sending";
+
+        $statusResponse = [
+            "id" => $notifyId,
+            "reference" => $data['uuid'],
+            "status" => $notifyStatus,
+            "content" => [
+                "subject" => "Test",
+                "body" => "More testing",
+                "from_email" => "me@test.com"
+            ],
+            "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
+            "template" => [
+                "id" => "9286a7db-a316-4103-a1c7-7bc1fdbbaa81",
+                "version" => 1,
+                "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
+            ]
+        ];
+
+        $payload = [
+            "documentId" => $data['documentId'],
+            "notifySendId" => $notifyId,
+            "notifyStatus" => $notifyStatus,
+        ];
+
+        $command = SendToNotify::fromArray($data);
+
+        $this->mockFilesystem
+            ->expects(self::once())
+            ->method('read')
+            ->with($data['filename'])
+            ->willReturn($contents);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('prepareUpload')
+            ->with($contents)
+            ->willReturn($prepareUploadResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('sendEmail')
+            ->with(
+                $data['recipientEmail'],
+                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
                 $this->getPersonalisationData($data, $prepareUploadResponse),
                 $data['uuid']
             )
@@ -282,7 +372,8 @@ class SendToNotifyHandlerTest extends TestCase
             'sendBy' => [
                 'method' => 'post',
                 'documentType' => 'letter'
-            ]
+            ],
+            'letterType' => 'ff1',
         ];
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
@@ -328,7 +419,8 @@ class SendToNotifyHandlerTest extends TestCase
             'sendBy' => [
                 'method' => 'post',
                 'documentType' => 'letter'
-            ]
+            ],
+            'letterType' => null,
         ];
 
         $command = SendToNotify::fromArray($data);
@@ -420,7 +512,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoNotifyIdReturned(): void
     {
-        $data = $this->getEmailData();
+        $data = $this->getEmailData('ff1');
 
         $contents = "pdf content";
 
@@ -453,7 +545,7 @@ class SendToNotifyHandlerTest extends TestCase
             ->method('sendEmail')
             ->with(
                 $data['recipientEmail'],
-                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE,
+                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE,
                 $this->getPersonalisationData($data, $prepareUploadResponse),
                 $data['uuid']
             )
@@ -470,7 +562,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoStatusRetrieved(): void
     {
-        $data = $this->getEmailData();
+        $data = $this->getEmailData('');
 
         $contents = "pdf content";
 
@@ -496,7 +588,7 @@ class SendToNotifyHandlerTest extends TestCase
             ],
             "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
             "template" => [
-                "id" => "daef7d83-9874-4dd8-ac60-d92646e7aaaa",
+                "id" => "9286a7db-a316-4103-a1c7-7bc1fdbbaa81",
                 "version" => 1,
                 "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
             ]
@@ -521,7 +613,7 @@ class SendToNotifyHandlerTest extends TestCase
             ->method('sendEmail')
             ->with(
                 $data['recipientEmail'],
-                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE,
+                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
                 $this->getPersonalisationData($data, $prepareUploadResponse),
                 $data['uuid']
             )
@@ -549,7 +641,7 @@ class SendToNotifyHandlerTest extends TestCase
         ];
     }
 
-    public function getEmailData(): array
+    public function getEmailData(?string $letterType): array
     {
         return [
             'id' => '123',
@@ -563,7 +655,8 @@ class SendToNotifyHandlerTest extends TestCase
             'sendBy' => [
                 'method' => 'email',
                 'documentType' => 'invoice'
-            ]
+            ],
+            'letterType' => $letterType,
         ];
     }
 

@@ -57,7 +57,8 @@ class SqsAdapterTest extends TestCase
                 'sendBy' => [
                     'method' => 'post',
                     'documentType' => 'letter'
-                ]
+                ],
+                'letterType' => null,
             ]
         ];
         $rawData = [
@@ -75,6 +76,7 @@ class SqsAdapterTest extends TestCase
                 'clientFirstName' => $rawBody['message']['clientFirstName'],
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
+                'letterType' => $rawBody['message']['letterType'],
             ]
         );
 
@@ -116,7 +118,8 @@ class SqsAdapterTest extends TestCase
                 'sendBy' => [
                     'method' => 'post',
                     'documentType' => 'letter'
-                ]
+                ],
+                'letterType' => null,
             ]
         ];
         $rawData = [
@@ -134,6 +137,7 @@ class SqsAdapterTest extends TestCase
                 'clientFirstName' => $rawBody['message']['clientFirstName'],
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
+                'letterType' => $rawBody['message']['letterType'],
             ]
         );
 
@@ -175,7 +179,8 @@ class SqsAdapterTest extends TestCase
                 'sendBy' => [
                     'method' => 'email',
                     'documentType' => 'invoice'
-                ]
+                ],
+                'letterType' => 'ff1',
             ]
         ];
         $rawData = [
@@ -192,7 +197,8 @@ class SqsAdapterTest extends TestCase
                 'recipientName' => $rawBody['message']['recipientName'],
                 'clientFirstName' => $rawBody['message']['clientFirstName'],
                 'clientSurname' => $rawBody['message']['clientSurname'],
-                'sendBy' => $rawBody['message']['sendBy']
+                'sendBy' => $rawBody['message']['sendBy'],
+                'letterType' => $rawBody['message']['letterType'],
             ]
         );
 
@@ -297,7 +303,8 @@ class SqsAdapterTest extends TestCase
                 'sendBy' => [
                     'method' => 'post',
                     'documentType' => 'letter'
-                ]
+                ],
+                'letterType' => null,
             ]
         );
 

@@ -13,12 +13,15 @@ use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use UnexpectedValueException;
 use Alphagov\Notifications\Exception;
 
+use function PHPUnit\Framework\matches;
+
 class SendToNotifyHandler
 {
     private Filesystem $filesystem;
     private Client $notifyClient;
 
-    const NOTIFY_TEMPLATE_DOWNLOAD_INVOICE = 'daef7d83-9874-4dd8-ac60-d92646e7aaaa';
+    const NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE = 'daef7d83-9874-4dd8-ac60-d92646e7aaaa';
+    const NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE = '9286a7db-a316-4103-a1c7-7bc1fdbbaa81';
 
     public function __construct(Filesystem $filesystem, Client $notifyClient)
     {
@@ -51,13 +54,23 @@ class SendToNotifyHandler
         // 3. Send to notify
         $sendBy = $sendToNotifyCommand->getSendBy();
         if ($sendBy['method'] === 'email' && $sendBy['documentType'] === 'invoice') {
+            switch ($sendToNotifyCommand->getLetterType()) {
+                case 'ff1':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE;
+                    break;
+                default:
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE;
+                    break;
+            }
+
             $response = $this->sendInvoiceToNotify(
                 $sendToNotifyCommand->getUuid(),
                 $sendToNotifyCommand->getRecipientName(),
                 $sendToNotifyCommand->getRecipientEmail(),
                 $sendToNotifyCommand->getClientFirstname(),
                 $sendToNotifyCommand->getClientSurname(),
-                $contents
+                $contents,
+                $letterTemplate,
             );
         } else {
             $response = $this->sendLetterToNotify($sendToNotifyCommand->getUuid(), $contents);
@@ -117,7 +130,8 @@ class SendToNotifyHandler
         string $recipientEmail,
         string $clientFirstName,
         string $clientSurname,
-        string $contents
+        string $contents,
+        string $letterTemplate
     ): array {
         $data = [
             'name' => $recipientName,
@@ -128,7 +142,7 @@ class SendToNotifyHandler
 
         $sendResponse = $this->notifyClient->sendEmail(
             $recipientEmail,
-            self::NOTIFY_TEMPLATE_DOWNLOAD_INVOICE,
+            $letterTemplate,
             $data,
             $reference
         );
