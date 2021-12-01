@@ -48,7 +48,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyLetterAndReturnCommandSuccess(): void
     {
-        $data = $this->getLetterData(null);
+        $data = $this->getData('post', 'letter', null);
 
         $contents = "pdf content";
         $response = [
@@ -110,102 +110,21 @@ class SendToNotifyHandlerTest extends TestCase
         self::assertEquals($payload['notifySendId'], $command->getNotifyId());
     }
 
-    /**
-     * @throws FileNotFoundException
-     */
-    public function testRetrieveQueueMessageSendToNotifyEmailAndReturnCommandSuccess(): void
+    public function letterData()
     {
-        $data =  $this->getEmailData('ff1');
-
-        $contents = "pdf content";
-
-        $prepareUploadResponse = [
-            'file' => 'cGRmIGNvbnRlbnQ=',
-            'is_csv' => false
+        return [
+            'FF1 Template' => ['ff1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE],
+            'A6 Template' => ['a6', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE],
         ];
-
-        $response = [
-            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
-            "reference" => $data['uuid']
-        ];
-
-        $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
-
-        $notifyStatus = "sending";
-
-        $statusResponse = [
-            "id" => $notifyId,
-            "reference" => $data['uuid'],
-            "status" => $notifyStatus,
-            "content" => [
-                "subject" => "Test",
-                "body" => "More testing",
-                "from_email" => "me@test.com"
-            ],
-            "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
-            "template" => [
-                "id" => "daef7d83-9874-4dd8-ac60-d92646e7aaaa",
-                "version" => 1,
-                "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
-            ]
-        ];
-
-        $payload = [
-            "documentId" => $data['documentId'],
-            "notifySendId" => $notifyId,
-            "notifyStatus" => $notifyStatus,
-        ];
-
-        $command = SendToNotify::fromArray($data);
-
-        $this->mockFilesystem
-            ->expects(self::once())
-            ->method('read')
-            ->with($data['filename'])
-            ->willReturn($contents);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('prepareUpload')
-            ->with($contents)
-            ->willReturn($prepareUploadResponse);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('sendEmail')
-            ->with(
-                $data['recipientEmail'],
-                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE,
-                $this->getPersonalisationData($data, $prepareUploadResponse),
-                $data['uuid']
-            )
-            ->willReturn($response);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('getNotification')
-            ->with($response['id'])
-            ->willReturn($statusResponse);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('listNotifications')
-            ->with(['reference' => $response['reference']])
-            ->willReturn([]);
-
-        $command = $this->handler->handle($command);
-
-        self::assertEquals($payload['documentId'], $command->getDocumentId());
-        self::assertEquals($payload['notifyStatus'], $command->getNotifyStatus());
-        self::assertEquals($payload['notifySendId'], $command->getNotifyId());
     }
 
     /**
+     * @dataProvider letterData
      * @throws FileNotFoundException
      */
-    public function testRetrieveQueueMessageSendToNotifyEmailAndReturnCommandSuccessA6(): void
+    public function testRetrieveQueueMessageSendToNotifyEmailAndReturnCommandExpected(string $letterType, string $letterTemplate): void
     {
-        $data =  $this->getEmailData('a6');
+        $data = $this->getData('email', 'invoice', $letterType);
 
         $contents = "pdf content";
 
@@ -234,7 +153,7 @@ class SendToNotifyHandlerTest extends TestCase
             ],
             "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
             "template" => [
-                "id" => "9286a7db-a316-4103-a1c7-7bc1fdbbaa81",
+                "id" => $letterTemplate,
                 "version" => 1,
                 "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
             ]
@@ -265,7 +184,7 @@ class SendToNotifyHandlerTest extends TestCase
             ->method('sendEmail')
             ->with(
                 $data['recipientEmail'],
-                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
+                $letterTemplate,
                 $this->getPersonalisationData($data, $prepareUploadResponse),
                 $data['uuid']
             )
@@ -297,18 +216,8 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testSendToNotifyBubblesUpApiExceptionFailure(Exception $notifyException): void
     {
-        $data = [
-            'id' => '123',
-            'uuid' => 'asd-456',
-            'filename' => 'document.pdf',
-            'documentId' => '456',
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => [
-                'method' => 'post',
-                'documentType' => 'letter'
-            ]
-        ];
+        $data = $this->getData('post', 'letter', null);
+
         $contents = "some content";
         $command = SendToNotify::fromArray($data);
 
@@ -362,19 +271,8 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveDuplicateMessageThrowsExceptionFailure(): void
     {
-        $data = [
-            'id' => '123',
-            'uuid' => 'asd-456',
-            'filename' => 'document.pdf',
-            'documentId' => '456',
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => [
-                'method' => 'post',
-                'documentType' => 'letter'
-            ],
-            'letterType' => 'ff1',
-        ];
+        $data = $this->getData('post', 'letter', 'ff1');
+
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
             "reference" => $data['uuid'],
@@ -409,19 +307,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testEmptyPdfInQueueFailure(): void
     {
-        $data = [
-            'id' => "123",
-            'uuid' => 'asd-456',
-            'filename' => 'document.pdf',
-            'documentId' => 456,
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => [
-                'method' => 'post',
-                'documentType' => 'letter'
-            ],
-            'letterType' => null,
-        ];
+        $data = $this->getData('post', 'letter', null);
 
         $command = SendToNotify::fromArray($data);
 
@@ -438,7 +324,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testNotifyResponseIdNotFoundFailure(): void
     {
-        $data = $this->getLetterData();
+        $data = $this->getData('post', 'letter', null);
 
         $contents = "some content";
 
@@ -472,7 +358,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testNotifyStatusNotFoundFailure(): void
     {
-        $data = $this->getLetterData();
+        $data = $this->getData('post', 'letter', null);
         $contents = "some content";
 
         $response = [
@@ -512,7 +398,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoNotifyIdReturned(): void
     {
-        $data = $this->getEmailData('ff1');
+       $data = $this->getData('email', 'invoice', 'ff1');
 
         $contents = "pdf content";
 
@@ -562,7 +448,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoStatusRetrieved(): void
     {
-        $data = $this->getEmailData('');
+        $data = $this->getData('email', 'invoice', null);
 
         $contents = "pdf content";
 
@@ -588,7 +474,7 @@ class SendToNotifyHandlerTest extends TestCase
             ],
             "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
             "template" => [
-                "id" => "9286a7db-a316-4103-a1c7-7bc1fdbbaa81",
+                "id" => '',
                 "version" => 1,
                 "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
             ]
@@ -613,7 +499,7 @@ class SendToNotifyHandlerTest extends TestCase
             ->method('sendEmail')
             ->with(
                 $data['recipientEmail'],
-                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
+                null,
                 $this->getPersonalisationData($data, $prepareUploadResponse),
                 $data['uuid']
             )
@@ -625,7 +511,6 @@ class SendToNotifyHandlerTest extends TestCase
             ->with($response['id'])
             ->willReturn($statusResponse);
 
-        self:
         $this->expectException(UnexpectedValueException::class);
 
         $this->handler->handle($command);
@@ -641,38 +526,22 @@ class SendToNotifyHandlerTest extends TestCase
         ];
     }
 
-    public function getEmailData(?string $letterType): array
+    private function getData(string $sendByMethod, string $sendByDocType, ?string $letterType): array
     {
         return [
             'id' => '123',
             'uuid' => 'asd-456',
-            'filename' => 'invoice.pdf',
+            'filename' => 'filename.pdf',
             'documentId' => '456',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
             'clientFirstName' => 'Test2',
             'clientSurname' => 'Test Surname',
             'sendBy' => [
-                'method' => 'email',
-                'documentType' => 'invoice'
+                'method' => $sendByMethod,
+                'documentType' => $sendByDocType
             ],
             'letterType' => $letterType,
-        ];
-    }
-
-    public function getLetterData(?string $documentType = ''): array
-    {
-        return [
-            'id' => '123',
-            'uuid' => 'asd-456',
-            'filename' => 'document.pdf',
-            'documentId' => 456,
-            'recipientEmail' => 'test@test.com',
-            'recipientName' => 'Test Test',
-            'sendBy' => [
-                'method' => 'post',
-                'documentType' => 'letter'
-            ]
         ];
     }
 }

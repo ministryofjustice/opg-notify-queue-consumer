@@ -45,22 +45,9 @@ class SqsAdapterTest extends TestCase
             'QueueUrl' => $this->queueUrl,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
-        $rawBody = [
-            'message' => [
-                'uuid' => 'asd-123',
-                'filename' => 'this_is_a_test.pdf',
-                'documentId' => '1234',
-                'recipientEmail' => null,
-                'recipientName' => null,
-                'clientFirstName' => null,
-                'clientSurname' => null,
-                'sendBy' => [
-                    'method' => 'post',
-                    'documentType' => 'letter'
-                ],
-                'letterType' => null,
-            ]
-        ];
+
+        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null);
+
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
             'Body' => json_encode($rawBody),
@@ -106,22 +93,8 @@ class SqsAdapterTest extends TestCase
             'QueueUrl' => $this->queueUrl,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
-        $rawBody = [
-            'message' => [
-                'uuid' => 'asd-123',
-                'filename' => 'this_is_a_test.pdf',
-                'documentId' => '1234',
-                'recipientEmail' => null,
-                'recipientName' => null,
-                'clientFirstName' => null,
-                'clientSurname' => null,
-                'sendBy' => [
-                    'method' => 'post',
-                    'documentType' => 'letter'
-                ],
-                'letterType' => null,
-            ]
-        ];
+        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null);
+
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
             'Body' => json_encode($rawBody),
@@ -167,22 +140,9 @@ class SqsAdapterTest extends TestCase
             'QueueUrl' => $this->queueUrl,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
-        $rawBody = [
-            'message' => [
-                'uuid' => 'asd-123',
-                'filename' => 'this_is_a_test.pdf',
-                'documentId' => '1234',
-                'recipientEmail' => 'test@test.com',
-                'recipientName' => 'Test Test',
-                'clientFirstName' => 'Test2',
-                'clientSurname' => 'Test2',
-                'sendBy' => [
-                    'method' => 'email',
-                    'documentType' => 'invoice'
-                ],
-                'letterType' => 'ff1',
-            ]
-        ];
+
+        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'invoice', 'ff1', 'test@test.com', 'Testy McTestface');
+
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
             'Body' => json_encode($rawBody),
@@ -321,5 +281,23 @@ class SqsAdapterTest extends TestCase
         $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
 
         $sqsAdapter->delete($command);
+    }
+
+    private function getMessage(?string $clientFirstName, ?string $clientSurname, string $sendByMethod, string $sendByDocumentType, ?string $letterType, ?string $recipientEmail, ?string $recipientName): array {
+
+        return ['message' => [
+            'uuid' => 'asd-123',
+            'filename' => 'this_is_a_test.pdf',
+            'documentId' => '1234',
+            'recipientEmail' => $recipientEmail,
+            'recipientName' => $recipientName,
+            'clientFirstName' => $clientFirstName,
+            'clientSurname' => $clientSurname,
+            'sendBy' => [
+                'method' => $sendByMethod,
+                'documentType' => $sendByDocumentType
+            ],
+            'letterType' => $letterType,
+        ]];
     }
 }

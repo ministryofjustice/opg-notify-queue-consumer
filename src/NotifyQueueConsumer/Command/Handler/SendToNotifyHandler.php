@@ -58,8 +58,11 @@ class SendToNotifyHandler
                 case 'ff1':
                     $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE;
                     break;
-                default:
+                case 'a6':
                     $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE;
+                    break;
+                default:
+                    $letterTemplate = null;
                     break;
             }
 
@@ -131,7 +134,7 @@ class SendToNotifyHandler
         string $clientFirstName,
         string $clientSurname,
         string $contents,
-        string $letterTemplate
+        ?string $letterTemplate
     ): array {
         $data = [
             'name' => $recipientName,
