@@ -135,7 +135,7 @@ class SendToNotifyHandler
         ?string $letterTemplate
     ): array {
         $data = [
-            'name' => $recipientName,
+            'recipient_name' => $recipientName,
             'client_first_name' => $clientFirstName,
             'client_surname' => $clientSurname,
             'link_to_file' => $this->notifyClient->prepareUpload($contents)

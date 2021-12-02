@@ -519,7 +519,7 @@ class SendToNotifyHandlerTest extends TestCase
     public function getPersonalisationData(array $data, array $prepareUploadResponse): array
     {
         return [
-            'name' => $data['recipientName'],
+            'recipient_name' => $data['recipientName'],
             'client_first_name' => $data['clientFirstName'],
             'client_surname' => $data['clientSurname'],
             'link_to_file' => $prepareUploadResponse
