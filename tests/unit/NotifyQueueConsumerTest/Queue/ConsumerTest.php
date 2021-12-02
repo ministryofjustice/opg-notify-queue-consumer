@@ -173,7 +173,8 @@ class ConsumerTest extends TestCase
                 'sendBy' => [
                     'method' => 'post',
                     'documentType' => 'letter'
-                ]
+                ],
+                'letterType' => 'a6',
             ]
         );
     }

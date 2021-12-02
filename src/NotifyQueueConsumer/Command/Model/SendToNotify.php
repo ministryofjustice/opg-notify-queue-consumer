@@ -18,6 +18,7 @@ class SendToNotify
      * @var array<string,string>
      */
     protected array $sendBy;
+    protected ?string $letterType;
 
     private function __construct()
     {
@@ -59,6 +60,7 @@ class SendToNotify
         $instance->clientFirstName = $data['clientFirstName'];
         $instance->clientSurname = $data['clientSurname'];
         $instance->sendBy = $data['sendBy'];
+        $instance->letterType = $data['letterType'];
 
         return $instance;
     }
@@ -109,5 +111,10 @@ class SendToNotify
     public function getSendBy(): array
     {
         return $this->sendBy;
+    }
+
+    public function getLetterType(): ?string
+    {
+        return $this->letterType;
     }
 }

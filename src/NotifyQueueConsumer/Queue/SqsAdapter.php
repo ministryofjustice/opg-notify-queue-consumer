@@ -52,7 +52,8 @@ class SqsAdapter implements QueueInterface
             'recipientName' => $message['recipientName'],
             'sendBy' => $message['sendBy'],
             'clientFirstName' => $message['clientFirstName'],
-            'clientSurname' => $message['clientSurname']
+            'clientSurname' => $message['clientSurname'],
+            'letterType' => $message['letterType'],
         ]);
     }
 
@@ -91,6 +92,7 @@ class SqsAdapter implements QueueInterface
                 'recipientEmail',
                 'recipientName',
                 'sendBy',
+                'letterType',
             ]);
         }
 
