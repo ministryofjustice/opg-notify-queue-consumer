@@ -22,7 +22,8 @@ class SendToNotifyTest extends TestCase
             'sendBy' => [
                 'method' => 'post',
                 'documentType' => 'letter'
-            ]
+            ],
+            'letterType' => 'ff1',
         ];
 
         $command = SendToNotify::fromArray($data);
