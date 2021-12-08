@@ -30,6 +30,8 @@ Unit tests
     docker-compose --project-name notify-queue-consumer run --rm test
 
 Functional tests
+
+    # Ensure the consumer is built before attempting to run the functional tests 
     
     docker-compose --project-name notify-queue-consumer up -d localstack
     docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-notify

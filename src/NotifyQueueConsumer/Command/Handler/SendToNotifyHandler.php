@@ -18,8 +18,21 @@ class SendToNotifyHandler
     private Filesystem $filesystem;
     private Client $notifyClient;
 
-    const NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE = 'daef7d83-9874-4dd8-ac60-d92646e7aaaa';
     const NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE = '9286a7db-a316-4103-a1c7-7bc1fdbbaa81';
+    const NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE = 'daef7d83-9874-4dd8-ac60-d92646e7aaaa';
+    const NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER = '3dc53e2c-7e90-4e5f-95ef-8e7a98a6ee55';
+    const NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER = '228746a3-a445-412d-995e-ae60af86b63d';
+    const NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER = 'ed08b8c0-dcd6-4cd4-9798-779189e0abe8';
+    const NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER = '7bc45244-1545-4978-9a01-926d1291b1df';
+    const NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER = 'd17bb689-52d1-4d73-a501-9955282cfe2e';
+    const NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER = '473de8af-c59f-4b7e-8e12-240450ec3fb4';
+    const NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER = 'f93687ad-d1e3-4577-83e9-1f5db0748d38';
+    const NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER = 'd43958ef-4a93-4cd8-abda-c4001785e740';
+    const NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER = '19610ca0-0225-423a-8f83-729be739be66';
+
+    //add behat for email path for all scheduled letters
+    //check content of templates
+    //try and use match in the sirius side
 
     public function __construct(Filesystem $filesystem, Client $notifyClient)
     {
@@ -51,20 +64,47 @@ class SendToNotifyHandler
 
         // 3. Send to notify
         $sendBy = $sendToNotifyCommand->getSendBy();
-        if ($sendBy['method'] === 'email' && $sendBy['documentType'] === 'invoice') {
+        var_dump($sendBy);
+        if ($sendBy['method'] === 'email' && ($sendBy['documentType'] === 'invoice' || $sendBy['documentType'] === 'letter')) {
             switch ($sendToNotifyCommand->getLetterType()) {
+                case 'a6':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE;
+                    break;
                 case 'ff1':
                     $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE;
                     break;
-                case 'a6':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE;
+                case 'bs1':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER;
+                    break;
+                case 'bs2':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER;
+                    break;
+                case 'rd1':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER;
+                    break;
+                case 'rd2':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER;
+                    break;
+                case 'ri2':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER;
+                    break;
+                case 'ri3':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER;
+                    break;
+                case 'rr1':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER;
+                    break;
+                case 'rr2':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER;
+                    break;
+                case 'rr3':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER;
                     break;
                 default:
                     $letterTemplate = null;
                     break;
             }
-
-            $response = $this->sendInvoiceToNotify(
+            $response = $this->sendEmailToNotify(
                 $sendToNotifyCommand->getUuid(),
                 $sendToNotifyCommand->getRecipientName(),
                 $sendToNotifyCommand->getRecipientEmail(),
@@ -125,7 +165,7 @@ class SendToNotifyHandler
      * @return array<string,string>
      * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
-    private function sendInvoiceToNotify(
+    private function sendEmailToNotify(
         string $reference,
         string $recipientName,
         string $recipientEmail,
