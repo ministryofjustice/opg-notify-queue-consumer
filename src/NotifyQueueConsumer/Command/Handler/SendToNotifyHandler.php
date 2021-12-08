@@ -60,7 +60,6 @@ class SendToNotifyHandler
 
         // 3. Send to notify
         $sendBy = $sendToNotifyCommand->getSendBy();
-        var_dump($sendBy);
         if ($sendBy['method'] === 'email' && ($sendBy['documentType'] === 'invoice' || $sendBy['documentType'] === 'letter')) {
             switch ($sendToNotifyCommand->getLetterType()) {
                 case 'a6':
