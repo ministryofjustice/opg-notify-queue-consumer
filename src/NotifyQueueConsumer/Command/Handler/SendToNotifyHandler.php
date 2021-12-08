@@ -30,10 +30,6 @@ class SendToNotifyHandler
     const NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER = 'd43958ef-4a93-4cd8-abda-c4001785e740';
     const NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER = '19610ca0-0225-423a-8f83-729be739be66';
 
-    //add behat for email path for all scheduled letters
-    //check content of templates
-    //try and use match in the sirius side
-
     public function __construct(Filesystem $filesystem, Client $notifyClient)
     {
         $this->filesystem = $filesystem;
