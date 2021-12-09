@@ -35,7 +35,7 @@ class SqsAdapterTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testNextReturnsMessageSuccessLetter(): void
+    public function testNextReturnsMessageSuccessPostLetter(): void
     {
         $awsResult = $this->createMock(Result::class);
         $config = [
@@ -83,7 +83,7 @@ class SqsAdapterTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testNextReturnsMessageSuccessLPALetter(): void
+    public function testNextReturnsMessageSuccessPostLPALetter(): void
     {
         $awsResult = $this->createMock(Result::class);
         $config = [
@@ -130,7 +130,7 @@ class SqsAdapterTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testNextReturnsMessageSuccessInvoice(): void
+    public function testNextReturnsMessageSuccessEmailInvoice(): void
     {
         $awsResult = $this->createMock(Result::class);
         $config = [
@@ -142,6 +142,54 @@ class SqsAdapterTest extends TestCase
         ];
 
         $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'invoice', 'ff1', 'test@test.com', 'Testy McTestface');
+
+        $rawData = [
+            'ReceiptHandle' => 'handle-12345',
+            'Body' => json_encode($rawBody),
+        ];
+        $expectedResult = SendToNotify::fromArray(
+            [
+                'id' => $rawData['ReceiptHandle'],
+                'uuid' => $rawBody['message']['uuid'],
+                'filename' => $rawBody['message']['filename'],
+                'documentId' => $rawBody['message']['documentId'],
+                'recipientEmail' => $rawBody['message']['recipientEmail'],
+                'recipientName' => $rawBody['message']['recipientName'],
+                'clientFirstName' => $rawBody['message']['clientFirstName'],
+                'clientSurname' => $rawBody['message']['clientSurname'],
+                'sendBy' => $rawBody['message']['sendBy'],
+                'letterType' => $rawBody['message']['letterType'],
+            ]
+        );
+
+        $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
+
+        $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
+
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
+
+        $actualResult = $sqsAdapter->next();
+
+        self::assertEquals($expectedResult->getId(), $actualResult->getId());
+        self::assertEquals($expectedResult->getUuid(), $actualResult->getUuid());
+        self::assertEquals($expectedResult->getFilename(), $actualResult->getFilename());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testNextReturnsMessageSuccessEmailLetter(): void
+    {
+        $awsResult = $this->createMock(Result::class);
+        $config = [
+            'AttributeNames' => ['SentTimestamp'],
+            'MaxNumberOfMessages' => 1,
+            'MessageAttributeNames' => ['All'],
+            'QueueUrl' => $this->queueUrl,
+            'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
+        ];
+
+        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'letter', 'ff1', 'test@test.com', 'Testy McTestface');
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
