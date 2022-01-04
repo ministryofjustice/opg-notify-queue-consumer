@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.0'
           tools: phpcs
       - name: Run PHPCS
         run: |
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.0'
           tools: composer:v1
       - run: |
           cp local.env.example local.env
@@ -99,7 +99,7 @@ jobs:
     name: Metrics
     runs-on: ubuntu-latest
     # uses this container as setup-php doesn't support phpmetrics yet
-    container: jakzal/phpqa:php7.4-alpine
+    container: jakzal/phpqa:php8.0-alpine
     steps:
       - uses: actions/checkout@v2
       - name: Generate report
@@ -121,7 +121,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.0'
           tools: composer:v1 , phpstan
       - name: Get Composer Cache Directory
         id: composer-cache
