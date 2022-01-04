@@ -285,9 +285,30 @@ class SqsAdapterTest extends TestCase
     public function invalidMessageProvider(): array
     {
         return [
-            [['message' => ['filename' => 'this_is_a_test.pdf', 'documentId' => '1234']]],
-            [['message' => ['uuid' => 'asd-123', 'documentId' => '1234']]],
-            [['message' => ['uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf']]],
+            [['message' => [
+                'filename' => 'this_is_a_test.pdf',
+                'documentId' => '1234',
+                'sendBy' => [
+                    'method' => 'post',
+                    'documentType' => 'letter'
+                    ],
+                ]]],
+            [['message' => [
+                'uuid' => 'asd-123',
+                'documentId' => '1234',
+                'sendBy' => [
+                    'method' => 'post',
+                    'documentType' => 'letter'
+                    ],
+                ]]],
+            [['message' => [
+                'uuid' => 'asd-123',
+                'filename' => 'this_is_a_test.pdf',
+                'sendBy' => [
+                    'method' => 'post',
+                    'documentType' => 'letter'
+                    ],
+                ]]],
             [['message' => []]],
             [[]],
         ];

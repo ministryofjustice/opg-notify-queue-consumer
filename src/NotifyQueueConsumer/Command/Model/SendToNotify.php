@@ -57,8 +57,8 @@ class SendToNotify
         $instance->documentId = (int)$data['documentId'];
         $instance->recipientName = $data['recipientName'];
         $instance->recipientEmail = $data['recipientEmail'];
-        $instance->clientFirstName = $data['clientFirstName'];
-        $instance->clientSurname = $data['clientSurname'];
+        $instance->clientFirstName = $data['clientFirstName'] ?? null;
+        $instance->clientSurname = $data['clientSurname'] ?? null;
         $instance->sendBy = $data['sendBy'];
         $instance->letterType = $data['letterType'];
 

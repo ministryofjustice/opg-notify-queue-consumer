@@ -60,46 +60,24 @@ class SendToNotifyHandler
 
         // 3. Send to notify
         $sendBy = $sendToNotifyCommand->getSendBy();
-        if ($sendBy['method'] === 'email' && ($sendBy['documentType'] === 'invoice' || $sendBy['documentType'] === 'letter')) {
-            switch ($sendToNotifyCommand->getLetterType()) {
-                case 'a6':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE;
-                    break;
-                case 'ff1':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE;
-                    break;
-                case 'bs1':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER;
-                    break;
-                case 'bs2':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER;
-                    break;
-                case 'rd1':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER;
-                    break;
-                case 'rd2':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER;
-                    break;
-                case 'ri2':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER;
-                    break;
-                case 'ri3':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER;
-                    break;
-                case 'rr1':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER;
-                    break;
-                case 'rr2':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER;
-                    break;
-                case 'rr3':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER;
-                    break;
-                default:
-                    $letterTemplate = null;
-                    break;
-            }
-            $response = $this->sendEmailToNotify(
+
+        if ($sendBy['method'] === 'email' && $sendBy['documentType'] === 'invoice') {
+            $letterTemplate = match ($sendToNotifyCommand->getLetterType()) {
+                'ff1' => self::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE,
+                'a6' => self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
+                'bs1' => self::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER,
+                'bs2' => self::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER,
+                'rd1' => self::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER,
+                'rd2' => self::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER,
+                'ri2' => self::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER,
+                'ri3' => self::NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER,
+                'rr1' => self::NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER,
+                'rr2' => self::NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER,
+                'rr3' => self::NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER,
+                default => null,
+            };
+
+            $response = $this->sendInvoiceToNotify(
                 $sendToNotifyCommand->getUuid(),
                 $sendToNotifyCommand->getRecipientName(),
                 $sendToNotifyCommand->getRecipientEmail(),
