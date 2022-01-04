@@ -46,7 +46,7 @@ class SendToNotifyHandlerTest extends TestCase
     /**
      * @throws FileNotFoundException
      */
-    public function testRetrieveQueueMessageSendToNotifyLetterAndReturnCommandSuccess(): void
+    public function testRetrieveQueueMessageSendToNotifyPostLetterAndReturnCommandSuccess(): void
     {
         $data = $this->getData('post', 'letter', null);
 
@@ -110,7 +110,7 @@ class SendToNotifyHandlerTest extends TestCase
         self::assertEquals($payload['notifySendId'], $command->getNotifyId());
     }
 
-    public function letterData()
+    public function financeInvoiceLetterData()
     {
         return [
             'FF1 Template' => ['ff1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE],
@@ -119,12 +119,118 @@ class SendToNotifyHandlerTest extends TestCase
     }
 
     /**
-     * @dataProvider letterData
+     * @dataProvider financeInvoiceLetterData
      * @throws FileNotFoundException
      */
-    public function testRetrieveQueueMessageSendToNotifyEmailAndReturnCommandExpected(string $letterType, string $letterTemplate): void
+    public function testRetrieveQueueMessageSendToNotifyEmailInvoiceAndReturnCommandExpected(string $letterType, string $letterTemplate): void
     {
         $data = $this->getData('email', 'invoice', $letterType);
+
+        $contents = "pdf content";
+
+        $prepareUploadResponse = [
+            'file' => 'cGRmIGNvbnRlbnQ=',
+            'is_csv' => false
+        ];
+
+        $response = [
+            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
+            "reference" => $data['uuid']
+        ];
+
+        $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
+
+        $notifyStatus = "sending";
+
+        $statusResponse = [
+            "id" => $notifyId,
+            "reference" => $data['uuid'],
+            "status" => $notifyStatus,
+            "content" => [
+                "subject" => "Test",
+                "body" => "More testing",
+                "from_email" => "me@test.com"
+            ],
+            "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
+            "template" => [
+                "id" => $letterTemplate,
+                "version" => 1,
+                "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
+            ]
+        ];
+
+        $payload = [
+            "documentId" => $data['documentId'],
+            "notifySendId" => $notifyId,
+            "notifyStatus" => $notifyStatus,
+        ];
+
+        $command = SendToNotify::fromArray($data);
+
+        $this->mockFilesystem
+            ->expects(self::once())
+            ->method('read')
+            ->with($data['filename'])
+            ->willReturn($contents);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('prepareUpload')
+            ->with($contents)
+            ->willReturn($prepareUploadResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('sendEmail')
+            ->with(
+                $data['recipientEmail'],
+                $letterTemplate,
+                $this->getPersonalisationData($data, $prepareUploadResponse),
+                $data['uuid']
+            )
+            ->willReturn($response);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('getNotification')
+            ->with($response['id'])
+            ->willReturn($statusResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('listNotifications')
+            ->with(['reference' => $response['reference']])
+            ->willReturn([]);
+
+        $command = $this->handler->handle($command);
+
+        self::assertEquals($payload['documentId'], $command->getDocumentId());
+        self::assertEquals($payload['notifyStatus'], $command->getNotifyStatus());
+        self::assertEquals($payload['notifySendId'], $command->getNotifyId());
+    }
+
+    public function annualReportLetterData()
+    {
+        return [
+            'BS1 Template' => ['bs1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER],
+            'BS2 Template' => ['bs2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER],
+            'RD1 Template' => ['rd1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER],
+            'RD2 Template' => ['rd2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER],
+            'RI2 Template' => ['ri2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER],
+            'RI3 Template' => ['ri3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER],
+            'RR1 Template' => ['rr1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER],
+            'RR2 Template' => ['rr2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER],
+            'RR3 Template' => ['rr3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER],
+        ];
+    }
+
+    /**
+     * @dataProvider annualReportLetterData
+     * @throws FileNotFoundException
+     */
+    public function testRetrieveQueueMessageSendToNotifyEmailLetterAndReturnCommandExpected(string $letterType, string $letterTemplate): void
+    {
+        $data = $this->getData('email', 'letter', $letterType);
 
         $contents = "pdf content";
 

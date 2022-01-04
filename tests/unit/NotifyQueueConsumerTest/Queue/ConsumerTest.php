@@ -41,9 +41,57 @@ class ConsumerTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testFetchMessageSendToNotifyUpdateStatusSuccess(): void
+    public function testFetchMessagePostLetterSendToNotifyUpdateStatusSuccess(): void
     {
         $sendToNotifyCommand = $this->createSendToNotifyCommand();
+        $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
+
+        $this->queueMock->expects(self::once())->method('next')->willReturn($sendToNotifyCommand);
+        $this->sendToNotifyHandlerMock
+            ->expects(self::once())
+            ->method('handle')
+            ->with($sendToNotifyCommand)
+            ->willReturn($updateDocumentStatusCommand);
+        $this->queueMock->expects(self::once())->method('delete')->with($sendToNotifyCommand);
+        $this->updateDocumentStatusHandlerMock
+            ->expects(self::once())
+            ->method('handle')
+            ->with($updateDocumentStatusCommand);
+        $this->loggerMock->expects(self::never())->method('critical');
+
+        $this->consumer->run();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFetchMessageEmailInvoiceSendToNotifyUpdateStatusSuccess(): void
+    {
+        $sendToNotifyCommand = $this->createSendToNotifyCommand('email invoice');
+        $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
+
+        $this->queueMock->expects(self::once())->method('next')->willReturn($sendToNotifyCommand);
+        $this->sendToNotifyHandlerMock
+            ->expects(self::once())
+            ->method('handle')
+            ->with($sendToNotifyCommand)
+            ->willReturn($updateDocumentStatusCommand);
+        $this->queueMock->expects(self::once())->method('delete')->with($sendToNotifyCommand);
+        $this->updateDocumentStatusHandlerMock
+            ->expects(self::once())
+            ->method('handle')
+            ->with($updateDocumentStatusCommand);
+        $this->loggerMock->expects(self::never())->method('critical');
+
+        $this->consumer->run();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFetchMessageEmailLetterSendToNotifyUpdateStatusSuccess(): void
+    {
+        $sendToNotifyCommand = $this->createSendToNotifyCommand('email letter');
         $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
 
         $this->queueMock->expects(self::once())->method('next')->willReturn($sendToNotifyCommand);
@@ -160,8 +208,42 @@ class ConsumerTest extends TestCase
         $this->consumer->run();
     }
 
-    private function createSendToNotifyCommand(): SendToNotify
+    private function createSendToNotifyCommand(string $sendBy = null): SendToNotify
     {
+        if($sendBy === 'email letter'){
+            return SendToNotify::fromArray(
+                [
+                    'id' => '1',
+                    'uuid' => 'asd-123',
+                    'filename' => 'this_is_a_test.pdf',
+                    'documentId' => '4545',
+                    'recipientEmail' => 'test@test.com',
+                    'recipientName' => 'Test Test',
+                    'sendBy' => [
+                        'method' => 'email',
+                        'documentType' => 'letter'
+                    ],
+                    'letterType' => 'a6',
+                ]
+            );
+        }
+        if($sendBy === 'email invoice'){
+            return SendToNotify::fromArray(
+                [
+                    'id' => '1',
+                    'uuid' => 'asd-123',
+                    'filename' => 'this_is_a_test.pdf',
+                    'documentId' => '4545',
+                    'recipientEmail' => 'test@test.com',
+                    'recipientName' => 'Test Test',
+                    'sendBy' => [
+                        'method' => 'email',
+                        'documentType' => 'invoice'
+                    ],
+                    'letterType' => 'a6',
+                ]
+            );
+        }
         return SendToNotify::fromArray(
             [
                 'id' => '1',
