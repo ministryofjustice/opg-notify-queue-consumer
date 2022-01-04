@@ -234,11 +234,6 @@ class SendToNotifyHandlerTest extends TestCase
 
         $contents = "pdf content";
 
-        $prepareUploadResponse = [
-            'file' => 'cGRmIGNvbnRlbnQ=',
-            'is_csv' => false
-        ];
-
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
             "reference" => $data['uuid']
@@ -281,19 +276,8 @@ class SendToNotifyHandlerTest extends TestCase
 
         $this->mockNotifyClient
             ->expects(self::once())
-            ->method('prepareUpload')
-            ->with($contents)
-            ->willReturn($prepareUploadResponse);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('sendEmail')
-            ->with(
-                $data['recipientEmail'],
-                $letterTemplate,
-                $this->getPersonalisationData($data, $prepareUploadResponse),
-                $data['uuid']
-            )
+            ->method('sendPrecompiledLetter')
+            ->with($data['uuid'], $contents)
             ->willReturn($response);
 
         $this->mockNotifyClient

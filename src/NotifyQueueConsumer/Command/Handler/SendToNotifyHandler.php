@@ -77,7 +77,7 @@ class SendToNotifyHandler
                 default => null,
             };
 
-            $response = $this->sendInvoiceToNotify(
+            $response = $this->sendEmailToNotify(
                 $sendToNotifyCommand->getUuid(),
                 $sendToNotifyCommand->getRecipientName(),
                 $sendToNotifyCommand->getRecipientEmail(),
