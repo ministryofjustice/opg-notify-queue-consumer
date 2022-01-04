@@ -8,5 +8,4 @@ use UnexpectedValueException;
 
 class DuplicateMessageException extends UnexpectedValueException
 {
-
 }
