@@ -141,7 +141,7 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
-        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'invoice', 'ff1', 'test@test.com', 'Testy McTestface');
+        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'invoice', 'ff1-sf', 'test@test.com', 'Testy McTestface');
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -189,7 +189,7 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
-        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'letter', 'ff1', 'test@test.com', 'Testy McTestface');
+        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'letter', 'ff1-sf', 'test@test.com', 'Testy McTestface');
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
