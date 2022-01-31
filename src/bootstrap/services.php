@@ -90,6 +90,7 @@ $updateDocumentStatusHandler = new UpdateDocumentStatusHandler(
     new NotifyStatus(),
     $guzzleClient,
     $jwtAuthenticator,
+    $psrLoggerAdapter,
     $config['sirius']['update_status_endpoint']
 );
 
