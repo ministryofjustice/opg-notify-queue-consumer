@@ -113,8 +113,6 @@ class SendToNotifyHandlerTest extends TestCase
     public function financeInvoiceLetterData()
     {
         return [
-            'FF1 SF Template' => ['ff1-sf', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE],
-            'FF1 SE Template' => ['ff1-se', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE],
             'A6 Template' => ['a6', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE],
         ];
     }
@@ -378,7 +376,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveDuplicateMessageThrowsExceptionFailure(): void
     {
-        $data = $this->getData('post', 'letter', 'ff1-sf');
+        $data = $this->getData('post', 'letter', 'a6');
 
         $response = [
             "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
@@ -505,7 +503,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoNotifyIdReturned(): void
     {
-       $data = $this->getData('email', 'invoice', 'ff1-sf');
+       $data = $this->getData('email', 'invoice', 'a6');
 
         $contents = "pdf content";
 
@@ -538,7 +536,7 @@ class SendToNotifyHandlerTest extends TestCase
             ->method('sendEmail')
             ->with(
                 $data['recipientEmail'],
-                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE,
+                SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
                 $this->getPersonalisationData($data, $prepareUploadResponse),
                 $data['uuid']
             )
