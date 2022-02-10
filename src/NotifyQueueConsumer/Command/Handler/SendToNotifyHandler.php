@@ -19,7 +19,6 @@ class SendToNotifyHandler
     private Client $notifyClient;
 
     const NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE = '9286a7db-a316-4103-a1c7-7bc1fdbbaa81';
-    const NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE = 'daef7d83-9874-4dd8-ac60-d92646e7aaaa';
     const NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER = '3dc53e2c-7e90-4e5f-95ef-8e7a98a6ee55';
     const NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER = '228746a3-a445-412d-995e-ae60af86b63d';
     const NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER = 'ed08b8c0-dcd6-4cd4-9798-779189e0abe8';
@@ -64,11 +63,6 @@ class SendToNotifyHandler
             switch ($sendToNotifyCommand->getLetterType()) {
                 case 'a6':
                     $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE;
-                    break;
-                case 'ff1':
-                case 'ff1-sf':
-                case 'ff1-se':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_FF1_INVOICE;
                     break;
                 case 'bs1':
                     $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER;
