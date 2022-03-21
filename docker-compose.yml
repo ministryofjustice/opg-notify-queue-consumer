@@ -12,14 +12,8 @@ services:
         ENABLE_DEV_DEPS: "true"
     env_file: [local.env]
 
-  phpqa:
-    image: jakzal/phpqa:php7.4-alpine
-    build:
-      context: .
-      dockerfile: docker/phpqa/Dockerfile
-
   phpstan:
-    image: jakzal/phpqa:php7.4-alpine
+    image: jakzal/phpqa:php8.1-alpine
     volumes:
       - .:/app
     command:
@@ -29,7 +23,7 @@ services:
       - "/app/tests/phpstan.neon"
 
   lint:
-    image: jakzal/phpqa:php7.4-alpine
+    image: jakzal/phpqa:php8.1-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -43,7 +37,7 @@ services:
       - /app/public
 
   phpmd:
-    image: jakzal/phpqa:php7.4-alpine
+    image: jakzal/phpqa:php8.1-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -54,7 +48,7 @@ services:
       - codesize,unusedcode,naming
 
   test:
-    image: jakzal/phpqa:php7.4-alpine
+    image: jakzal/phpqa:php8.1-alpine
     volumes:
       - .:/app
     command:

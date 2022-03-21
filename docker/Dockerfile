@@ -3,9 +3,10 @@ FROM composer as composer
 ARG ENABLE_DEV_DEPS=false
 COPY composer.json composer.json
 COPY composer.lock composer.lock
+
+RUN composer check-platform-reqs
 RUN if [ "$ENABLE_DEV_DEPS" = "true" ] ; then composer install --prefer-dist --no-interaction --no-scripts; else \
     composer install --prefer-dist --no-interaction --no-scripts --no-dev; fi
-
 RUN composer dumpautoload -o
 
 FROM php:8.1.1-cli-alpine

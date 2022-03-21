@@ -19,6 +19,8 @@ class SendToNotifyTest extends TestCase
             'documentId' => '1234',
             'recipientEmail' => 'test@test.com',
             'recipientName' => 'Test Test',
+            'clientFirstName' => 'Sharilyn',
+            'clientSurname' => 'Harrey',
             'sendBy' => [
                 'method' => 'post',
                 'documentType' => 'letter'
