@@ -79,6 +79,14 @@ class SqsAdapter implements QueueInterface
             throw new UnexpectedValueException('Empty message');
         }
 
+        if (empty($body['message']['sendBy'])) {
+            throw new UnexpectedValueException('Missing "sendBy"');
+        }
+
+        if (empty($body['message']['sendBy']['documentType'])) {
+            throw new UnexpectedValueException('Missing "sendBy.documentType"');
+        }
+
         $message = $body['message'];
 
         $requiredFields = [
@@ -91,7 +99,6 @@ class SqsAdapter implements QueueInterface
             $requiredFields = array_merge($requiredFields, [
                 'recipientEmail',
                 'recipientName',
-                'sendBy',
                 'letterType',
             ]);
         }

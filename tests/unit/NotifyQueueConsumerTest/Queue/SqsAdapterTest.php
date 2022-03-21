@@ -253,7 +253,7 @@ class SqsAdapterTest extends TestCase
      * @throws Exception
      * @dataProvider invalidMessageProvider
      */
-    public function testNextInvalidMessageThrowsExceptionFailure(array $rawMessageBody): void
+    public function testNextInvalidMessageThrowsExceptionFailure(array $rawMessageBody, string $errorMessage): void
     {
         $awsResult = $this->createMock(Result::class);
         $config = [
@@ -275,6 +275,7 @@ class SqsAdapterTest extends TestCase
         $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
 
         self::expectException(UnexpectedValueException::class);
+        self::expectExceptionMessage($errorMessage);
 
         $sqsAdapter->next();
     }
@@ -285,11 +286,16 @@ class SqsAdapterTest extends TestCase
     public function invalidMessageProvider(): array
     {
         return [
-            [['message' => ['filename' => 'this_is_a_test.pdf', 'documentId' => '1234']]],
-            [['message' => ['uuid' => 'asd-123', 'documentId' => '1234']]],
-            [['message' => ['uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf']]],
-            [['message' => []]],
-            [[]],
+            [['message' => ['uuid' => 'asd-123']], 'Missing "sendBy"'],
+            [['message' => ['sendBy' => ['method' => 'post']]], 'Missing "sendBy.documentType"'],
+            [['message' => ['sendBy' => ['documentType' => 'something'], 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234']], 'Missing "uuid"'],
+            [['message' => ['sendBy' => ['documentType' => 'something'], 'uuid' => 'asd-123', 'documentId' => '1234']], 'Missing "filename"'],
+            [['message' => ['sendBy' => ['documentType' => 'something'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf']], 'Missing "documentId"'],
+            [['message' => ['sendBy' => ['documentType' => 'invoice'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234', 'recipientName' => 'Beth Schwarz', 'letterType' => 'IN-4']], 'Missing "recipientEmail"'],
+            [['message' => ['sendBy' => ['documentType' => 'invoice'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234', 'recipientEmail' => 'test@test.com', 'letterType' => 'IN-4']], 'Missing "recipientName"'],
+            [['message' => ['sendBy' => ['documentType' => 'invoice'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234', 'recipientEmail' => 'test@test.com', 'recipientName' => 'Beth Schwarz']], 'Missing "letterType"'],
+            [['message' => []], 'Empty message'],
+            [[], 'Empty body'],
         ];
     }
 
@@ -331,8 +337,8 @@ class SqsAdapterTest extends TestCase
         $sqsAdapter->delete($command);
     }
 
-    private function getMessage(?string $clientFirstName, ?string $clientSurname, string $sendByMethod, string $sendByDocumentType, ?string $letterType, ?string $recipientEmail, ?string $recipientName): array {
-
+    private function getMessage(?string $clientFirstName, ?string $clientSurname, string $sendByMethod, string $sendByDocumentType, ?string $letterType, ?string $recipientEmail, ?string $recipientName): array
+    {
         return ['message' => [
             'uuid' => 'asd-123',
             'filename' => 'this_is_a_test.pdf',
