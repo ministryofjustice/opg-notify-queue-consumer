@@ -219,6 +219,8 @@ class ConsumerTest extends TestCase
                     'documentId' => '4545',
                     'recipientEmail' => 'test@test.com',
                     'recipientName' => 'Test Test',
+                    'clientFirstName' => 'Devin',
+                    'clientSurname' => 'Bahrke',
                     'sendBy' => [
                         'method' => 'email',
                         'documentType' => 'letter'
@@ -236,6 +238,8 @@ class ConsumerTest extends TestCase
                     'documentId' => '4545',
                     'recipientEmail' => 'test@test.com',
                     'recipientName' => 'Test Test',
+                    'clientFirstName' => 'Devin',
+                    'clientSurname' => 'Bahrke',
                     'sendBy' => [
                         'method' => 'email',
                         'documentType' => 'invoice'
@@ -252,6 +256,8 @@ class ConsumerTest extends TestCase
                 'documentId' => '4545',
                 'recipientEmail' => 'test@test.com',
                 'recipientName' => 'Test Test',
+                'clientFirstName' => 'Devin',
+                    'clientSurname' => 'Bahrke',
                 'sendBy' => [
                     'method' => 'post',
                     'documentType' => 'letter'
