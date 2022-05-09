@@ -114,6 +114,8 @@ class SendToNotifyHandlerTest extends TestCase
     {
         return [
             'A6 Template' => ['a6', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE],
+            'AF1 Template' => ['af1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE],
+            'AF3 Template' => ['af3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE],
         ];
     }
 
