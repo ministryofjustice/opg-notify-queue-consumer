@@ -66,6 +66,7 @@ class SendToNotifyHandler
                     $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE;
                     break;
                 case 'af1':
+                case 'af2':
                 case 'af3':
                     $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE;
                     break;
