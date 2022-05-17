@@ -175,10 +175,10 @@ class SendToNotifyHandler
     ): array {
         $data = [
             'recipient_name' => $recipientName,
+            'pending_report_type' => $pendingReportType,
             'client_first_name' => $clientFirstName,
             'client_surname' => $clientSurname,
             'link_to_file' => $this->notifyClient->prepareUpload($contents),
-            'pending_report_type' => $pendingReportType
         ];
 
         $sendResponse = $this->notifyClient->sendEmail(
