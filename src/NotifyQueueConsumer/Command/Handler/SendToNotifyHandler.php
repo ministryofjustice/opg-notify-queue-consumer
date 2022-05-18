@@ -109,6 +109,7 @@ class SendToNotifyHandler
                 $sendToNotifyCommand->getClientSurname(),
                 $contents,
                 $letterTemplate,
+                $sendToNotifyCommand->getPendingReportType()
             );
         } else {
             $response = $this->sendLetterToNotify($sendToNotifyCommand->getUuid(), $contents);
@@ -169,13 +170,15 @@ class SendToNotifyHandler
         string $clientFirstName,
         string $clientSurname,
         string $contents,
-        ?string $letterTemplate
+        ?string $letterTemplate,
+        ?string $pendingReportType
     ): array {
         $data = [
             'recipient_name' => $recipientName,
+            'pending_report_type' => $pendingReportType,
             'client_first_name' => $clientFirstName,
             'client_surname' => $clientSurname,
-            'link_to_file' => $this->notifyClient->prepareUpload($contents)
+            'link_to_file' => $this->notifyClient->prepareUpload($contents),
         ];
 
         $sendResponse = $this->notifyClient->sendEmail(

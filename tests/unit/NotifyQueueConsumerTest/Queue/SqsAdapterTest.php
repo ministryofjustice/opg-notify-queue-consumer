@@ -46,7 +46,7 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
-        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null);
+        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null, null);
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -64,6 +64,7 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
+                'pendingReportType' => $rawBody['message']['pendingReportType']
             ]
         );
 
@@ -93,7 +94,7 @@ class SqsAdapterTest extends TestCase
             'QueueUrl' => $this->queueUrl,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
-        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null);
+        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null, null);
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -111,6 +112,7 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
+                'pendingReportType' => $rawBody['message']['pendingReportType']
             ]
         );
 
@@ -141,7 +143,7 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
-        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'invoice', 'a6', 'test@test.com', 'Testy McTestface');
+        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'invoice', 'a6', 'test@test.com', 'Testy McTestface', 'OPG103');
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -159,6 +161,7 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
+                'pendingReportType' => $rawBody['message']['pendingReportType']
             ]
         );
 
@@ -189,7 +192,7 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
-        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'letter', 'a6', 'test@test.com', 'Testy McTestface');
+        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'letter', 'a6', 'test@test.com', 'Testy McTestface', 'OPG104');
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -207,6 +210,7 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
+                'pendingReportType' => $rawBody['message']['pendingReportType']
             ]
         );
 
@@ -319,6 +323,7 @@ class SqsAdapterTest extends TestCase
                     'documentType' => 'letter'
                 ],
                 'letterType' => null,
+                'pendingReportType' => null
             ]
         );
 
@@ -337,7 +342,7 @@ class SqsAdapterTest extends TestCase
         $sqsAdapter->delete($command);
     }
 
-    private function getMessage(?string $clientFirstName, ?string $clientSurname, string $sendByMethod, string $sendByDocumentType, ?string $letterType, ?string $recipientEmail, ?string $recipientName): array
+    private function getMessage(?string $clientFirstName, ?string $clientSurname, string $sendByMethod, string $sendByDocumentType, ?string $letterType, ?string $recipientEmail, ?string $recipientName, ?string $pendingReportType): array
     {
         return ['message' => [
             'uuid' => 'asd-123',
@@ -352,6 +357,7 @@ class SqsAdapterTest extends TestCase
                 'documentType' => $sendByDocumentType
             ],
             'letterType' => $letterType,
+            'pendingReportType' => $pendingReportType
         ]];
     }
 }

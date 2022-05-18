@@ -630,7 +630,9 @@ class SendToNotifyHandlerTest extends TestCase
             'recipient_name' => $data['recipientName'],
             'client_first_name' => $data['clientFirstName'],
             'client_surname' => $data['clientSurname'],
-            'link_to_file' => $prepareUploadResponse
+            'link_to_file' => $prepareUploadResponse,
+            'pending_report_type' => $data['pendingReportType']
+
         ];
     }
 
@@ -650,6 +652,7 @@ class SendToNotifyHandlerTest extends TestCase
                 'documentType' => $sendByDocType
             ],
             'letterType' => $letterType,
+            'pendingReportType' => 'OPG103'
         ];
     }
 }

@@ -54,6 +54,7 @@ class SqsAdapter implements QueueInterface
             'clientFirstName' => $message['clientFirstName'],
             'clientSurname' => $message['clientSurname'],
             'letterType' => $message['letterType'],
+            'pendingReportType' => $message['pendingReportType']
         ]);
     }
 
