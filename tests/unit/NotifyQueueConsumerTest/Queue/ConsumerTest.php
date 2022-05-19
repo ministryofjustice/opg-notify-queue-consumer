@@ -226,6 +226,7 @@ class ConsumerTest extends TestCase
                         'documentType' => 'letter'
                     ],
                     'letterType' => 'a6',
+                    'pendingReportType' => 'OPG104'
                 ]
             );
         }
@@ -245,6 +246,7 @@ class ConsumerTest extends TestCase
                         'documentType' => 'invoice'
                     ],
                     'letterType' => 'a6',
+                    'pendingReportType' => null
                 ]
             );
         }
@@ -263,6 +265,7 @@ class ConsumerTest extends TestCase
                     'documentType' => 'letter'
                 ],
                 'letterType' => 'a6',
+                'pendingReportType' => null
             ]
         );
     }
