@@ -114,6 +114,9 @@ class SendToNotifyHandlerTest extends TestCase
     {
         return [
             'A6 Template' => ['a6', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE],
+            'AF1 Template' => ['af1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE],
+            'AF2 Template' => ['af2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE],
+            'AF3 Template' => ['af3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE],
         ];
     }
 
@@ -627,7 +630,9 @@ class SendToNotifyHandlerTest extends TestCase
             'recipient_name' => $data['recipientName'],
             'client_first_name' => $data['clientFirstName'],
             'client_surname' => $data['clientSurname'],
-            'link_to_file' => $prepareUploadResponse
+            'link_to_file' => $prepareUploadResponse,
+            'pending_report_type' => $data['pendingReportType']
+
         ];
     }
 
@@ -647,6 +652,7 @@ class SendToNotifyHandlerTest extends TestCase
                 'documentType' => $sendByDocType
             ],
             'letterType' => $letterType,
+            'pendingReportType' => 'OPG103'
         ];
     }
 }

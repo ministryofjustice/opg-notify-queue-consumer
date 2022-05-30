@@ -19,6 +19,7 @@ class SendToNotifyHandler
     private Client $notifyClient;
 
     const NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE = '9286a7db-a316-4103-a1c7-7bc1fdbbaa81';
+    const NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE = '017b664c-2776-497b-ad6e-b25b8a365ae0';
     const NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER = '3dc53e2c-7e90-4e5f-95ef-8e7a98a6ee55';
     const NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER = '228746a3-a445-412d-995e-ae60af86b63d';
     const NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER = 'ed08b8c0-dcd6-4cd4-9798-779189e0abe8';
@@ -64,6 +65,11 @@ class SendToNotifyHandler
                 case 'a6':
                     $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE;
                     break;
+                case 'af1':
+                case 'af2':
+                case 'af3':
+                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE;
+                    break;
                 case 'bs1':
                     $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER;
                     break;
@@ -103,6 +109,7 @@ class SendToNotifyHandler
                 $sendToNotifyCommand->getClientSurname(),
                 $contents,
                 $letterTemplate,
+                $sendToNotifyCommand->getPendingReportType()
             );
         } else {
             $response = $this->sendLetterToNotify($sendToNotifyCommand->getUuid(), $contents);
@@ -163,13 +170,15 @@ class SendToNotifyHandler
         string $clientFirstName,
         string $clientSurname,
         string $contents,
-        ?string $letterTemplate
+        ?string $letterTemplate,
+        ?string $pendingReportType
     ): array {
         $data = [
             'recipient_name' => $recipientName,
+            'pending_report_type' => $pendingReportType,
             'client_first_name' => $clientFirstName,
             'client_surname' => $clientSurname,
-            'link_to_file' => $this->notifyClient->prepareUpload($contents)
+            'link_to_file' => $this->notifyClient->prepareUpload($contents),
         ];
 
         $sendResponse = $this->notifyClient->sendEmail(
