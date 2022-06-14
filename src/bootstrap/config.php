@@ -27,7 +27,9 @@ return [
     ],
     'consumer' => [
         'sleep_time' => getenv('OPG_NOTIFY_QUEUE_CONSUMER_SLEEP_TIME_SECONDS') === false
-            ? 1 : (int)getenv('OPG_NOTIFY_QUEUE_CONSUMER_SLEEP_TIME_SECONDS')
+            ? 1 : (int)getenv('OPG_NOTIFY_QUEUE_CONSUMER_SLEEP_TIME_SECONDS'),
+        'update_retry_time' => getenv('OPG_NOTIFY_QUEUE_CONSUMER_UPDATE_RETRY_TIME_SECONDS') === false
+            ? 15 : (int)getenv('OPG_NOTIFY_QUEUE_CONSUMER_UPDATE_RETRY_TIME_SECONDS'),
     ],
     'notify' => [
         'api_key' => getenv('OPG_NOTIFY_API_KEY') === false ?
