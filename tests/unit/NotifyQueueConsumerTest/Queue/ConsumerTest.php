@@ -13,16 +13,19 @@ use NotifyQueueConsumer\Logging\Context;
 use NotifyQueueConsumer\Queue\Consumer;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use NotifyQueueConsumer\Queue\QueueInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use UnexpectedValueException;
 
 class ConsumerTest extends TestCase
 {
-    private Consumer $consumer;
-    private LoggerInterface $loggerMock;
-    private SendToNotifyHandler $sendToNotifyHandlerMock;
-    private QueueInterface $queueMock;
-    private UpdateDocumentStatusHandler $updateDocumentStatusHandlerMock;
+    private Consumer|MockObject $consumer;
+    private LoggerInterface|MockObject $loggerMock;
+    private SendToNotifyHandler|MockObject $sendToNotifyHandlerMock;
+    private QueueInterface|MockObject $queueMock;
+    private UpdateDocumentStatusHandler|MockObject $updateDocumentStatusHandlerMock;
+    private bool $sleepMockCalled;
 
     public function setUp(): void
     {
@@ -34,7 +37,8 @@ class ConsumerTest extends TestCase
             $this->queueMock,
             $this->sendToNotifyHandlerMock,
             $this->updateDocumentStatusHandlerMock,
-            $this->loggerMock
+            $this->loggerMock,
+            fn() => $this->sleepMockCalled = true,
         );
     }
 
@@ -60,6 +64,33 @@ class ConsumerTest extends TestCase
         $this->loggerMock->expects(self::never())->method('critical');
 
         $this->consumer->run();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFetchMessagePostLetterSendToNotifyUpdateStatusFailsOnce(): void
+    {
+        $sendToNotifyCommand = $this->createSendToNotifyCommand();
+        $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
+
+        $this->queueMock->expects(self::once())->method('next')->willReturn($sendToNotifyCommand);
+        $this->sendToNotifyHandlerMock
+            ->expects(self::once())
+            ->method('handle')
+            ->with($sendToNotifyCommand)
+            ->willReturn($updateDocumentStatusCommand);
+        $this->queueMock->expects(self::once())->method('delete')->with($sendToNotifyCommand);
+        $this->updateDocumentStatusHandlerMock
+            ->expects(self::exactly(2))
+            ->method('handle')
+            ->withConsecutive([$updateDocumentStatusCommand], [$updateDocumentStatusCommand])
+            ->will($this->onConsecutiveCalls($this->throwException(new UnexpectedValueException('abc')), $this->returnValue(null)));
+        $this->loggerMock->expects(self::never())->method('critical');
+
+        $this->consumer->run();
+
+        $this->assertTrue($this->sleepMockCalled);
     }
 
     /**
