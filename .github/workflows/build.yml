@@ -145,6 +145,7 @@ jobs:
     name: "Build & Push Containers"
     runs-on: ubuntu-latest
     needs: ['lint', 'test-unit', 'test-functional', 'static-analysis' ]
+    if: github.actor != 'dependabot[bot]'
     outputs:
       tag: ${{ steps.bump_version.outputs.tag }}
     steps:
