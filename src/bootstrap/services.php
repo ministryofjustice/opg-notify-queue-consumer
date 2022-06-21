@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Http\Discovery\Psr17FactoryDiscovery;
 use Alphagov\Notifications\Client;
 use GuzzleHttp\Client as GuzzleClient;
 use Aws\S3\S3Client;
@@ -98,5 +97,6 @@ $consumer = new Consumer(
     $queue,
     $sendToNotifyHandler,
     $updateDocumentStatusHandler,
-    $psrLoggerAdapter
+    $psrLoggerAdapter,
+    fn() => sleep($config['consumer']['update_retry_time']),
 );

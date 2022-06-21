@@ -88,7 +88,8 @@ class ConsumerTest extends TestCase
             $queueAdapter,
             $sendToNotifyHandler,
             $updateDocumentStatusHandler,
-            $this->logger
+            $this->logger,
+            function() {},
         );
     }
 

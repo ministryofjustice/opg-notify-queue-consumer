@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace NotifyQueueConsumer\Queue;
 
+use Closure;
 use Exception;
 use NotifyQueueConsumer\Command\Handler\UpdateDocumentStatusHandler;
 use Throwable;
 use Psr\Log\LoggerInterface;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Logging\Context;
+use UnexpectedValueException;
 
 class Consumer
 {
@@ -17,17 +19,20 @@ class Consumer
     private QueueInterface $queue;
     private SendToNotifyHandler $sendToNotifyHandler;
     private UpdateDocumentStatusHandler $updateDocumentStatusHandler;
+    private Closure $sleep;
 
     public function __construct(
         QueueInterface $queue,
         SendToNotifyHandler $sendToNotifyHandler,
         UpdateDocumentStatusHandler $updateDocumentStatusHandler,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Closure $sleep,
     ) {
         $this->queue = $queue;
         $this->sendToNotifyHandler = $sendToNotifyHandler;
         $this->updateDocumentStatusHandler = $updateDocumentStatusHandler;
         $this->logger = $logger;
+        $this->sleep = $sleep;
     }
 
     /**
@@ -59,7 +64,14 @@ class Consumer
             $this->queue->delete($sendToNotifyCommand);
 
             $this->logger->info('Updating document status', $logExtras);
-            $this->updateDocumentStatusHandler->handle($updateDocumentStatusCommand);
+            try {
+                $this->updateDocumentStatusHandler->handle($updateDocumentStatusCommand);
+            } catch (UnexpectedValueException $e) {
+                $this->logger->info($e->getMessage(), $logExtras);
+                $this->sleep->__invoke();
+                $this->logger->info('Updating document status again', $logExtras);
+                $this->updateDocumentStatusHandler->handle($updateDocumentStatusCommand);
+            }
 
             $this->logger->info('Success', $logExtras);
         } catch (DuplicateMessageException $e) {
