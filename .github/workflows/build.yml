@@ -55,6 +55,13 @@ jobs:
       - name: Run Unit Tests Docker
         run: docker-compose --project-name notify-queue-consumer run --rm test
 
+      - name: Run SonarQube
+        uses: sonarsource/sonarqube-scan-action@master
+        if: github.actor != 'dependabot[bot]'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
       - name: Check Coverage
         run: |
           php -f scripts/coverage-checker.php test-results/clover/results.xml 100
