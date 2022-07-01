@@ -15,6 +15,7 @@ class SendToNotify
     protected ?string $clientFirstName;
     protected ?string $clientSurname;
     protected ?string $pendingReportType;
+    protected string $caseNumber;
     /**
      * @var array<string,string>
      */
@@ -63,6 +64,7 @@ class SendToNotify
         $instance->sendBy = $data['sendBy'];
         $instance->letterType = $data['letterType'];
         $instance->pendingReportType = $data['pendingReportType'];
+        $instance->caseNumber = $data['caseNumber'];
 
         return $instance;
     }
@@ -123,5 +125,10 @@ class SendToNotify
     public function getPendingReportType(): ?string
     {
         return $this->pendingReportType;
+    }
+
+    public function getCaseNumber(): string
+    {
+        return $this->caseNumber;
     }
 }

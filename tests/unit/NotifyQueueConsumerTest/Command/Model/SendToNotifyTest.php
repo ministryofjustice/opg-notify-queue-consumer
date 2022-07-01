@@ -26,7 +26,8 @@ class SendToNotifyTest extends TestCase
                 'documentType' => 'letter'
             ],
             'letterType' => 'a6',
-            'pendingReportType' => 'OPG102'
+            'pendingReportType' => 'OPG102',
+            'caseNumber' => '74442574',
         ];
 
         $command = SendToNotify::fromArray($data);
@@ -39,7 +40,6 @@ class SendToNotifyTest extends TestCase
 
     /**
      * @param array<string,string> $data
-     * @param string               $expectedMessage
      * @dataProvider commandDataProvider
      */
     public function testFromArrayThrowsExceptionFailure(array $data, string $expectedMessage): void

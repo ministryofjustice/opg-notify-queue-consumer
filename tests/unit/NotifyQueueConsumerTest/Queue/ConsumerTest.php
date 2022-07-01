@@ -47,16 +47,16 @@ class ConsumerTest extends TestCase
      */
     public function testFetchMessagePostLetterSendToNotifyUpdateStatusSuccess(): void
     {
-        $sendToNotifyCommand = $this->createSendToNotifyCommand();
+        $command = $this->createSendToNotifyCommand();
         $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
 
-        $this->queueMock->expects(self::once())->method('next')->willReturn($sendToNotifyCommand);
+        $this->queueMock->expects(self::once())->method('next')->willReturn($command);
         $this->sendToNotifyHandlerMock
             ->expects(self::once())
             ->method('handle')
-            ->with($sendToNotifyCommand)
+            ->with($command)
             ->willReturn($updateDocumentStatusCommand);
-        $this->queueMock->expects(self::once())->method('delete')->with($sendToNotifyCommand);
+        $this->queueMock->expects(self::once())->method('delete')->with($command);
         $this->updateDocumentStatusHandlerMock
             ->expects(self::once())
             ->method('handle')
@@ -71,16 +71,16 @@ class ConsumerTest extends TestCase
      */
     public function testFetchMessagePostLetterSendToNotifyUpdateStatusFailsOnce(): void
     {
-        $sendToNotifyCommand = $this->createSendToNotifyCommand();
+        $command = $this->createSendToNotifyCommand();
         $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
 
-        $this->queueMock->expects(self::once())->method('next')->willReturn($sendToNotifyCommand);
+        $this->queueMock->expects(self::once())->method('next')->willReturn($command);
         $this->sendToNotifyHandlerMock
             ->expects(self::once())
             ->method('handle')
-            ->with($sendToNotifyCommand)
+            ->with($command)
             ->willReturn($updateDocumentStatusCommand);
-        $this->queueMock->expects(self::once())->method('delete')->with($sendToNotifyCommand);
+        $this->queueMock->expects(self::once())->method('delete')->with($command);
         $this->updateDocumentStatusHandlerMock
             ->expects(self::exactly(2))
             ->method('handle')
@@ -98,16 +98,16 @@ class ConsumerTest extends TestCase
      */
     public function testFetchMessageEmailInvoiceSendToNotifyUpdateStatusSuccess(): void
     {
-        $sendToNotifyCommand = $this->createSendToNotifyCommand('email invoice');
+        $command = $this->createSendToNotifyCommand('email invoice');
         $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
 
-        $this->queueMock->expects(self::once())->method('next')->willReturn($sendToNotifyCommand);
+        $this->queueMock->expects(self::once())->method('next')->willReturn($command);
         $this->sendToNotifyHandlerMock
             ->expects(self::once())
             ->method('handle')
-            ->with($sendToNotifyCommand)
+            ->with($command)
             ->willReturn($updateDocumentStatusCommand);
-        $this->queueMock->expects(self::once())->method('delete')->with($sendToNotifyCommand);
+        $this->queueMock->expects(self::once())->method('delete')->with($command);
         $this->updateDocumentStatusHandlerMock
             ->expects(self::once())
             ->method('handle')
@@ -122,16 +122,16 @@ class ConsumerTest extends TestCase
      */
     public function testFetchMessageEmailLetterSendToNotifyUpdateStatusSuccess(): void
     {
-        $sendToNotifyCommand = $this->createSendToNotifyCommand('email letter');
+        $command = $this->createSendToNotifyCommand('email letter');
         $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
 
-        $this->queueMock->expects(self::once())->method('next')->willReturn($sendToNotifyCommand);
+        $this->queueMock->expects(self::once())->method('next')->willReturn($command);
         $this->sendToNotifyHandlerMock
             ->expects(self::once())
             ->method('handle')
-            ->with($sendToNotifyCommand)
+            ->with($command)
             ->willReturn($updateDocumentStatusCommand);
-        $this->queueMock->expects(self::once())->method('delete')->with($sendToNotifyCommand);
+        $this->queueMock->expects(self::once())->method('delete')->with($command);
         $this->updateDocumentStatusHandlerMock
             ->expects(self::once())
             ->method('handle')
@@ -219,6 +219,9 @@ class ConsumerTest extends TestCase
         $this->consumer->run();
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteMessageFailure(): void
     {
         $command = $this->createSendToNotifyCommand();
@@ -257,7 +260,8 @@ class ConsumerTest extends TestCase
                         'documentType' => 'letter'
                     ],
                     'letterType' => 'a6',
-                    'pendingReportType' => 'OPG104'
+                    'pendingReportType' => 'OPG104',
+                    'caseNumber' => '74442574',
                 ]
             );
         }
@@ -277,7 +281,8 @@ class ConsumerTest extends TestCase
                         'documentType' => 'invoice'
                     ],
                     'letterType' => 'a6',
-                    'pendingReportType' => null
+                    'pendingReportType' => null,
+                    'caseNumber' => '74442574',
                 ]
             );
         }
@@ -296,7 +301,8 @@ class ConsumerTest extends TestCase
                     'documentType' => 'letter'
                 ],
                 'letterType' => 'a6',
-                'pendingReportType' => null
+                'pendingReportType' => null,
+                'caseNumber' => '74442574',
             ]
         );
     }
