@@ -61,46 +61,20 @@ class SendToNotifyHandler
         // 3. Send to notify
         $sendBy = $sendToNotifyCommand->getSendBy();
         if ($sendBy['method'] === 'email' && ($sendBy['documentType'] === 'invoice' || $sendBy['documentType'] === 'letter')) {
-            switch ($sendToNotifyCommand->getLetterType()) {
-                case 'a6':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE;
-                    break;
-                case 'af1':
-                case 'af2':
-                case 'af3':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE;
-                    break;
-                case 'bs1':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER;
-                    break;
-                case 'bs2':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER;
-                    break;
-                case 'rd1':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER;
-                    break;
-                case 'rd2':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER;
-                    break;
-                case 'ri2':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER;
-                    break;
-                case 'ri3':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER;
-                    break;
-                case 'rr1':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER;
-                    break;
-                case 'rr2':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER;
-                    break;
-                case 'rr3':
-                    $letterTemplate = self::NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER;
-                    break;
-                default:
-                    $letterTemplate = null;
-                    break;
-            }
+            $letterTemplate = match ($sendToNotifyCommand->getLetterType()) {
+                'a6' => self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
+                'af1', 'af2', 'af3' => self::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE,
+                'bs1' => self::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER,
+                'bs2' => self::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER,
+                'rd1' => self::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER,
+                'rd2' => self::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER,
+                'ri2' => self::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER,
+                'ri3' => self::NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER,
+                'rr1' => self::NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER,
+                'rr2' => self::NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER,
+                'rr3' => self::NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER,
+                default => null,
+            };
             $response = $this->sendEmailToNotify(
                 $sendToNotifyCommand->getUuid(),
                 $sendToNotifyCommand->getRecipientName(),
@@ -109,7 +83,8 @@ class SendToNotifyHandler
                 $sendToNotifyCommand->getClientSurname(),
                 $contents,
                 $letterTemplate,
-                $sendToNotifyCommand->getPendingReportType()
+                $sendToNotifyCommand->getPendingReportType(),
+                $sendToNotifyCommand->getCaseNumber(),
             );
         } else {
             $response = $this->sendLetterToNotify($sendToNotifyCommand->getUuid(), $contents);
@@ -127,8 +102,6 @@ class SendToNotifyHandler
     }
 
     /**
-     * @param string $reference
-     * @param string $contents
      * @return array<string,string>
      * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
@@ -155,13 +128,7 @@ class SendToNotifyHandler
     }
 
     /**
-     * @param string $reference
-     * @param string $recipientName
-     * @param string $recipientEmail
-     * @param string $contents
-     *
      * @return array<string,string>
-     * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
     private function sendEmailToNotify(
         string $reference,
@@ -171,11 +138,13 @@ class SendToNotifyHandler
         string $clientSurname,
         string $contents,
         ?string $letterTemplate,
-        ?string $pendingReportType
+        ?string $pendingReportType,
+        string $caseNumber
     ): array {
         $data = [
             'recipient_name' => $recipientName,
             'pending_report_type' => $pendingReportType,
+            'case_number' => $caseNumber,
             'client_first_name' => $clientFirstName,
             'client_surname' => $clientSurname,
             'link_to_file' => $this->notifyClient->prepareUpload($contents),

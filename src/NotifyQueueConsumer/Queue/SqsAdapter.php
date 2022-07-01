@@ -54,7 +54,8 @@ class SqsAdapter implements QueueInterface
             'clientFirstName' => $message['clientFirstName'],
             'clientSurname' => $message['clientSurname'],
             'letterType' => $message['letterType'],
-            'pendingReportType' => $message['pendingReportType']
+            'pendingReportType' => $message['pendingReportType'],
+            'caseNumber' => $message['caseNumber'],
         ]);
     }
 
@@ -70,7 +71,7 @@ class SqsAdapter implements QueueInterface
     /**
      * @param mixed $body
      */
-    private function validateBody($body): void
+    private function validateBody(mixed $body): void
     {
         if (empty($body)) {
             throw new UnexpectedValueException('Empty body');

@@ -64,7 +64,8 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
-                'pendingReportType' => $rawBody['message']['pendingReportType']
+                'pendingReportType' => $rawBody['message']['pendingReportType'],
+                'caseNumber' => $rawBody['message']['caseNumber'],
             ]
         );
 
@@ -112,7 +113,8 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
-                'pendingReportType' => $rawBody['message']['pendingReportType']
+                'pendingReportType' => $rawBody['message']['pendingReportType'],
+                'caseNumber' => $rawBody['message']['caseNumber'],
             ]
         );
 
@@ -143,7 +145,16 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
-        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'invoice', 'a6', 'test@test.com', 'Testy McTestface', 'OPG103');
+        $rawBody = $this->getMessage(
+            'Test2',
+            'Test2',
+            'email',
+            'invoice',
+            'a6',
+            'test@test.com',
+            'Testy McTestface',
+            'OPG103'
+        );
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -161,7 +172,8 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
-                'pendingReportType' => $rawBody['message']['pendingReportType']
+                'pendingReportType' => $rawBody['message']['pendingReportType'],
+                'caseNumber' => $rawBody['message']['caseNumber'],
             ]
         );
 
@@ -192,7 +204,16 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
-        $rawBody = $this->getMessage('Test2', 'Test2', 'email', 'letter', 'a6', 'test@test.com', 'Testy McTestface', 'OPG104');
+        $rawBody = $this->getMessage(
+            'Test2',
+            'Test2',
+            'email',
+            'letter',
+            'a6',
+            'test@test.com',
+            'Testy McTestface',
+            'OPG104'
+        );
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -210,7 +231,8 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
-                'pendingReportType' => $rawBody['message']['pendingReportType']
+                'pendingReportType' => $rawBody['message']['pendingReportType'],
+                'caseNumber' => $rawBody['message']['caseNumber'],
             ]
         );
 
@@ -323,7 +345,8 @@ class SqsAdapterTest extends TestCase
                     'documentType' => 'letter'
                 ],
                 'letterType' => null,
-                'pendingReportType' => null
+                'pendingReportType' => null,
+                'caseNumber' => '74442574',
             ]
         );
 
@@ -342,7 +365,16 @@ class SqsAdapterTest extends TestCase
         $sqsAdapter->delete($command);
     }
 
-    private function getMessage(?string $clientFirstName, ?string $clientSurname, string $sendByMethod, string $sendByDocumentType, ?string $letterType, ?string $recipientEmail, ?string $recipientName, ?string $pendingReportType): array
+    private function getMessage(
+        ?string $clientFirstName,
+        ?string $clientSurname,
+        string $sendByMethod,
+        string $sendByDocumentType,
+        ?string $letterType,
+        ?string $recipientEmail,
+        ?string $recipientName,
+        ?string $pendingReportType
+    ): array
     {
         return ['message' => [
             'uuid' => 'asd-123',
@@ -357,7 +389,8 @@ class SqsAdapterTest extends TestCase
                 'documentType' => $sendByDocumentType
             ],
             'letterType' => $letterType,
-            'pendingReportType' => $pendingReportType
+            'pendingReportType' => $pendingReportType,
+            'caseNumber' => '74442574',
         ]];
     }
 }
