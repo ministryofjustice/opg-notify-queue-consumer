@@ -16,7 +16,6 @@ class SendToNotify
     protected ?string $clientSurname;
     protected ?string $pendingReportType;
     protected ?string $caseNumber;
-    
     /**
      * @var array<string,string>
      */
