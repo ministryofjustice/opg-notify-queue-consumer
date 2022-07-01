@@ -139,7 +139,7 @@ class SendToNotifyHandler
         string $contents,
         ?string $letterTemplate,
         ?string $pendingReportType,
-        string $caseNumber
+        ?string $caseNumber
     ): array {
         $data = [
             'recipient_name' => $recipientName,
