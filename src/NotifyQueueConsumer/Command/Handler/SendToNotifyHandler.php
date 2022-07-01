@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace NotifyQueueConsumer\Command\Handler;
 
 use Alphagov\Notifications\Client;
-use JetBrains\PhpStorm\ArrayShape;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
@@ -106,7 +105,7 @@ class SendToNotifyHandler
      * @return array<string,string>
      * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
-    #[ArrayShape(['id' => "mixed", 'status' => "mixed"])] private function sendLetterToNotify(string $reference, string $contents): array
+    private function sendLetterToNotify(string $reference, string $contents): array
     {
         $sendResponse = $this->notifyClient->sendPrecompiledLetter($reference, $contents);
 
@@ -131,7 +130,7 @@ class SendToNotifyHandler
     /**
      * @return array<string,string>
      */
-    #[ArrayShape(['id' => "mixed", 'status' => "mixed"])] private function sendEmailToNotify(
+    private function sendEmailToNotify(
         string $reference,
         string $recipientName,
         string $recipientEmail,
