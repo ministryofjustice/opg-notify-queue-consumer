@@ -6,6 +6,7 @@ namespace NotifyQueueConsumerTest\Unit\Command\Handler;
 
 use Alphagov\Notifications\Exception as NotifyException;
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use Psr\Http\Message\ResponseInterface;
 use UnexpectedValueException;
@@ -19,16 +20,8 @@ use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 
 class SendToNotifyHandlerTest extends TestCase
 {
-    /**
-     * @var Filesystem|MockObject
-     */
-    private $mockFilesystem;
-
-    /**
-     * @var Client|MockObject
-     */
-    private $mockNotifyClient;
-
+    private Filesystem|MockObject $mockFilesystem;
+    private Client|MockObject $mockNotifyClient;
     private SendToNotifyHandler $handler;
 
     public function setUp(): void
@@ -79,11 +72,7 @@ class SendToNotifyHandlerTest extends TestCase
         ];
         $command = SendToNotify::fromArray($data);
 
-        $this->mockFilesystem
-            ->expects(self::once())
-            ->method('read')
-            ->with($data['filename'])
-            ->willReturn($contents);
+        $this->fileSystemWillReturn($data['filename'], $contents);
 
         $this->mockNotifyClient
             ->expects(self::once())
@@ -91,26 +80,15 @@ class SendToNotifyHandlerTest extends TestCase
             ->with($data['uuid'], $contents)
             ->willReturn($response);
 
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('getNotification')
-            ->with($response['id'])
-            ->willReturn($statusResponse);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('listNotifications')
-            ->with(['reference' => $response['reference']])
-            ->willReturn([]);
-
-        $command = $this->handler->handle($command);
-
-        self::assertEquals($payload['documentId'], $command->getDocumentId());
-        self::assertEquals($payload['notifyStatus'], $command->getNotifyStatus());
-        self::assertEquals($payload['notifySendId'], $command->getNotifyId());
+        $this->notifyClientAndAssertions($response, $statusResponse, $command, $payload);
     }
 
-    public function financeInvoiceLetterData()
+    #[ArrayShape([
+        'A6 Template' => "array",
+        'AF1 Template' => "array",
+        'AF2 Template' => "array",
+        'AF3 Template' => "array"
+    ])] public function financeInvoiceLetterData(): array
     {
         return [
             'A6 Template' => ['a6', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE],
@@ -128,90 +106,20 @@ class SendToNotifyHandlerTest extends TestCase
     {
         $data = $this->getData('email', 'invoice', $letterType);
 
-        $contents = "pdf content";
-
-        $prepareUploadResponse = [
-            'file' => 'cGRmIGNvbnRlbnQ=',
-            'is_csv' => false
-        ];
-
-        $response = [
-            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
-            "reference" => $data['uuid']
-        ];
-
-        $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
-
-        $notifyStatus = "sending";
-
-        $statusResponse = [
-            "id" => $notifyId,
-            "reference" => $data['uuid'],
-            "status" => $notifyStatus,
-            "content" => [
-                "subject" => "Test",
-                "body" => "More testing",
-                "from_email" => "me@test.com"
-            ],
-            "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
-            "template" => [
-                "id" => $letterTemplate,
-                "version" => 1,
-                "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
-            ]
-        ];
-
-        $payload = [
-            "documentId" => $data['documentId'],
-            "notifySendId" => $notifyId,
-            "notifyStatus" => $notifyStatus,
-        ];
-
-        $command = SendToNotify::fromArray($data);
-
-        $this->mockFilesystem
-            ->expects(self::once())
-            ->method('read')
-            ->with($data['filename'])
-            ->willReturn($contents);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('prepareUpload')
-            ->with($contents)
-            ->willReturn($prepareUploadResponse);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('sendEmail')
-            ->with(
-                $data['recipientEmail'],
-                $letterTemplate,
-                $this->getPersonalisationData($data, $prepareUploadResponse),
-                $data['uuid']
-            )
-            ->willReturn($response);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('getNotification')
-            ->with($response['id'])
-            ->willReturn($statusResponse);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('listNotifications')
-            ->with(['reference' => $response['reference']])
-            ->willReturn([]);
-
-        $command = $this->handler->handle($command);
-
-        self::assertEquals($payload['documentId'], $command->getDocumentId());
-        self::assertEquals($payload['notifyStatus'], $command->getNotifyStatus());
-        self::assertEquals($payload['notifySendId'], $command->getNotifyId());
+        $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
     }
 
-    public function annualReportLetterData()
+    #[ArrayShape([
+        'BS1 Template' => "array",
+        'BS2 Template' => "array",
+        'RD1 Template' => "array",
+        'RD2 Template' => "array",
+        'RI2 Template' => "array",
+        'RI3 Template' => "array",
+        'RR1 Template' => "array",
+        'RR2 Template' => "array",
+        'RR3 Template' => "array"
+    ])] public function annualReportLetterData(): array
     {
         return [
             'BS1 Template' => ['bs1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER],
@@ -234,87 +142,7 @@ class SendToNotifyHandlerTest extends TestCase
     {
         $data = $this->getData('email', 'letter', $letterType);
 
-        $contents = "pdf content";
-
-        $prepareUploadResponse = [
-            'file' => 'cGRmIGNvbnRlbnQ=',
-            'is_csv' => false
-        ];
-
-        $response = [
-            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
-            "reference" => $data['uuid']
-        ];
-
-        $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
-
-        $notifyStatus = "sending";
-
-        $statusResponse = [
-            "id" => $notifyId,
-            "reference" => $data['uuid'],
-            "status" => $notifyStatus,
-            "content" => [
-                "subject" => "Test",
-                "body" => "More testing",
-                "from_email" => "me@test.com"
-            ],
-            "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
-            "template" => [
-                "id" => $letterTemplate,
-                "version" => 1,
-                "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
-            ]
-        ];
-
-        $payload = [
-            "documentId" => $data['documentId'],
-            "notifySendId" => $notifyId,
-            "notifyStatus" => $notifyStatus,
-        ];
-
-        $command = SendToNotify::fromArray($data);
-
-        $this->mockFilesystem
-            ->expects(self::once())
-            ->method('read')
-            ->with($data['filename'])
-            ->willReturn($contents);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('prepareUpload')
-            ->with($contents)
-            ->willReturn($prepareUploadResponse);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('sendEmail')
-            ->with(
-                $data['recipientEmail'],
-                $letterTemplate,
-                $this->getPersonalisationData($data, $prepareUploadResponse),
-                $data['uuid']
-            )
-            ->willReturn($response);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('getNotification')
-            ->with($response['id'])
-            ->willReturn($statusResponse);
-
-        $this->mockNotifyClient
-            ->expects(self::once())
-            ->method('listNotifications')
-            ->with(['reference' => $response['reference']])
-            ->willReturn([]);
-
-        $command = $this->handler->handle($command);
-
-        self::assertEquals($payload['documentId'], $command->getDocumentId());
-        self::assertEquals($payload['notifyStatus'], $command->getNotifyStatus());
-        self::assertEquals($payload['notifySendId'], $command->getNotifyId());
+        $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
     }
 
     /**
@@ -382,9 +210,7 @@ class SendToNotifyHandlerTest extends TestCase
         $data = $this->getData('post', 'letter', 'a6');
 
         $response = [
-            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
-            "reference" => $data['uuid'],
-            "postage" => "first",
+            "reference" => $data['uuid']
         ];
         $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
         $command = SendToNotify::fromArray($data);
@@ -624,15 +450,22 @@ class SendToNotifyHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 
-    public function getPersonalisationData(array $data, array $prepareUploadResponse): array
+    #[ArrayShape([
+        'recipient_name' => "mixed",
+        'client_first_name' => "mixed",
+        'client_surname' => "mixed",
+        'link_to_file' => "array",
+        'pending_report_type' => "mixed",
+        'case_number' => "mixed"
+    ])] public function getPersonalisationData(array $data, array $prepareUploadResponse): array
     {
         return [
             'recipient_name' => $data['recipientName'],
             'client_first_name' => $data['clientFirstName'],
             'client_surname' => $data['clientSurname'],
             'link_to_file' => $prepareUploadResponse,
-            'pending_report_type' => $data['pendingReportType']
-
+            'pending_report_type' => $data['pendingReportType'],
+            'case_number' => $data['caseNumber'],
         ];
     }
 
@@ -652,7 +485,122 @@ class SendToNotifyHandlerTest extends TestCase
                 'documentType' => $sendByDocType
             ],
             'letterType' => $letterType,
-            'pendingReportType' => 'OPG103'
+            'pendingReportType' => 'OPG103',
+            'caseNumber' => '74442574',
         ];
+    }
+
+    public function fileSystemWillReturn($filename, string $contents): void
+    {
+        $this->mockFilesystem
+            ->expects(self::once())
+            ->method('read')
+            ->with($filename)
+            ->willReturn($contents);
+    }
+
+    /**
+     * @param array $response
+     * @param array $statusResponse
+     * @param SendToNotify $command
+     * @param array $payload
+     * @return void
+     * @throws FileNotFoundException
+     */
+    public function notifyClientAndAssertions(
+        array $response,
+        array $statusResponse,
+        SendToNotify $command,
+        array $payload
+    ): void {
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('getNotification')
+            ->with($response['id'])
+            ->willReturn($statusResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('listNotifications')
+            ->with(['reference' => $response['reference']])
+            ->willReturn([]);
+
+        $command = $this->handler->handle($command);
+
+        self::assertEquals($payload['documentId'], $command->getDocumentId());
+        self::assertEquals($payload['notifyStatus'], $command->getNotifyStatus());
+        self::assertEquals($payload['notifySendId'], $command->getNotifyId());
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    public function setupForInvoiceAndLettersWithAssertions(array $data, string $letterTemplate): void
+    {
+        $contents = "pdf content";
+
+        $prepareUploadResponse = [
+            'file' => 'cGRmIGNvbnRlbnQ=',
+            'is_csv' => false
+        ];
+
+        $response = [
+            "id" => "740e5834-3a29-46b4-9a6f-16142fde533a",
+            "reference" => $data['uuid']
+        ];
+
+        $notifyId = "740e5834-3a29-46b4-9a6f-16142fde533a";
+
+        $notifyStatus = "sending";
+
+        $statusResponse = [
+            "id" => $notifyId,
+            "reference" => $data['uuid'],
+            "status" => $notifyStatus,
+            "content" => [
+                "subject" => "Test",
+                "body" => "More testing",
+                "from_email" => "me@test.com"
+            ],
+            "uri" => "https://api.notifications.service.gov.uk/v2/notifications/daef7d83-9874-4dd8-ac60-d92646e7aaaa",
+            "template" => [
+                "id" => $letterTemplate,
+                "version" => 1,
+                "uri" => "https://api.notificaitons.service.gov.uk/service/your_service_id/templates/740e5834-3a29-46b4-9a6f-16142fde533a"
+            ]
+        ];
+
+        $payload = [
+            "documentId" => $data['documentId'],
+            "notifySendId" => $notifyId,
+            "notifyStatus" => $notifyStatus,
+        ];
+
+        $command = SendToNotify::fromArray($data);
+
+        $this->mockFilesystem
+            ->expects(self::once())
+            ->method('read')
+            ->with($data['filename'])
+            ->willReturn($contents);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('prepareUpload')
+            ->with($contents)
+            ->willReturn($prepareUploadResponse);
+
+        $this->mockNotifyClient
+            ->expects(self::once())
+            ->method('sendEmail')
+            ->with(
+                $data['recipientEmail'],
+                $letterTemplate,
+                $this->getPersonalisationData($data, $prepareUploadResponse),
+                $data['uuid']
+            )
+            ->willReturn($response);
+
+        $this->notifyClientAndAssertions($response, $statusResponse, $command, $payload);
     }
 }

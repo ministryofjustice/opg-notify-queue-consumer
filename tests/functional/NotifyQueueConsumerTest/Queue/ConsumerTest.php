@@ -109,7 +109,7 @@ class ConsumerTest extends TestCase
         $this->guzzleHandlerStack->push(GuzzleMiddleware::mapRequest(function (RequestInterface $request) {
             $method = $request->getMethod();
 
-            if (strpos((string)$request->getUri(), '/v2/notifications/') !== false && $method === 'GET') {
+            if (str_contains((string)$request->getUri(), '/v2/notifications/') && $method === 'GET') {
                 $request = $request->withAddedHeader('Prefer', 'example=validation-failed');
             }
             return $request;
@@ -148,7 +148,7 @@ class ConsumerTest extends TestCase
         $this->guzzleHandlerStack->push(GuzzleMiddleware::mapRequest(function (RequestInterface $request) {
             $method = $request->getMethod();
 
-            if (strpos((string)$request->getUri(), '/v2/notifications/letter') !== false && $method === 'POST') {
+            if (str_contains((string)$request->getUri(), '/v2/notifications/letter') && $method === 'POST') {
                 $request = $request->withAddedHeader('Prefer', 'code=400');
             }
             return $request;
@@ -185,7 +185,7 @@ class ConsumerTest extends TestCase
         $this->guzzleHandlerStack->push(GuzzleMiddleware::mapRequest(function (RequestInterface $request) {
             $method = $request->getMethod();
 
-            if (strpos((string)$request->getUri(), '/v2/notifications?reference=') !== false && $method === 'GET') {
+            if (str_contains((string)$request->getUri(), '/v2/notifications?reference=') && $method === 'GET') {
                 $request = $request->withAddedHeader('Prefer', 'example=one');
             }
 
@@ -227,7 +227,8 @@ class ConsumerTest extends TestCase
                 'MessageBody' => sprintf(
                     '{"message":{"uuid":"%s","filename":"%s","documentId":"%d", 
                     "recipientEmail":"%s", "recipientName":"%s", "clientFirstName":"%s", "clientSurname":"%s",
-                    "sendBy":{"method": "post", "documentType": "letter"}, "letterType":"%s", "pendingReportType":"%s"}}',
+                    "sendBy":{"method": "post", "documentType": "letter"}, "letterType":"%s", "pendingReportType":"%s",
+                     "caseNumber":"%s"}}',
                     $uuid,
                     $destination,
                     $documentId,
@@ -236,7 +237,8 @@ class ConsumerTest extends TestCase
                     'Test2',
                     'Test Surname',
                     $letterType,
-                    'OPG103'
+                    'OPG103',
+                    '74442574'
                 ),
             ]
         );
