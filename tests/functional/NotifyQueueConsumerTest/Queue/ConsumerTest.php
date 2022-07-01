@@ -228,7 +228,7 @@ class ConsumerTest extends TestCase
                     '{"message":{"uuid":"%s","filename":"%s","documentId":"%d", 
                     "recipientEmail":"%s", "recipientName":"%s", "clientFirstName":"%s", "clientSurname":"%s",
                     "sendBy":{"method": "post", "documentType": "letter"}, "letterType":"%s", "pendingReportType":"%s",
-                     "caseNUmber":"%s"}}',
+                     "caseNumber":"%s"}}',
                     $uuid,
                     $destination,
                     $documentId,
