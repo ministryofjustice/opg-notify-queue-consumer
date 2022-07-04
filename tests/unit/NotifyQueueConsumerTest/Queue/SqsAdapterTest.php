@@ -46,7 +46,7 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
-        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null, null);
+        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null, null, null);
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -95,7 +95,7 @@ class SqsAdapterTest extends TestCase
             'QueueUrl' => $this->queueUrl,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
-        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null, null);
+        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null, null, null);
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -153,7 +153,8 @@ class SqsAdapterTest extends TestCase
             'a6',
             'test@test.com',
             'Testy McTestface',
-            'OPG103'
+            'OPG103',
+            '75412368'
         );
 
         $rawData = [
@@ -212,7 +213,8 @@ class SqsAdapterTest extends TestCase
             'a6',
             'test@test.com',
             'Testy McTestface',
-            'OPG104'
+            'OPG104',
+            '96582147'
         );
 
         $rawData = [
@@ -373,7 +375,8 @@ class SqsAdapterTest extends TestCase
         ?string $letterType,
         ?string $recipientEmail,
         ?string $recipientName,
-        ?string $pendingReportType
+        ?string $pendingReportType,
+        ?string $caseNumber
     ): array
     {
         return ['message' => [
@@ -390,7 +393,7 @@ class SqsAdapterTest extends TestCase
             ],
             'letterType' => $letterType,
             'pendingReportType' => $pendingReportType,
-            'caseNumber' => '74442574',
+            'caseNumber' => $caseNumber,
         ]];
     }
 }
