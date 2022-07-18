@@ -55,12 +55,6 @@ jobs:
       - name: Run Unit Tests Docker
         run: docker-compose --project-name notify-queue-consumer run --rm test
 
-      - name: Run SonarQube
-        uses: sonarsource/sonarqube-scan-action@master
-        if: github.actor != 'dependabot[bot]'
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Check Coverage
         run: |
@@ -72,6 +66,20 @@ jobs:
           name: coverage-report
           path: |
             ./test-results/coverage
+
+      - name: Repoint unit & coverage results paths for SonarQube
+        if: github.actor != 'dependabot[bot]'
+        run: |
+          sudo sed -i 's/\/app\///g' test-results/clover/results.xml
+          sudo sed -i 's/\/app\///g' test-results/unit/results.xml
+
+
+      - name: Run SonarQube
+        uses: sonarsource/sonarqube-scan-action@master
+        if: github.actor != 'dependabot[bot]'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   test-functional:
     name: Functional Testing
