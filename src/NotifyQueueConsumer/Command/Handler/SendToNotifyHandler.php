@@ -76,15 +76,9 @@ class SendToNotifyHandler
                 default => null,
             };
             $response = $this->sendEmailToNotify(
-                $sendToNotifyCommand->getUuid(),
-                $sendToNotifyCommand->getRecipientName(),
-                $sendToNotifyCommand->getRecipientEmail(),
-                $sendToNotifyCommand->getClientFirstname(),
-                $sendToNotifyCommand->getClientSurname(),
+                $sendToNotifyCommand,
                 $contents,
-                $letterTemplate,
-                $sendToNotifyCommand->getPendingReportType(),
-                $sendToNotifyCommand->getCaseNumber(),
+                $letterTemplate
             );
         } else {
             $response = $this->sendLetterToNotify($sendToNotifyCommand->getUuid(), $contents);
@@ -131,30 +125,24 @@ class SendToNotifyHandler
      * @return array<string,string>
      */
     private function sendEmailToNotify(
-        string $reference,
-        string $recipientName,
-        string $recipientEmail,
-        string $clientFirstName,
-        string $clientSurname,
+        SendToNotify $sendToNotifyCommand,
         string $contents,
-        ?string $letterTemplate,
-        ?string $pendingReportType,
-        ?string $caseNumber
+        ?string $letterTemplate
     ): array {
         $data = [
-            'recipient_name' => $recipientName,
-            'pending_report_type' => $pendingReportType,
-            'case_number' => $caseNumber,
-            'client_first_name' => $clientFirstName,
-            'client_surname' => $clientSurname,
+            'recipient_name' => $sendToNotifyCommand->getRecipientName(),
+            'pending_report_type' => $sendToNotifyCommand->getPendingReportType(),
+            'case_number' => $sendToNotifyCommand->getCaseNumber(),
+            'client_first_name' => $sendToNotifyCommand->getClientFirstName(),
+            'client_surname' => $sendToNotifyCommand->getClientSurname(),
             'link_to_file' => $this->notifyClient->prepareUpload($contents),
         ];
 
         $sendResponse = $this->notifyClient->sendEmail(
-            $recipientEmail,
+            $sendToNotifyCommand->getRecipientEmail(),
             $letterTemplate,
             $data,
-            $reference
+            $sendToNotifyCommand->getUuid()
         );
 
         if (empty($sendResponse['id'])) {
