@@ -29,7 +29,7 @@ $s3ClientConfig = [
     'version' => $config['aws']['s3']['version'],
 ];
 
-if (isset($config['aws']['s3']['use_path_style_endpoint']) && $config['aws']['s3']['use_path_style_endpoint'] == true) {
+if (isset($config['aws']['s3']['use_path_style_endpoint']) && $config['aws']['s3']['use_path_style_endpoint']) {
     $s3ClientConfig['endpoint'] = $config['aws']['s3']['endpoint'];
     $s3ClientConfig['use_path_style_endpoint'] = $config['aws']['s3']['use_path_style_endpoint'];
 }
