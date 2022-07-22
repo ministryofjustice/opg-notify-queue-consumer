@@ -20,7 +20,7 @@ return [
         ],
         'sqs' => [
             'queue_url' => getenv('AWS_SQS_QUEUE_URL') ?: null,
-            'version' => '2012-11-05', // TODO can this be `latest`?
+            'version' => '2012-11-05',
             'endpoint' => getenv('AWS_SQS_ENDPOINT_URL') ?: null,
             'wait_time' => (int)(getenv('AWS_SQS_QUEUE_WAIT_TIME') ?: 0),
         ],
