@@ -45,6 +45,8 @@ class UpdateDocumentStatusHandler
             'documentId' => $command->getDocumentId(),
             'notifySendId' => $command->getNotifyId(),
             'notifyStatus' => $this->notifyStatusMapper->toSirius($command->getNotifyStatus()),
+            'unmappedNotifyStatus' => $command->getNotifyStatus(),
+            'sendByMethod' => $command->getSendByMethod()
         ];
 
         try {
