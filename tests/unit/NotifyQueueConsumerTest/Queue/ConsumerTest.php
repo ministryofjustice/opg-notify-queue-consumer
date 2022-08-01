@@ -314,6 +314,7 @@ class ConsumerTest extends TestCase
                 'notifyId' => '1',
                 'notifyStatus' => 'accepted',
                 'documentId' => '4545',
+                'sendByMethod' => 'email'
             ]
         );
     }
