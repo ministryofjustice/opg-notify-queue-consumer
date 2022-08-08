@@ -57,7 +57,7 @@ class UpdateDocumentStatusHandlerTest extends TestCase
             'notifySendId' => $command->getNotifyId(),
             'notifyStatus' => $siriusStatus,
             'sendByMethod' => 'email',
-            'unmappedNotifyStatus' => 'accepted'
+            'notifySubStatus' => 'accepted'
         ];
 
         $this->mockNotifyStatusMapper
@@ -91,7 +91,7 @@ class UpdateDocumentStatusHandlerTest extends TestCase
             'notifySendId' => $command->getNotifyId(),
             'notifyStatus' => $siriusStatus,
             'sendByMethod' => 'email',
-            'unmappedNotifyStatus' => 'accepted'
+            'notifySubStatus' => 'accepted'
         ];
 
         $this->mockNotifyStatusMapper
@@ -130,7 +130,7 @@ class UpdateDocumentStatusHandlerTest extends TestCase
             'notifySendId' => $command->getNotifyId(),
             'notifyStatus' => $siriusStatus,
             'sendByMethod' => 'email',
-            'unmappedNotifyStatus' => 'accepted'
+            'notifySubStatus' => 'accepted'
         ];
 
         $this->mockNotifyStatusMapper
