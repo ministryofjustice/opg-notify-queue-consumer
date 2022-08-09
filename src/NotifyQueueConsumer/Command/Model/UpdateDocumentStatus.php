@@ -9,6 +9,7 @@ class UpdateDocumentStatus
     protected int $documentId;
     protected string $notifyId;
     protected string $notifyStatus;
+    protected string $sendByMethod;
 
     private function __construct()
     {
@@ -34,6 +35,10 @@ class UpdateDocumentStatus
             AggregateValidationException::addError('Data doesn\'t contain a notifyStatus');
         }
 
+        if (empty($data['sendByMethod'])) {
+            AggregateValidationException::addError('Data doesn\'t contain a sendByMethod');
+        }
+
         AggregateValidationException::checkAndThrow();
 
         $instance = new self();
@@ -41,6 +46,7 @@ class UpdateDocumentStatus
         $instance->documentId = (int)$data['documentId'];
         $instance->notifyId = $data['notifyId'];
         $instance->notifyStatus = $data['notifyStatus'];
+        $instance->sendByMethod = $data['sendByMethod'];
 
         return $instance;
     }
@@ -58,5 +64,10 @@ class UpdateDocumentStatus
     public function getNotifyStatus(): string
     {
         return $this->notifyStatus;
+    }
+
+    public function getSendByMethod(): string
+    {
+        return $this->sendByMethod;
     }
 }
