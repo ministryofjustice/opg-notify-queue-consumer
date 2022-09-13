@@ -115,16 +115,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.234.6",
+            "version": "3.235.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "c0ae9fbc8295678502a8fde6a2ecc49f2bd39580"
+                "reference": "d7c649ff9d55eb8099cac97c5a37a5ed2720d06b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c0ae9fbc8295678502a8fde6a2ecc49f2bd39580",
-                "reference": "c0ae9fbc8295678502a8fde6a2ecc49f2bd39580",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d7c649ff9d55eb8099cac97c5a37a5ed2720d06b",
+                "reference": "d7c649ff9d55eb8099cac97c5a37a5ed2720d06b",
                 "shasum": ""
             },
             "require": {
@@ -201,9 +201,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.234.6"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.235.6"
             },
-            "time": "2022-08-30T20:25:10+00:00"
+            "time": "2022-09-12T18:15:48+00:00"
         },
         {
             "name": "firebase/php-jwt",
