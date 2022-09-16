@@ -29,6 +29,7 @@ class SendToNotifyHandler
     const NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER = 'f93687ad-d1e3-4577-83e9-1f5db0748d38';
     const NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER = 'd43958ef-4a93-4cd8-abda-c4001785e740';
     const NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER = '19610ca0-0225-423a-8f83-729be739be66';
+    const NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER = '08a7256f-921c-4cff-a4ef-70d50e2b1847';
 
     public function __construct(Filesystem $filesystem, Client $notifyClient)
     {
@@ -66,6 +67,7 @@ class SendToNotifyHandler
                 'af1', 'af2', 'af3' => self::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE,
                 'bs1' => self::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER,
                 'bs2' => self::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER,
+                'fn14' => self::NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER,
                 'rd1' => self::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER,
                 'rd2' => self::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER,
                 'ri2' => self::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER,
