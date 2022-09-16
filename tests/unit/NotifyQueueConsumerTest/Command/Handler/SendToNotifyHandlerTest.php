@@ -112,6 +112,7 @@ class SendToNotifyHandlerTest extends TestCase
     #[ArrayShape([
         'BS1 Template' => "array",
         'BS2 Template' => "array",
+        'FN14 Template' => "array",
         'RD1 Template' => "array",
         'RD2 Template' => "array",
         'RI2 Template' => "array",
@@ -124,6 +125,7 @@ class SendToNotifyHandlerTest extends TestCase
         return [
             'BS1 Template' => ['bs1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER],
             'BS2 Template' => ['bs2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER],
+            'FN14 Template' => ['fn14', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER],
             'RD1 Template' => ['rd1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER],
             'RD2 Template' => ['rd2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER],
             'RI2 Template' => ['ri2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER],
