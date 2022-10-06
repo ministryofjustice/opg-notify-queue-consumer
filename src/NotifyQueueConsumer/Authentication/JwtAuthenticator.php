@@ -11,9 +11,11 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 
 class JwtAuthenticator
 {
+    /** @var non-empty-string $jwtSecret */
     private string $jwtSecret;
     private string $apiUserEmail;
 
+    /** @param non-empty-string $jwtSecret */
     public function __construct(string $jwtSecret, string $apiUserEmail)
     {
         $this->jwtSecret = $jwtSecret;
