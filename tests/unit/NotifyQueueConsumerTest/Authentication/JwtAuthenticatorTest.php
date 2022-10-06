@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class JwtAuthenticatorTest extends TestCase
 {
-    private const JWT_SECRET = 'test';
+    private const JWT_SECRET = 'mysupersecrettestkeythatis128bits';
     private const API_USER_EMAIL = 'test@test.com';
 
     private JwtAuthenticator $authenticator;
