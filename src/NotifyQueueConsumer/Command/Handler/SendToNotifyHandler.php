@@ -134,7 +134,7 @@ class SendToNotifyHandler
     ): array {
         $data = [
             'recipient_name' => $sendToNotifyCommand->getRecipientName(),
-            'pending_report_type' => $sendToNotifyCommand->getPendingReportType(),
+            'pending_or_due_report_type' => $sendToNotifyCommand->getPendingOrDueReportType(),
             'case_number' => $sendToNotifyCommand->getCaseNumber(),
             'client_first_name' => $sendToNotifyCommand->getClientFirstName(),
             'client_surname' => $sendToNotifyCommand->getClientSurname(),
