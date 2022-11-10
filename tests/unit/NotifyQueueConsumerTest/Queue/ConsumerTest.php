@@ -260,7 +260,7 @@ class ConsumerTest extends TestCase
                         'documentType' => 'letter'
                     ],
                     'letterType' => 'a6',
-                    'pendingReportType' => 'OPG104',
+                    'pendingOrDueReportType' => 'OPG104',
                     'caseNumber' => '74442574',
                 ]
             );
@@ -281,7 +281,7 @@ class ConsumerTest extends TestCase
                         'documentType' => 'invoice'
                     ],
                     'letterType' => 'a6',
-                    'pendingReportType' => null,
+                    'pendingOrDueReportType' => null,
                     'caseNumber' => '74442574',
                 ]
             );
@@ -301,7 +301,7 @@ class ConsumerTest extends TestCase
                     'documentType' => 'letter'
                 ],
                 'letterType' => 'a6',
-                'pendingReportType' => null,
+                'pendingOrDueReportType' => null,
                 'caseNumber' => '74442574',
             ]
         );

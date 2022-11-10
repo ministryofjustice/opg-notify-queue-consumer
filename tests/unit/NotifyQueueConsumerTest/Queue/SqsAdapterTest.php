@@ -64,7 +64,7 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
-                'pendingReportType' => $rawBody['message']['pendingReportType'],
+                'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
             ]
         );
@@ -113,7 +113,7 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
-                'pendingReportType' => $rawBody['message']['pendingReportType'],
+                'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
             ]
         );
@@ -173,7 +173,7 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
-                'pendingReportType' => $rawBody['message']['pendingReportType'],
+                'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
             ]
         );
@@ -233,7 +233,7 @@ class SqsAdapterTest extends TestCase
                 'clientSurname' => $rawBody['message']['clientSurname'],
                 'sendBy' => $rawBody['message']['sendBy'],
                 'letterType' => $rawBody['message']['letterType'],
-                'pendingReportType' => $rawBody['message']['pendingReportType'],
+                'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
             ]
         );
@@ -347,7 +347,7 @@ class SqsAdapterTest extends TestCase
                     'documentType' => 'letter'
                 ],
                 'letterType' => null,
-                'pendingReportType' => null,
+                'pendingOrDueReportType' => null,
                 'caseNumber' => '74442574',
             ]
         );
@@ -375,7 +375,7 @@ class SqsAdapterTest extends TestCase
         ?string $letterType,
         ?string $recipientEmail,
         ?string $recipientName,
-        ?string $pendingReportType,
+        ?string $pendingOrDueReportType,
         ?string $caseNumber
     ): array
     {
@@ -392,7 +392,7 @@ class SqsAdapterTest extends TestCase
                 'documentType' => $sendByDocumentType
             ],
             'letterType' => $letterType,
-            'pendingReportType' => $pendingReportType,
+            'pendingOrDueReportType' => $pendingOrDueReportType,
             'caseNumber' => $caseNumber,
         ]];
     }
