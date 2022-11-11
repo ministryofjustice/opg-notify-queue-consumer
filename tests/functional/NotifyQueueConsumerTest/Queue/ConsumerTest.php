@@ -227,7 +227,7 @@ class ConsumerTest extends TestCase
                 'MessageBody' => sprintf(
                     '{"message":{"uuid":"%s","filename":"%s","documentId":"%d", 
                     "recipientEmail":"%s", "recipientName":"%s", "clientFirstName":"%s", "clientSurname":"%s",
-                    "sendBy":{"method": "post", "documentType": "letter"}, "letterType":"%s", "pendingReportType":"%s",
+                    "sendBy":{"method": "post", "documentType": "letter"}, "letterType":"%s", "pendingOrDueReportType":"%s",
                      "caseNumber":"%s"}}',
                     $uuid,
                     $destination,

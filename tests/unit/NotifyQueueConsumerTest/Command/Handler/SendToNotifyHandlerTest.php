@@ -457,7 +457,7 @@ class SendToNotifyHandlerTest extends TestCase
         'client_first_name' => "mixed",
         'client_surname' => "mixed",
         'link_to_file' => "array",
-        'pending_report_type' => "mixed",
+        'pending_or_due_report_type' => "mixed",
         'case_number' => "mixed"
     ])] public function getPersonalisationData(array $data, array $prepareUploadResponse): array
     {
@@ -466,7 +466,7 @@ class SendToNotifyHandlerTest extends TestCase
             'client_first_name' => $data['clientFirstName'],
             'client_surname' => $data['clientSurname'],
             'link_to_file' => $prepareUploadResponse,
-            'pending_report_type' => $data['pendingReportType'],
+            'pending_or_due_report_type' => $data['pendingOrDueReportType'],
             'case_number' => $data['caseNumber'],
         ];
     }
@@ -487,7 +487,7 @@ class SendToNotifyHandlerTest extends TestCase
                 'documentType' => $sendByDocType
             ],
             'letterType' => $letterType,
-            'pendingReportType' => 'OPG103',
+            'pendingOrDueReportType' => 'OPG103',
             'caseNumber' => '74442574',
         ];
     }

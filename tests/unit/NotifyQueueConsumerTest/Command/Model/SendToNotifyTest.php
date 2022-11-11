@@ -26,7 +26,7 @@ class SendToNotifyTest extends TestCase
                 'documentType' => 'letter'
             ],
             'letterType' => 'a6',
-            'pendingReportType' => 'OPG102',
+            'pendingOrDueReportType' => 'OPG102',
             'caseNumber' => '74442574',
         ];
 
