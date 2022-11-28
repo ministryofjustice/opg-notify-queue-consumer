@@ -104,7 +104,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailInvoiceAndReturnCommandExpected(string $letterType, string $letterTemplate): void
     {
-        $data = $this->getData('email', 'invoice', $letterType);
+        $data = $this->getData('email', 'letter', $letterType);
 
         $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
     }
@@ -334,7 +334,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoNotifyIdReturned(): void
     {
-       $data = $this->getData('email', 'invoice', 'a6');
+       $data = $this->getData('email', 'letter', 'a6');
 
         $contents = "pdf content";
 
@@ -373,7 +373,6 @@ class SendToNotifyHandlerTest extends TestCase
             )
             ->willReturn($response);
 
-        self:
         $this->expectException(UnexpectedValueException::class);
 
         $this->handler->handle($command);
@@ -384,7 +383,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoStatusRetrieved(): void
     {
-        $data = $this->getData('email', 'invoice', null);
+        $data = $this->getData('email', 'letter', null);
 
         $contents = "pdf content";
 

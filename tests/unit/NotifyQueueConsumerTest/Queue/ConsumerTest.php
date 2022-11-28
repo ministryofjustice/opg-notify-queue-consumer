@@ -96,30 +96,6 @@ class ConsumerTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testFetchMessageEmailInvoiceSendToNotifyUpdateStatusSuccess(): void
-    {
-        $command = $this->createSendToNotifyCommand('email invoice');
-        $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
-
-        $this->queueMock->expects(self::once())->method('next')->willReturn($command);
-        $this->sendToNotifyHandlerMock
-            ->expects(self::once())
-            ->method('handle')
-            ->with($command)
-            ->willReturn($updateDocumentStatusCommand);
-        $this->queueMock->expects(self::once())->method('delete')->with($command);
-        $this->updateDocumentStatusHandlerMock
-            ->expects(self::once())
-            ->method('handle')
-            ->with($updateDocumentStatusCommand);
-        $this->loggerMock->expects(self::never())->method('critical');
-
-        $this->consumer->run();
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testFetchMessageEmailLetterSendToNotifyUpdateStatusSuccess(): void
     {
         $command = $this->createSendToNotifyCommand('email letter');
@@ -261,27 +237,6 @@ class ConsumerTest extends TestCase
                     ],
                     'letterType' => 'a6',
                     'pendingOrDueReportType' => 'OPG104',
-                    'caseNumber' => '74442574',
-                ]
-            );
-        }
-        if($sendBy === 'email invoice'){
-            return SendToNotify::fromArray(
-                [
-                    'id' => '1',
-                    'uuid' => 'asd-123',
-                    'filename' => 'this_is_a_test.pdf',
-                    'documentId' => '4545',
-                    'recipientEmail' => 'test@test.com',
-                    'recipientName' => 'Test Test',
-                    'clientFirstName' => 'Devin',
-                    'clientSurname' => 'Bahrke',
-                    'sendBy' => [
-                        'method' => 'email',
-                        'documentType' => 'invoice'
-                    ],
-                    'letterType' => 'a6',
-                    'pendingOrDueReportType' => null,
                     'caseNumber' => '74442574',
                 ]
             );
