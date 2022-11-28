@@ -61,7 +61,7 @@ class SendToNotifyHandler
 
         // 3. Send to notify
         $sendBy = $sendToNotifyCommand->getSendBy();
-        if ($sendBy['method'] === 'email' && ($sendBy['documentType'] === 'invoice' || $sendBy['documentType'] === 'letter')) {
+        if ($sendBy['method'] === 'email' && $sendBy['documentType'] === 'letter') {
             $letterTemplate = match ($sendToNotifyCommand->getLetterType()) {
                 'a6' => self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
                 'af1', 'af2', 'af3' => self::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE,
