@@ -68,7 +68,6 @@ jobs:
             ./test-results/coverage
 
       - name: Repoint unit & coverage results paths for SonarQube
-        if: github.actor != 'dependabot[bot]'
         run: |
           sudo sed -i 's/\/app\///g' test-results/clover/results.xml
           sudo sed -i 's/\/app\///g' test-results/unit/results.xml
@@ -76,7 +75,6 @@ jobs:
 
       - name: Run SonarQube
         uses: sonarsource/sonarqube-scan-action@master
-        if: github.actor != 'dependabot[bot]'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -160,7 +158,6 @@ jobs:
     name: "Build & Push Containers"
     runs-on: ubuntu-latest
     needs: ['lint', 'test-unit', 'test-functional', 'static-analysis' ]
-    if: github.actor != 'dependabot[bot]'
     outputs:
       tag: ${{ steps.bump_version.outputs.tag }}
     steps:
@@ -172,7 +169,7 @@ jobs:
           if [ "${{ github.head_ref }}" == "" ]; then
             echo BRANCH_NAME=main >> $GITHUB_ENV
           else
-            echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
+            echo BRANCH_NAME=$(echo ${{ github.head_ref }} | sed 's/\//-/g') >> $GITHUB_ENV
           fi
         id: extract_branch
       - uses: unfor19/install-aws-cli-action@v1
@@ -183,11 +180,12 @@ jobs:
 
       - name: Bump version
         id: bump_version
-        uses: anothrNick/github-tag-action@1.36.0
+        uses: anothrNick/github-tag-action@1.52.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INITIAL_VERSION: 1.0.0
           DEFAULT_BUMP: minor
+          PRERELEASE: true
           PRERELEASE_SUFFIX: ${{ env.BRANCH_NAME }}
           RELEASE_BRANCHES: main
           WITH_V: true
