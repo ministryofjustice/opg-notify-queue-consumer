@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace NotifyQueueConsumerTest\Unit\Queue;
 
 use Exception;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
@@ -91,6 +94,63 @@ class ConsumerTest extends TestCase
         $this->consumer->run();
 
         $this->assertTrue($this->sleepMockCalled);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFetchMessagePostLetterSendToNotifyUpdateStatusFailsWithClientException(): void
+    {
+        $command = $this->createSendToNotifyCommand();
+        $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
+
+        $this->queueMock->expects(self::once())->method('next')->willReturn($command);
+        $this->sendToNotifyHandlerMock
+            ->expects(self::once())
+            ->method('handle')
+            ->with($command)
+            ->willReturn($updateDocumentStatusCommand);
+        $this->queueMock->expects(self::once())->method('delete')->with($command);
+        $this->updateDocumentStatusHandlerMock
+            ->expects(self::exactly(2))
+            ->method('handle')
+            ->withConsecutive([$updateDocumentStatusCommand], [$updateDocumentStatusCommand])
+            ->will($this->onConsecutiveCalls($this->throwException(
+                new ClientException(
+                    'some message',
+                    new Request('put', '/'),
+                    new Response(404, [], 'this is the problem')
+                )
+            ), $this->returnValue(null)));
+        $this->loggerMock->expects(self::never())->method('critical');
+
+        $this->consumer->run();
+
+        $this->assertTrue($this->sleepMockCalled);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFetchMessageEmailInvoiceSendToNotifyUpdateStatusSuccess(): void
+    {
+        $command = $this->createSendToNotifyCommand('email invoice');
+        $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
+
+        $this->queueMock->expects(self::once())->method('next')->willReturn($command);
+        $this->sendToNotifyHandlerMock
+            ->expects(self::once())
+            ->method('handle')
+            ->with($command)
+            ->willReturn($updateDocumentStatusCommand);
+        $this->queueMock->expects(self::once())->method('delete')->with($command);
+        $this->updateDocumentStatusHandlerMock
+            ->expects(self::once())
+            ->method('handle')
+            ->with($updateDocumentStatusCommand);
+        $this->loggerMock->expects(self::never())->method('critical');
+
+        $this->consumer->run();
     }
 
     /**

@@ -6,6 +6,7 @@ namespace NotifyQueueConsumer\Queue;
 
 use Closure;
 use Exception;
+use GuzzleHttp\Exception\ClientException;
 use NotifyQueueConsumer\Command\Handler\UpdateDocumentStatusHandler;
 use Throwable;
 use Psr\Log\LoggerInterface;
@@ -66,7 +67,7 @@ class Consumer
             $this->logger->info('Updating document status', $logExtras);
             try {
                 $this->updateDocumentStatusHandler->handle($updateDocumentStatusCommand);
-            } catch (UnexpectedValueException $e) {
+            } catch (UnexpectedValueException | ClientException $e) {
                 $this->logger->info($e->getMessage(), $logExtras);
                 $this->sleep->__invoke();
                 $this->logger->info('Updating document status again', $logExtras);
