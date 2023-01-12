@@ -132,30 +132,6 @@ class ConsumerTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testFetchMessageEmailInvoiceSendToNotifyUpdateStatusSuccess(): void
-    {
-        $command = $this->createSendToNotifyCommand('email invoice');
-        $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
-
-        $this->queueMock->expects(self::once())->method('next')->willReturn($command);
-        $this->sendToNotifyHandlerMock
-            ->expects(self::once())
-            ->method('handle')
-            ->with($command)
-            ->willReturn($updateDocumentStatusCommand);
-        $this->queueMock->expects(self::once())->method('delete')->with($command);
-        $this->updateDocumentStatusHandlerMock
-            ->expects(self::once())
-            ->method('handle')
-            ->with($updateDocumentStatusCommand);
-        $this->loggerMock->expects(self::never())->method('critical');
-
-        $this->consumer->run();
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testFetchMessageEmailLetterSendToNotifyUpdateStatusSuccess(): void
     {
         $command = $this->createSendToNotifyCommand('email letter');
