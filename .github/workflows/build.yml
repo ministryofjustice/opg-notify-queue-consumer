@@ -61,7 +61,7 @@ jobs:
           php -f scripts/coverage-checker.php test-results/clover/results.xml 100
 
       - name: Upload Coverage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-report
           path: |
@@ -109,7 +109,7 @@ jobs:
           phpmetrics --report-html=./test-results/phpmetrics src/NotifyQueueConsumer
 
       - name: Upload Metrics
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: phpmetrics
           path: |
