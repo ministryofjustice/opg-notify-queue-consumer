@@ -67,18 +67,6 @@ jobs:
           path: |
             ./test-results/coverage
 
-      - name: Repoint unit & coverage results paths for SonarQube
-        run: |
-          sudo sed -i 's/\/app\///g' test-results/clover/results.xml
-          sudo sed -i 's/\/app\///g' test-results/unit/results.xml
-
-
-      - name: Run SonarQube
-        uses: sonarsource/sonarqube-scan-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
   test-functional:
     name: Functional Testing
     runs-on: ubuntu-latest
