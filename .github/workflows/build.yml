@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.2'
           tools: phpcs
       - name: Run PHPCS
         run: |
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.2'
           tools: composer:v1
       - run: |
           cp local.env.example local.env
@@ -54,7 +54,6 @@ jobs:
 
       - name: Run Unit Tests Docker
         run: docker-compose --project-name notify-queue-consumer run --rm test
-
 
       - name: Check Coverage
         run: |
@@ -100,7 +99,7 @@ jobs:
     name: Metrics
     runs-on: ubuntu-latest
     # uses this container as setup-php doesn't support phpmetrics yet
-    container: jakzal/phpqa:php7.4-alpine
+    container: jakzal/phpqa:php8.2-alpine
     steps:
       - uses: actions/checkout@v2
       - name: Generate report
@@ -122,7 +121,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.2'
           tools: composer:v1 , phpstan
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -165,6 +164,21 @@ jobs:
       - name: Build Container
         run: |
           docker build --file docker/Dockerfile --tag notify-queue-consumer:latest .
+
+      - name: Trivy Image Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: notify-queue-consumer:latest
+          severity: 'MEDIUM,HIGH,CRITICAL'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v1
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Bump version
         id: bump_version
