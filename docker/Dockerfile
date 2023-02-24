@@ -13,6 +13,14 @@ FROM php:8.2.1-cli-alpine
 RUN apk --no-cache add \
   # needed by intl
   icu-dev
+# Alpine Image Vulnerabilities 20230224
+RUN apk --no-cache upgrade \
+  curl \
+  libcrypto3 \
+  libcurl \
+  libssl3 \
+  openssl \
+  tar
 RUN docker-php-ext-install pcntl
 RUN docker-php-ext-install calendar
 RUN docker-php-ext-install intl

@@ -13,7 +13,7 @@ services:
     env_file: [local.env]
 
   phpstan:
-    image: jakzal/phpqa:php8.1-alpine
+    image: jakzal/phpqa:php8.2-alpine
     volumes:
       - .:/app
     command:
@@ -23,7 +23,7 @@ services:
       - "/app/tests/phpstan.neon"
 
   lint:
-    image: jakzal/phpqa:php8.1-alpine
+    image: jakzal/phpqa:php8.2-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -37,7 +37,7 @@ services:
       - /app/public
 
   phpmd:
-    image: jakzal/phpqa:php8.1-alpine
+    image: jakzal/phpqa:php8.2-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -48,7 +48,7 @@ services:
       - codesize,unusedcode,naming
 
   test:
-    image: jakzal/phpqa:php8.1-alpine
+    image: jakzal/phpqa:php8.2-alpine
     volumes:
       - .:/app
     command:
