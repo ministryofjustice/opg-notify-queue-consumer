@@ -228,7 +228,7 @@ class ConsumerTest extends TestCase
                     '{"message":{"uuid":"%s","filename":"%s","documentId":"%d", 
                     "recipientEmail":"%s", "recipientName":"%s", "clientFirstName":"%s", "clientSurname":"%s",
                     "sendBy":{"method": "post", "documentType": "letter"}, "letterType":"%s", "pendingOrDueReportType":"%s",
-                     "caseNumber":"%s"}}',
+                     "caseNumber":"%s", "orderType":"%s"}}',
                     $uuid,
                     $destination,
                     $documentId,
@@ -238,7 +238,8 @@ class ConsumerTest extends TestCase
                     'Test Surname',
                     $letterType,
                     'OPG103',
-                    '74442574'
+                    '74442574',
+                    'HW'
                 ),
             ]
         );

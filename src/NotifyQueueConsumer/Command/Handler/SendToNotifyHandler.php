@@ -30,6 +30,7 @@ class SendToNotifyHandler
     const NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER = 'd43958ef-4a93-4cd8-abda-c4001785e740';
     const NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER = '19610ca0-0225-423a-8f83-729be739be66';
     const NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER = '08a7256f-921c-4cff-a4ef-70d50e2b1847';
+    const NOTIFY_EMAIL_HEALTH_AND_WELFARE = '9b1dfc66-8ccb-4db8-b4e7-17f03f487874';
 
     public function __construct(Filesystem $filesystem, Client $notifyClient)
     {
@@ -77,10 +78,16 @@ class SendToNotifyHandler
                 'rr3' => self::NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER,
                 default => null,
             };
+
+            $replyToEmail = match ($sendToNotifyCommand->getOrderType()) {
+                'HW' => self::NOTIFY_EMAIL_HEALTH_AND_WELFARE,
+                default => null
+            };
             $response = $this->sendEmailToNotify(
                 $sendToNotifyCommand,
                 $contents,
-                $letterTemplate
+                $letterTemplate,
+                $replyToEmail
             );
         } else {
             $response = $this->sendLetterToNotify($sendToNotifyCommand->getUuid(), $contents);
@@ -130,7 +137,8 @@ class SendToNotifyHandler
     private function sendEmailToNotify(
         SendToNotify $sendToNotifyCommand,
         string $contents,
-        ?string $letterTemplate
+        ?string $letterTemplate,
+        ?string $replyToEmail
     ): array {
         $data = [
             'recipient_name' => $sendToNotifyCommand->getRecipientName(),
@@ -145,7 +153,8 @@ class SendToNotifyHandler
             $sendToNotifyCommand->getRecipientEmail(),
             $letterTemplate,
             $data,
-            $sendToNotifyCommand->getUuid()
+            $sendToNotifyCommand->getUuid(),
+            $replyToEmail
         );
 
         if (empty($sendResponse['id'])) {

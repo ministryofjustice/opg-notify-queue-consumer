@@ -28,6 +28,7 @@ class SendToNotifyTest extends TestCase
             'letterType' => 'a6',
             'pendingOrDueReportType' => 'OPG102',
             'caseNumber' => '74442574',
+            'orderType' => 'HW'
         ];
 
         $command = SendToNotify::fromArray($data);
