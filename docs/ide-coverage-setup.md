@@ -22,7 +22,7 @@ plugins are installed.
 8. Add a new interpreter - selecting "PHPUnit by Remote Interpreter" (Please note, if you are using IntelliJ, you will need to install the Behat Support plugin to run this step)
 9. Select `phpqa-8.1` (the one we created) as the interpreter
 10. Your settings should then match these:
-    ![](/Users/gurpreetsingh/Desktop/step_10_phpunit_preferences.png "IntelliJ coverage example")
+    ![](images/step_10_phpunit_preferences.png "IntelliJ coverage example")
 11. In the top menu, go to Run > Edit Configurations
 12. Add a new configuration, of a type "PHPUnit" call it "Test Project"
 13. Settings:
