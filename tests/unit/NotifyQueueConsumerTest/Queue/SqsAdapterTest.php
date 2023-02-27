@@ -46,7 +46,17 @@ class SqsAdapterTest extends TestCase
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
-        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null, null, null);
+        $rawBody = $this->getMessage(
+            null,
+            null,
+            'post',
+            'letter',
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -66,6 +76,7 @@ class SqsAdapterTest extends TestCase
                 'letterType' => $rawBody['message']['letterType'],
                 'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
+                'orderType' => $rawBody['message']['orderType']
             ]
         );
 
@@ -95,7 +106,17 @@ class SqsAdapterTest extends TestCase
             'QueueUrl' => $this->queueUrl,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
-        $rawBody = $this->getMessage(null, null, 'post', 'letter', null, null, null, null, null);
+        $rawBody = $this->getMessage(
+            null,
+            null,
+            'post',
+            'letter',
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
 
         $rawData = [
             'ReceiptHandle' => 'handle-12345',
@@ -115,6 +136,7 @@ class SqsAdapterTest extends TestCase
                 'letterType' => $rawBody['message']['letterType'],
                 'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
+                'orderType' => $rawBody['message']['orderType']
             ]
         );
 
@@ -154,7 +176,8 @@ class SqsAdapterTest extends TestCase
             'test@test.com',
             'Testy McTestface',
             'OPG104',
-            '96582147'
+            '96582147',
+            'HW'
         );
 
         $rawData = [
@@ -175,6 +198,7 @@ class SqsAdapterTest extends TestCase
                 'letterType' => $rawBody['message']['letterType'],
                 'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
+                'orderType' => $rawBody['message']['orderType']
             ]
         );
 
@@ -256,12 +280,12 @@ class SqsAdapterTest extends TestCase
         return [
             [['message' => ['uuid' => 'asd-123']], 'Missing "sendBy"'],
             [['message' => ['sendBy' => ['method' => 'post']]], 'Missing "sendBy.documentType"'],
-            [['message' => ['sendBy' => ['documentType' => 'something'], 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234']], 'Missing "uuid"'],
-            [['message' => ['sendBy' => ['documentType' => 'something'], 'uuid' => 'asd-123', 'documentId' => '1234']], 'Missing "filename"'],
-            [['message' => ['sendBy' => ['documentType' => 'something'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf']], 'Missing "documentId"'],
-            [['message' => ['sendBy' => ['documentType' => 'invoice'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234', 'recipientName' => 'Beth Schwarz', 'letterType' => 'IN-4']], 'Missing "recipientEmail"'],
-            [['message' => ['sendBy' => ['documentType' => 'invoice'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234', 'recipientEmail' => 'test@test.com', 'letterType' => 'IN-4']], 'Missing "recipientName"'],
-            [['message' => ['sendBy' => ['documentType' => 'invoice'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234', 'recipientEmail' => 'test@test.com', 'recipientName' => 'Beth Schwarz']], 'Missing "letterType"'],
+            [['message' => ['sendBy' => ['method' => 'post', 'documentType' => 'letter'], 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234']], 'Missing "uuid"'],
+            [['message' => ['sendBy' => ['method' => 'email', 'documentType' => 'something'], 'uuid' => 'asd-123', 'documentId' => '1234']], 'Missing "filename"'],
+            [['message' => ['sendBy' => ['method' => 'email', 'documentType' => 'something'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf']], 'Missing "documentId"'],
+            [['message' => ['sendBy' => ['method' => 'email', 'documentType' => 'letter'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234', 'recipientName' => 'Beth Schwarz', 'letterType' => 'IN-4']], 'Missing "recipientEmail"'],
+            [['message' => ['sendBy' => ['method' => 'email', 'documentType' => 'letter'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234', 'recipientEmail' => 'test@test.com', 'letterType' => 'IN-4']], 'Missing "recipientName"'],
+            [['message' => ['sendBy' => ['method' => 'email', 'documentType' => 'letter'], 'uuid' => 'asd-123', 'filename' => 'this_is_a_test.pdf', 'documentId' => '1234', 'recipientEmail' => 'test@test.com', 'recipientName' => 'Beth Schwarz']], 'Missing "letterType"'],
             [['message' => []], 'Empty message'],
             [[], 'Empty body'],
         ];
@@ -289,6 +313,7 @@ class SqsAdapterTest extends TestCase
                 'letterType' => null,
                 'pendingOrDueReportType' => null,
                 'caseNumber' => '74442574',
+                'orderType' => 'HW'
             ]
         );
 
@@ -316,7 +341,8 @@ class SqsAdapterTest extends TestCase
         ?string $recipientEmail,
         ?string $recipientName,
         ?string $pendingOrDueReportType,
-        ?string $caseNumber
+        ?string $caseNumber,
+        ?string $orderType
     ): array
     {
         return ['message' => [
@@ -334,6 +360,7 @@ class SqsAdapterTest extends TestCase
             'letterType' => $letterType,
             'pendingOrDueReportType' => $pendingOrDueReportType,
             'caseNumber' => $caseNumber,
+            'orderType' => $orderType
         ]];
     }
 }
