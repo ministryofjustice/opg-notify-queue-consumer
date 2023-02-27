@@ -56,6 +56,7 @@ class SqsAdapter implements QueueInterface
             'letterType' => $message['letterType'],
             'pendingOrDueReportType' => $message['pendingOrDueReportType'],
             'caseNumber' => $message['caseNumber'],
+            'orderType' => $message['orderType']
         ]);
     }
 
@@ -97,7 +98,7 @@ class SqsAdapter implements QueueInterface
             'documentId',
         ];
 
-        if ($message['sendBy']['documentType'] === 'invoice') {
+        if ($message['sendBy']['method'] === 'email') {
             $requiredFields = array_merge($requiredFields, [
                 'recipientEmail',
                 'recipientName',

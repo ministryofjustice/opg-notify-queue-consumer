@@ -21,6 +21,7 @@ class SendToNotify
      */
     protected array $sendBy;
     protected ?string $letterType;
+    protected ?string $orderType;
 
     private function __construct()
     {
@@ -65,6 +66,7 @@ class SendToNotify
         $instance->letterType = $data['letterType'];
         $instance->pendingOrDueReportType = $data['pendingOrDueReportType'];
         $instance->caseNumber = $data['caseNumber'];
+        $instance->orderType = $data['orderType'];
 
         return $instance;
     }
@@ -130,5 +132,10 @@ class SendToNotify
     public function getCaseNumber(): ?string
     {
         return $this->caseNumber;
+    }
+
+    public function getOrderType(): ?string
+    {
+        return $this->orderType;
     }
 }
