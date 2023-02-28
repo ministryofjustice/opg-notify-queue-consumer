@@ -10,19 +10,19 @@ plugins are installed.
 
 1. We're going to use the jakzal/phpqa image for running PHPUnit with PCov:
     ```
-        docker pull jakzal/phpqa:php7.4-alpine
+        docker pull jakzal/phpqa:php8.1-alpine
     ```
 
 2. In your editor (either PHPStorm or IntelliJ), go to Preferences > Languages and Frameworks > PHP
-3. Set "PHP language level" to 7.4
+3. Set "PHP language level" to 8.0
 4. For "CLI Interpreter" hit the edit button (the three dots)
-5. On the "CLI Interpreters" popup, add a new one, make it Docker. Select new and call it `phpqa-7.4`
-6. Under "Image name", select `jakzal/phpqa:php7.4-alpine`
+5. On the "CLI Interpreters" popup, add a new one, make it Docker. Select new and call it `phpqa-8.1`
+6. Under "Image name", select `jakzal/phpqa:php8.1-alpine`. Click OK and in the CLI Interpreters pop up, change the name as well to `phpqa-8.1`
 7. Go to Preferences > Languages and Frameworks > PHP > Test Frameworks
 8. Add a new interpreter - selecting "PHPUnit by Remote Interpreter" (Please note, if you are using IntelliJ, you will need to install the Behat Support plugin to run this step)
-9. Select `phpqa-7.4` (the one we created) as the interpreter
-10. Your settings should then match these: 
-![](images/step_10_phpunit_preferences.png "IntelliJ coverage example")
+9. Select `phpqa-8.1` (the one we created) as the interpreter
+10. Your settings should then match these:
+    ![](images/step_10_phpunit_preferences.png "IntelliJ coverage example")
 11. In the top menu, go to Run > Edit Configurations
 12. Add a new configuration, of a type "PHPUnit" call it "Test Project"
 13. Settings:
