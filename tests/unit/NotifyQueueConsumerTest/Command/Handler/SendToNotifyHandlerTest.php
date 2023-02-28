@@ -41,7 +41,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyPostLetterAndReturnCommandSuccess(): void
     {
-        $data = $this->getData('post', 'letter', null);
+        $data = $this->getData('post', 'letter', null, null);
 
         $contents = "pdf content";
         $response = [
@@ -104,7 +104,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailInvoiceAndReturnCommandExpected(string $letterType, string $letterTemplate): void
     {
-        $data = $this->getData('email', 'letter', $letterType);
+        $data = $this->getData('email', 'letter', $letterType, null);
 
         $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
     }
@@ -123,16 +123,16 @@ class SendToNotifyHandlerTest extends TestCase
     ])] public function annualReportLetterData(): array
     {
         return [
-            'BS1 Template' => ['bs1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER],
-            'BS2 Template' => ['bs2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER],
-            'FN14 Template' => ['fn14', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER],
-            'RD1 Template' => ['rd1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER],
-            'RD2 Template' => ['rd2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER],
-            'RI2 Template' => ['ri2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER],
-            'RI3 Template' => ['ri3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER],
-            'RR1 Template' => ['rr1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER],
-            'RR2 Template' => ['rr2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER],
-            'RR3 Template' => ['rr3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER],
+            'BS1 Template' => ['bs1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER, 'HW'],
+            'BS2 Template' => ['bs2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER, 'HW'],
+            'FN14 Template' => ['fn14', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER, null],
+            'RD1 Template' => ['rd1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER, 'HW'],
+            'RD2 Template' => ['rd2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER, 'HW'],
+            'RI2 Template' => ['ri2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER, 'HW'],
+            'RI3 Template' => ['ri3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER, 'HW'],
+            'RR1 Template' => ['rr1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER, 'HW'],
+            'RR2 Template' => ['rr2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER, 'HW'],
+            'RR3 Template' => ['rr3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER, 'HW'],
         ];
     }
 
@@ -140,9 +140,9 @@ class SendToNotifyHandlerTest extends TestCase
      * @dataProvider annualReportLetterData
      * @throws FileNotFoundException
      */
-    public function testRetrieveQueueMessageSendToNotifyEmailLetterAndReturnCommandExpected(string $letterType, string $letterTemplate): void
+    public function testRetrieveQueueMessageSendToNotifyEmailLetterAndReturnCommandExpected(string $letterType, string $letterTemplate, ?string $orderType): void
     {
-        $data = $this->getData('email', 'letter', $letterType);
+        $data = $this->getData('email', 'letter', $letterType, $orderType);
 
         $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
     }
@@ -154,7 +154,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testSendToNotifyBubblesUpApiExceptionFailure(Exception $notifyException): void
     {
-        $data = $this->getData('post', 'letter', null);
+        $data = $this->getData('post', 'letter', null, null);
 
         $contents = "some content";
         $command = SendToNotify::fromArray($data);
@@ -209,7 +209,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveDuplicateMessageThrowsExceptionFailure(): void
     {
-        $data = $this->getData('post', 'letter', 'a6');
+        $data = $this->getData('post', 'letter', 'a6', 'HW');
 
         $response = [
             "reference" => $data['uuid']
@@ -243,7 +243,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testEmptyPdfInQueueFailure(): void
     {
-        $data = $this->getData('post', 'letter', null);
+        $data = $this->getData('post', 'letter', null, null);
 
         $command = SendToNotify::fromArray($data);
 
@@ -260,7 +260,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testNotifyResponseIdNotFoundFailure(): void
     {
-        $data = $this->getData('post', 'letter', null);
+        $data = $this->getData('post', 'letter', null, null);
 
         $contents = "some content";
 
@@ -294,7 +294,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testNotifyStatusNotFoundFailure(): void
     {
-        $data = $this->getData('post', 'letter', null);
+        $data = $this->getData('post', 'letter', null, null);
         $contents = "some content";
 
         $response = [
@@ -334,7 +334,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoNotifyIdReturned(): void
     {
-       $data = $this->getData('email', 'letter', 'a6');
+       $data = $this->getData('email', 'letter', 'a6', 'HW');
 
         $contents = "pdf content";
 
@@ -383,7 +383,7 @@ class SendToNotifyHandlerTest extends TestCase
      */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoStatusRetrieved(): void
     {
-        $data = $this->getData('email', 'letter', null);
+        $data = $this->getData('email', 'letter', null, null);
 
         $contents = "pdf content";
 
@@ -470,7 +470,7 @@ class SendToNotifyHandlerTest extends TestCase
         ];
     }
 
-    private function getData(string $sendByMethod, string $sendByDocType, ?string $letterType): array
+    private function getData(string $sendByMethod, string $sendByDocType, ?string $letterType, ?string $orderType): array
     {
         return [
             'id' => '123',
@@ -488,6 +488,7 @@ class SendToNotifyHandlerTest extends TestCase
             'letterType' => $letterType,
             'pendingOrDueReportType' => 'OPG103',
             'caseNumber' => '74442574',
+            'orderType' => $orderType
         ];
     }
 

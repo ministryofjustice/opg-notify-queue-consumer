@@ -274,6 +274,7 @@ class ConsumerTest extends TestCase
                     'letterType' => 'a6',
                     'pendingOrDueReportType' => 'OPG104',
                     'caseNumber' => '74442574',
+                    'orderType' => 'HW'
                 ]
             );
         }
@@ -294,6 +295,7 @@ class ConsumerTest extends TestCase
                 'letterType' => 'a6',
                 'pendingOrDueReportType' => null,
                 'caseNumber' => '74442574',
+                'orderType' => 'HW'
             ]
         );
     }
