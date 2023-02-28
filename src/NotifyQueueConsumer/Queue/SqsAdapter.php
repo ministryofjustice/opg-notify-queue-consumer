@@ -96,6 +96,7 @@ class SqsAdapter implements QueueInterface
             'uuid',
             'filename',
             'documentId',
+            'sendBy'
         ];
 
         if ($message['sendBy']['method'] === 'email') {

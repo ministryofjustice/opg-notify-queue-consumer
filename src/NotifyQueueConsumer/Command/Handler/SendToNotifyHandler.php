@@ -100,7 +100,8 @@ class SendToNotifyHandler
                 'notifyId' => $notifyId,
                 'notifyStatus' => $notifyStatus,
                 'documentId' => $sendToNotifyCommand->getDocumentId(),
-                'sendByMethod' => $sendBy['method']
+                'sendByMethod' => $sendBy['method'],
+                'recipientEmailAddress' => $sendToNotifyCommand->getRecipientEmail()
             ]
         );
     }
