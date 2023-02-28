@@ -18,7 +18,7 @@ jobs:
     name: PHPCS
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
@@ -31,7 +31,7 @@ jobs:
     name: Unit Testing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
@@ -70,7 +70,7 @@ jobs:
     name: Functional Testing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           cp local.env.example local.env
           chmod +x scripts/wait-for-prism.sh
@@ -101,7 +101,7 @@ jobs:
     # uses this container as setup-php doesn't support phpmetrics yet
     container: jakzal/phpqa:php8.2-alpine
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Generate report
         shell: sh
         run: |
@@ -118,7 +118,7 @@ jobs:
     name: Static Analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
@@ -148,7 +148,7 @@ jobs:
     outputs:
       tag: ${{ steps.bump_version.outputs.tag }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: '0'
       - name: Extract branch name
@@ -228,7 +228,7 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
