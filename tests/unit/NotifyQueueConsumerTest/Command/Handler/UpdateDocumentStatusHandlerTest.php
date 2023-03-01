@@ -56,8 +56,9 @@ class UpdateDocumentStatusHandlerTest extends TestCase
             'documentId' => $command->getDocumentId(),
             'notifySendId' => $command->getNotifyId(),
             'notifyStatus' => $siriusStatus,
-            'sendByMethod' => 'email',
-            'notifySubStatus' => 'accepted'
+            'sendByMethod' => $command->getSendByMethod(),
+            'notifySubStatus' => $command->getNotifyStatus(),
+            'recipientEmailAddress' => $command->getRecipientEmailAddress()
         ];
 
         $this->mockNotifyStatusMapper
@@ -90,8 +91,9 @@ class UpdateDocumentStatusHandlerTest extends TestCase
             'documentId' => $command->getDocumentId(),
             'notifySendId' => $command->getNotifyId(),
             'notifyStatus' => $siriusStatus,
-            'sendByMethod' => 'email',
-            'notifySubStatus' => 'accepted'
+            'sendByMethod' => $command->getSendByMethod(),
+            'notifySubStatus' => $command->getNotifyStatus(),
+            'recipientEmailAddress' => $command->getRecipientEmailAddress()
         ];
 
         $this->mockNotifyStatusMapper
@@ -129,8 +131,9 @@ class UpdateDocumentStatusHandlerTest extends TestCase
             'documentId' => $command->getDocumentId(),
             'notifySendId' => $command->getNotifyId(),
             'notifyStatus' => $siriusStatus,
-            'sendByMethod' => 'email',
-            'notifySubStatus' => 'accepted'
+            'sendByMethod' => $command->getSendByMethod(),
+            'notifySubStatus' => $command->getNotifyStatus(),
+            'recipientEmailAddress' => $command->getRecipientEmailAddress()
         ];
 
         $this->mockNotifyStatusMapper
@@ -158,10 +161,12 @@ class UpdateDocumentStatusHandlerTest extends TestCase
     private function createUpdateDocumentStatusCommand(): UpdateDocumentStatus
     {
         return UpdateDocumentStatus::fromArray([
+            'documentId' => '4545',
             'notifyId' => '1',
             'notifyStatus' => 'accepted',
-            'documentId' => '4545',
-            'sendByMethod' => 'email'
+            'sendByMethod' => 'email',
+            'notifySubStatus' => 'accepted',
+            'recipientEmailAddress' => 'test@test.com'
         ]);
     }
 }
