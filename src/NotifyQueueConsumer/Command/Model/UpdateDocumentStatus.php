@@ -10,7 +10,7 @@ class UpdateDocumentStatus
     protected string $notifyId;
     protected string $notifyStatus;
     protected string $sendByMethod;
-    protected string $recipientEmailAddress;
+    protected ?string $recipientEmailAddress;
 
     private function __construct()
     {
@@ -38,10 +38,6 @@ class UpdateDocumentStatus
 
         if (empty($data['sendByMethod'])) {
             AggregateValidationException::addError('Data doesn\'t contain a sendByMethod');
-        }
-
-        if (empty($data['recipientEmailAddress'])) {
-            AggregateValidationException::addError('Data doesn\'t contain a recipientEmailAddress');
         }
 
         AggregateValidationException::checkAndThrow();
@@ -77,7 +73,7 @@ class UpdateDocumentStatus
         return $this->sendByMethod;
     }
 
-    public function getRecipientEmailAddress(): string
+    public function getRecipientEmailAddress(): ?string
     {
         return $this->recipientEmailAddress;
     }

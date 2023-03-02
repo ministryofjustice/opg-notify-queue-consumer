@@ -97,9 +97,9 @@ class SendToNotifyHandler
 
         return UpdateDocumentStatus::fromArray(
             [
+                'documentId' => $sendToNotifyCommand->getDocumentId(),
                 'notifyId' => $notifyId,
                 'notifyStatus' => $notifyStatus,
-                'documentId' => $sendToNotifyCommand->getDocumentId(),
                 'sendByMethod' => $sendBy['method'],
                 'recipientEmailAddress' => $sendToNotifyCommand->getRecipientEmail()
             ]
