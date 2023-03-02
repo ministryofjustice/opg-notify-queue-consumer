@@ -232,7 +232,7 @@ class ConsumerTest extends TestCase
                     $uuid,
                     $destination,
                     $documentId,
-                    '',
+                    'test@test.com',
                     'Test name',
                     'Test2',
                     'Test Surname',
