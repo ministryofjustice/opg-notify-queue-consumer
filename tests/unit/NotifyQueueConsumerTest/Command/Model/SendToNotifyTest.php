@@ -10,7 +10,21 @@ use PHPUnit\Framework\TestCase;
 
 class SendToNotifyTest extends TestCase
 {
-    public function testFromArraySuccess(): void
+
+    public static function fromArrayProvider (): array
+    {
+        return [
+            ["HW"],
+            ["PFA LAY"],
+            ["PFA PRO"],
+            ["PFA PA"],
+            [null]
+        ];
+    }
+    /**
+     * @dataProvider fromArrayProvider
+     */
+    public function testFromArraySuccess(?string $replyToType): void
     {
         $data = [
             'id' => '123',
@@ -28,7 +42,7 @@ class SendToNotifyTest extends TestCase
             'letterType' => 'a6',
             'pendingOrDueReportType' => 'OPG102',
             'caseNumber' => '74442574',
-            'orderType' => 'HW'
+            'replyToType' => $replyToType
         ];
 
         $command = SendToNotify::fromArray($data);
