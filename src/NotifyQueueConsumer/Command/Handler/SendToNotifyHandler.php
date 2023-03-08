@@ -31,6 +31,9 @@ class SendToNotifyHandler
     const NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER = '19610ca0-0225-423a-8f83-729be739be66';
     const NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER = '08a7256f-921c-4cff-a4ef-70d50e2b1847';
     const NOTIFY_EMAIL_HEALTH_AND_WELFARE = '9b1dfc66-8ccb-4db8-b4e7-17f03f487874';
+    const NOTIFY_EMAIL_PFA_LAY = '27e5deb5-8ea0-4d91-83d1-ae4145c351f9';
+    const NOTIFY_EMAIL_PFA_PRO = '3e6753b7-6602-4363-8c9a-c88d02b239ba';
+    const NOTIFY_EMAIL_PFA_PA = 'd8b4e115-5688-4161-82ca-82a93344a21f';
 
     public function __construct(Filesystem $filesystem, Client $notifyClient)
     {
@@ -79,8 +82,11 @@ class SendToNotifyHandler
                 default => null,
             };
 
-            $replyToEmail = match ($sendToNotifyCommand->getOrderType()) {
+            $replyToEmail = match ($sendToNotifyCommand->getReplyToType()) {
                 'HW' => self::NOTIFY_EMAIL_HEALTH_AND_WELFARE,
+                'PFA LAY' => self::NOTIFY_EMAIL_PFA_LAY,
+                'PFA PRO' => self::NOTIFY_EMAIL_PFA_PRO,
+                'PFA PA' => self::NOTIFY_EMAIL_PFA_PA,
                 default => null
             };
             $response = $this->sendEmailToNotify(
