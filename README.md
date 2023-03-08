@@ -33,7 +33,7 @@ Functional tests
 
     # Ensure the consumer is built before attempting to run the functional tests 
     
-    docker-compose --project-name notify-queue-consumer up -d localstack
+    docker-compose --project-name notify-queue-consumer up -d --force-recreate localstack
     docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-notify
     docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-sirius
     docker-compose --project-name notify-queue-consumer run --rm test-functional

@@ -100,6 +100,53 @@ class ConsumerTest extends TestCase
         $this->awsSqsClient->deleteQueue(['QueueUrl' => $this->queueUrl]);
     }
 
+    public static function messageProvider(): array
+    {
+        return [
+            ['bs1', 'email', 'letter', 'HW'],
+            ['bs2', 'email', 'letter', 'PFA LAY'],
+            ['rd1', 'email', 'letter', 'PFA PRO'],
+            ['rd2', 'email', 'letter', 'PFA PA'],
+            ['ri2', 'post', 'letter', null],
+            ['ri3', 'email', 'letter', 'HW'],
+            ['rr1', 'email', 'letter', 'PFA LAY'],
+            ['rr2', 'email', 'letter', 'PFA PRO'],
+            ['rr3','email', 'letter',  'PFA PA'],
+            [null, 'post', 'letter', null]
+
+        ];
+    }
+
+    /**
+     * @@dataProvider  messageProvider
+     */
+    public function testRunNotifySendUpdateStatusSuccess(?string $templateId, string $sendByMethod, string $sendByDocumentType, ?string $replyToType)
+    {
+        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, $templateId, $sendByMethod, $sendByDocumentType, $replyToType);
+
+        $this->awsSqsClient->getQueueAttributes(['QueueUrl' => $this->queueUrl]);
+
+        $expectedLogMessageSequence = [
+            'Asking for next message',
+            'Sending to Notify',
+            'Deleting processed message',
+            'Updating document status',
+            'Success',
+        ];
+
+        $this->consumer->run();
+
+        self::assertNotEmpty($this->logger->records);
+
+        foreach ($expectedLogMessageSequence as $i => $expectedMessage) {
+            self::assertEquals(
+                $expectedMessage,
+                $this->logger->records[$i]['message'],
+                var_export($this->logger->records, true)
+            );
+        }
+    }
+
     /**
      * @throws Exception
      */
@@ -114,7 +161,7 @@ class ConsumerTest extends TestCase
             }
             return $request;
         }));
-        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, null);
+        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, 'rd1', 'email', 'letter', 'HW');
 
         $this->awsSqsClient->getQueueAttributes(['QueueUrl' => $this->queueUrl]);
 
@@ -153,7 +200,7 @@ class ConsumerTest extends TestCase
             }
             return $request;
         }));
-        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, null);
+        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, null, 'post', 'letter', 'HW');
 
         $this->awsSqsClient->getQueueAttributes(['QueueUrl' => $this->queueUrl]);
 
@@ -191,7 +238,7 @@ class ConsumerTest extends TestCase
 
             return $request;
         }));
-        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, null);
+        $this->createMessageWithFile((string)Uuid::uuid4(), 1234, 'rd1', 'email', 'letter', 'HW');
 
         $this->awsSqsClient->getQueueAttributes(['QueueUrl' => $this->queueUrl]);
 
@@ -214,7 +261,7 @@ class ConsumerTest extends TestCase
         }
     }
 
-    private function createMessageWithFile(string $uuid, int $documentId, ?string $letterType): void
+    private function createMessageWithFile(string $uuid, int $documentId, ?string $letterType, string $sendByMethod, string $sendByDocumentType, ?string $replyToType): void
     {
         $content = file_get_contents(self::TEST_FILE_PATH);
         $destination = basename(self::TEST_FILE_PATH);
@@ -227,7 +274,7 @@ class ConsumerTest extends TestCase
                 'MessageBody' => sprintf(
                     '{"message":{"uuid":"%s","filename":"%s","documentId":"%d", 
                     "recipientEmail":"%s", "recipientName":"%s", "clientFirstName":"%s", "clientSurname":"%s",
-                    "sendBy":{"method": "post", "documentType": "letter"}, "letterType":"%s", "pendingOrDueReportType":"%s",
+                    "sendBy":{"method": "%s", "documentType": "%s"}, "letterType":"%s", "pendingOrDueReportType":"%s",
                      "caseNumber":"%s", "replyToType":"%s"}}',
                     $uuid,
                     $destination,
@@ -236,10 +283,12 @@ class ConsumerTest extends TestCase
                     'Test name',
                     'Test2',
                     'Test Surname',
+                    $sendByMethod,
+                    $sendByDocumentType,
                     $letterType,
                     'OPG103',
                     '74442574',
-                    'HW'
+                    $replyToType
                 ),
             ]
         );
