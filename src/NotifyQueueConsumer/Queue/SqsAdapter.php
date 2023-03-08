@@ -56,7 +56,7 @@ class SqsAdapter implements QueueInterface
             'letterType' => $message['letterType'],
             'pendingOrDueReportType' => $message['pendingOrDueReportType'],
             'caseNumber' => $message['caseNumber'],
-            'orderType' => $message['orderType']
+            'replyToType' => $message['replyToType']
         ]);
     }
 
