@@ -18,6 +18,7 @@ class SendToNotifyTest extends TestCase
             ["PFA LAY"],
             ["PFA PRO"],
             ["PFA PA"],
+            ["FINANCE"],
             [null]
         ];
     }
