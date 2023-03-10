@@ -112,7 +112,7 @@ class ConsumerTest extends TestCase
             ['rr1', 'email', 'letter', 'PFA LAY'],
             ['rr2', 'email', 'letter', 'PFA PRO'],
             ['rr3','email', 'letter', 'PFA PA'],
-            ['a6','email', 'letter', 'PFA PA'],
+            ['a6','email', 'letter', 'FINANCE'],
             ['af1','email', 'letter', 'FINANCE'],
             ['af2','email', 'letter', 'FINANCE'],
             ['af3','email', 'letter', 'FINANCE'],
