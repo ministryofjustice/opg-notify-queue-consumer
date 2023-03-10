@@ -76,7 +76,7 @@ class SqsAdapterTest extends TestCase
                 'letterType' => $rawBody['message']['letterType'],
                 'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
-                'orderType' => $rawBody['message']['orderType']
+                'replyToType' => $rawBody['message']['replyToType']
             ]
         );
 
@@ -136,7 +136,7 @@ class SqsAdapterTest extends TestCase
                 'letterType' => $rawBody['message']['letterType'],
                 'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
-                'orderType' => $rawBody['message']['orderType']
+                'replyToType' => $rawBody['message']['replyToType']
             ]
         );
 
@@ -198,7 +198,7 @@ class SqsAdapterTest extends TestCase
                 'letterType' => $rawBody['message']['letterType'],
                 'pendingOrDueReportType' => $rawBody['message']['pendingOrDueReportType'],
                 'caseNumber' => $rawBody['message']['caseNumber'],
-                'orderType' => $rawBody['message']['orderType']
+                'replyToType' => $rawBody['message']['replyToType']
             ]
         );
 
@@ -313,7 +313,7 @@ class SqsAdapterTest extends TestCase
                 'letterType' => null,
                 'pendingOrDueReportType' => null,
                 'caseNumber' => '74442574',
-                'orderType' => 'HW'
+                'replyToType' => 'HW'
             ]
         );
 
@@ -342,7 +342,7 @@ class SqsAdapterTest extends TestCase
         ?string $recipientName,
         ?string $pendingOrDueReportType,
         ?string $caseNumber,
-        ?string $orderType
+        ?string $replyToType
     ): array
     {
         return ['message' => [
@@ -360,7 +360,7 @@ class SqsAdapterTest extends TestCase
             'letterType' => $letterType,
             'pendingOrDueReportType' => $pendingOrDueReportType,
             'caseNumber' => $caseNumber,
-            'orderType' => $orderType
+            'replyToType' => $replyToType
         ]];
     }
 }
