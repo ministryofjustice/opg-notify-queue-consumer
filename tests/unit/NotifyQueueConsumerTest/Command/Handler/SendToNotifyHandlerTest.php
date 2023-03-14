@@ -87,14 +87,16 @@ class SendToNotifyHandlerTest extends TestCase
         'A6 Template' => "array",
         'AF1 Template' => "array",
         'AF2 Template' => "array",
-        'AF3 Template' => "array"
+        'AF3 Template' => "array",
+        'FN14 Template' => "array",
     ])] public function financeInvoiceLetterData(): array
     {
         return [
-            'A6 Template' => ['a6', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE],
-            'AF1 Template' => ['af1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE],
-            'AF2 Template' => ['af2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE],
-            'AF3 Template' => ['af3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE],
+            'A6 Template' => ['a6', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE, 'FINANCE'],
+            'AF1 Template' => ['af1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE, 'FINANCE'],
+            'AF2 Template' => ['af2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE, 'FINANCE'],
+            'AF3 Template' => ['af3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE, 'FINANCE'],
+            'FN14 Template' => ['fn14', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER, 'FINANCE']
         ];
     }
 
@@ -102,9 +104,9 @@ class SendToNotifyHandlerTest extends TestCase
      * @dataProvider financeInvoiceLetterData
      * @throws FileNotFoundException
      */
-    public function testRetrieveQueueMessageSendToNotifyEmailInvoiceAndReturnCommandExpected(string $letterType, string $letterTemplate): void
+    public function testRetrieveQueueMessageSendToNotifyEmailInvoiceAndReturnCommandExpected(string $letterType, string $letterTemplate, string $replyToType): void
     {
-        $data = $this->getData('email', 'letter', $letterType, null);
+        $data = $this->getData('email', 'letter', $letterType, $replyToType);
 
         $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
     }
@@ -125,7 +127,6 @@ class SendToNotifyHandlerTest extends TestCase
         return [
             'BS1 Template' => ['bs1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER, 'HW'],
             'BS2 Template' => ['bs2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER, 'HW'],
-            'FN14 Template' => ['fn14', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER, null],
             'RD1 Template' => ['rd1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER, 'PFA LAY'],
             'RD2 Template' => ['rd2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER, 'PFA PRO'],
             'RI2 Template' => ['ri2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER, 'PFA PA'],
@@ -350,6 +351,15 @@ class SendToNotifyHandlerTest extends TestCase
 
         $command = SendToNotify::fromArray($data);
 
+        $replyToType = match ($command->getReplyToType()) {
+            'HW' => SendToNotifyHandler::NOTIFY_EMAIL_HEALTH_AND_WELFARE,
+            'PFA LAY' => SendToNotifyHandler::NOTIFY_EMAIL_PFA_LAY,
+            'PFA PRO' => SendToNotifyHandler::NOTIFY_EMAIL_PFA_PRO,
+            'PFA PA' => SendToNotifyHandler::NOTIFY_EMAIL_PFA_PA,
+            'FINANCE' => SendToNotifyHandler::NOTIFY_EMAIL_FINANCE,
+            default => null
+        };
+
         $this->mockFilesystem
             ->expects(self::once())
             ->method('read')
@@ -369,7 +379,8 @@ class SendToNotifyHandlerTest extends TestCase
                 $data['recipientEmail'],
                 SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
                 $this->getPersonalisationData($data, $prepareUploadResponse),
-                $data['uuid']
+                $data['uuid'],
+                $replyToType
             )
             ->willReturn($response);
 
@@ -417,6 +428,15 @@ class SendToNotifyHandlerTest extends TestCase
 
         $command = SendToNotify::fromArray($data);
 
+        $replyToType = match ($command->getReplyToType()) {
+            'HW' => SendToNotifyHandler::NOTIFY_EMAIL_HEALTH_AND_WELFARE,
+            'PFA LAY' => SendToNotifyHandler::NOTIFY_EMAIL_PFA_LAY,
+            'PFA PRO' => SendToNotifyHandler::NOTIFY_EMAIL_PFA_PRO,
+            'PFA PA' => SendToNotifyHandler::NOTIFY_EMAIL_PFA_PA,
+            'FINANCE' => SendToNotifyHandler::NOTIFY_EMAIL_FINANCE,
+            default => null
+        };
+
         $this->mockFilesystem
             ->expects(self::once())
             ->method('read')
@@ -436,7 +456,8 @@ class SendToNotifyHandlerTest extends TestCase
                 $data['recipientEmail'],
                 null,
                 $this->getPersonalisationData($data, $prepareUploadResponse),
-                $data['uuid']
+                $data['uuid'],
+                $replyToType
             )
             ->willReturn($response);
 
@@ -580,6 +601,15 @@ class SendToNotifyHandlerTest extends TestCase
 
         $command = SendToNotify::fromArray($data);
 
+        $replyToType = match ($command->getReplyToType()) {
+            'HW' => SendToNotifyHandler::NOTIFY_EMAIL_HEALTH_AND_WELFARE,
+            'PFA LAY' => SendToNotifyHandler::NOTIFY_EMAIL_PFA_LAY,
+            'PFA PRO' => SendToNotifyHandler::NOTIFY_EMAIL_PFA_PRO,
+            'PFA PA' => SendToNotifyHandler::NOTIFY_EMAIL_PFA_PA,
+            'FINANCE' => SendToNotifyHandler::NOTIFY_EMAIL_FINANCE,
+            default => null
+        };
+
         $this->mockFilesystem
             ->expects(self::once())
             ->method('read')
@@ -599,7 +629,8 @@ class SendToNotifyHandlerTest extends TestCase
                 $data['recipientEmail'],
                 $letterTemplate,
                 $this->getPersonalisationData($data, $prepareUploadResponse),
-                $data['uuid']
+                $data['uuid'],
+                $replyToType
             )
             ->willReturn($response);
 

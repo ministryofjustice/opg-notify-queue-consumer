@@ -34,6 +34,7 @@ class SendToNotifyHandler
     const NOTIFY_EMAIL_PFA_LAY = '27e5deb5-8ea0-4d91-83d1-ae4145c351f9';
     const NOTIFY_EMAIL_PFA_PRO = '3e6753b7-6602-4363-8c9a-c88d02b239ba';
     const NOTIFY_EMAIL_PFA_PA = 'd8b4e115-5688-4161-82ca-82a93344a21f';
+    const NOTIFY_EMAIL_FINANCE = 'f1e5faf6-e6aa-4beb-b6b8-cfa418482653';
 
     public function __construct(Filesystem $filesystem, Client $notifyClient)
     {
@@ -87,6 +88,7 @@ class SendToNotifyHandler
                 'PFA LAY' => self::NOTIFY_EMAIL_PFA_LAY,
                 'PFA PRO' => self::NOTIFY_EMAIL_PFA_PRO,
                 'PFA PA' => self::NOTIFY_EMAIL_PFA_PA,
+                'FINANCE' => self::NOTIFY_EMAIL_FINANCE,
                 default => null
             };
             $response = $this->sendEmailToNotify(
