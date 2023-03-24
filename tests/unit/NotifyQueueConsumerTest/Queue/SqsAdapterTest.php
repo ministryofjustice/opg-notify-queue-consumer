@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace NotifyQueueConsumerTest\Unit\Queue;
 
-use Exception;
-use NotifyQueueConsumer\Command\Model\SendToNotify;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Aws\Result;
 use Aws\Sqs\SqsClient;
+use Exception;
+use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Queue\SqsAdapter;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 
 class SqsAdapterTest extends TestCase
 {
     private const DEFAULT_WAIT_TIME = 0;
-    /**
-     * @var SqsClient|MockObject
-     */
-    private $sqsClientMock;
-    private string $queueUrl = 'url...';
+    private const QUEUE_URL = 'url...';
+
+    private MockObject|SqsClient $sqsClientMock;
 
     public function setUp(): void
     {
@@ -42,7 +40,7 @@ class SqsAdapterTest extends TestCase
             'AttributeNames' => ['SentTimestamp'],
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
-            'QueueUrl' => $this->queueUrl,
+            'QueueUrl' => self::QUEUE_URL,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
@@ -84,7 +82,7 @@ class SqsAdapterTest extends TestCase
 
         $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
         $actualResult = $sqsAdapter->next();
 
@@ -103,7 +101,7 @@ class SqsAdapterTest extends TestCase
             'AttributeNames' => ['SentTimestamp'],
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
-            'QueueUrl' => $this->queueUrl,
+            'QueueUrl' => self::QUEUE_URL,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
         $rawBody = $this->getMessage(
@@ -144,7 +142,7 @@ class SqsAdapterTest extends TestCase
 
         $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
         $actualResult = $sqsAdapter->next();
 
@@ -163,7 +161,7 @@ class SqsAdapterTest extends TestCase
             'AttributeNames' => ['SentTimestamp'],
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
-            'QueueUrl' => $this->queueUrl,
+            'QueueUrl' => self::QUEUE_URL,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
@@ -206,7 +204,7 @@ class SqsAdapterTest extends TestCase
 
         $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
         $actualResult = $sqsAdapter->next();
 
@@ -225,7 +223,7 @@ class SqsAdapterTest extends TestCase
             'AttributeNames' => ['SentTimestamp'],
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
-            'QueueUrl' => $this->queueUrl,
+            'QueueUrl' => self::QUEUE_URL,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
 
@@ -233,7 +231,7 @@ class SqsAdapterTest extends TestCase
 
         $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
         $actualResult = $sqsAdapter->next();
 
@@ -252,7 +250,7 @@ class SqsAdapterTest extends TestCase
             'AttributeNames' => ['SentTimestamp'],
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
-            'QueueUrl' => $this->queueUrl,
+            'QueueUrl' => self::QUEUE_URL,
             'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
         ];
         $rawData = [
@@ -264,7 +262,7 @@ class SqsAdapterTest extends TestCase
 
         $this->sqsClientMock->method('receiveMessage')->with($config)->willReturn($awsResult);
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
         self::expectException(UnexpectedValueException::class);
         self::expectExceptionMessage($errorMessage);
@@ -275,7 +273,7 @@ class SqsAdapterTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function invalidMessageProvider(): array
+    public static function invalidMessageProvider(): array
     {
         return [
             [['message' => ['uuid' => 'asd-123']], 'Missing "sendBy"'],
@@ -322,12 +320,12 @@ class SqsAdapterTest extends TestCase
             ->method('deleteMessage')
             ->with(
                 [
-                    'QueueUrl' => $this->queueUrl,
+                    'QueueUrl' => self::QUEUE_URL,
                     'ReceiptHandle' => $command->getId(),
                 ]
             );
 
-        $sqsAdapter = new SqsAdapter($this->sqsClientMock, $this->queueUrl, self::DEFAULT_WAIT_TIME);
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
         $sqsAdapter->delete($command);
     }

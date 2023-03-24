@@ -26,7 +26,7 @@ class NotifyStatusTest extends TestCase
     /**
      * @return array<array<string>>
      */
-    public function notifyStatusProvider(): array
+    public static function notifyStatusProvider(): array
     {
         return [
             ['failed', 'rejected'],

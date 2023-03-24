@@ -8,10 +8,10 @@ use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use NotifyQueueConsumer\Command\Model\SendToNotify;
-use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Command\Handler\UpdateDocumentStatusHandler;
+use NotifyQueueConsumer\Command\Model\SendToNotify;
+use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
 use NotifyQueueConsumer\Logging\Context;
 use NotifyQueueConsumer\Queue\Consumer;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
@@ -87,8 +87,9 @@ class ConsumerTest extends TestCase
         $this->updateDocumentStatusHandlerMock
             ->expects(self::exactly(2))
             ->method('handle')
-            ->withConsecutive([$updateDocumentStatusCommand], [$updateDocumentStatusCommand])
-            ->will($this->onConsecutiveCalls($this->throwException(new UnexpectedValueException('abc')), $this->returnValue(null)));
+            ->with($updateDocumentStatusCommand)
+            ->willReturnOnConsecutiveCalls($this->throwException(new UnexpectedValueException('abc')), null);
+
         $this->loggerMock->expects(self::never())->method('critical');
 
         $this->consumer->run();
@@ -114,14 +115,12 @@ class ConsumerTest extends TestCase
         $this->updateDocumentStatusHandlerMock
             ->expects(self::exactly(2))
             ->method('handle')
-            ->withConsecutive([$updateDocumentStatusCommand], [$updateDocumentStatusCommand])
-            ->will($this->onConsecutiveCalls($this->throwException(
-                new ClientException(
-                    'some message',
-                    new Request('put', '/'),
-                    new Response(404, [], 'this is the problem')
-                )
-            ), $this->returnValue(null)));
+            ->with($updateDocumentStatusCommand)
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new ClientException('some message', new Request('put', '/'), new Response(404, [], 'this is the problem'))),
+                null
+            );
+
         $this->loggerMock->expects(self::never())->method('critical');
 
         $this->consumer->run();
@@ -225,8 +224,12 @@ class ConsumerTest extends TestCase
         $this->loggerMock
             ->expects(self::atMost(3))
             ->method('info')
-            ->withConsecutive(['Asking for next message'], ['Sending to Notify'], ['Deleting duplicate message'])
-            ->willReturnOnConsecutiveCalls(['context' => Context::NOTIFY_CONSUMER]);
+            ->willReturnCallback(fn ($value) => match($value)
+                {
+                    'Asking for next message', 'Deleting duplicate message', 'Sending to Notify' => ['context' => Context::NOTIFY_CONSUMER],
+                    default => throw new \LogicException()
+                }
+            );
 
         $this->consumer->run();
     }

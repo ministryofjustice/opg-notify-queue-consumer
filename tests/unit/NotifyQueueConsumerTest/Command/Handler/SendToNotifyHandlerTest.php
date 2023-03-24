@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace NotifyQueueConsumerTest\Unit\Command\Handler;
 
+use Alphagov\Notifications\Client;
 use Alphagov\Notifications\Exception as NotifyException;
+use Closure;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
-use NotifyQueueConsumer\Queue\DuplicateMessageException;
-use Psr\Http\Message\ResponseInterface;
-use UnexpectedValueException;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
-use Alphagov\Notifications\Client;
-use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
+use NotifyQueueConsumer\Command\Model\SendToNotify;
+use NotifyQueueConsumer\Queue\DuplicateMessageException;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
+use UnexpectedValueException;
 
 class SendToNotifyHandlerTest extends TestCase
 {
@@ -89,7 +90,7 @@ class SendToNotifyHandlerTest extends TestCase
         'AF2 Template' => "array",
         'AF3 Template' => "array",
         'FN14 Template' => "array",
-    ])] public function financeInvoiceLetterData(): array
+    ])] public static function financeInvoiceLetterData(): array
     {
         return [
             'A6 Template' => ['a6', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE, 'FINANCE'],
@@ -122,7 +123,7 @@ class SendToNotifyHandlerTest extends TestCase
         'RR1 Template' => "array",
         'RR2 Template' => "array",
         'RR3 Template' => "array"
-    ])] public function annualReportLetterData(): array
+    ])] public static function annualReportLetterData(): array
     {
         return [
             'BS1 Template' => ['bs1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER, 'HW'],
@@ -153,8 +154,11 @@ class SendToNotifyHandlerTest extends TestCase
      * @throws FileNotFoundException
      * @dataProvider notifyExceptionProvider
      */
-    public function testSendToNotifyBubblesUpApiExceptionFailure(Exception $notifyException): void
+    public function testSendToNotifyBubblesUpApiExceptionFailure(Closure $notifyExceptionClosure): void
     {
+        $mockHttpResponse = $this->createMock(ResponseInterface::class);
+        $notifyException = $notifyExceptionClosure($mockHttpResponse);
+
         $data = $this->getData('post', 'letter', null, null);
 
         $contents = "some content";
@@ -177,31 +181,36 @@ class SendToNotifyHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 
-    /**
-     * @return array<array<Exception>>
-     */
-    public function notifyExceptionProvider(): array
+    public static function notifyExceptionProvider(): array
     {
-        $httpResponse = $this->createMock(ResponseInterface::class);
-
         return [
             [
-                new NotifyException\ApiException(
-                    "ValidationError",
-                    400,
-                    [
-                        'errors' => [
-                            [
-                                'error' => 'ValidationError',
-                                'message' => 'postage invalid. It must be either first or second.'
+                function ($mockResponse): Exception {
+                    return new NotifyException\ApiException(
+                        "ValidationError",
+                        400,
+                        [
+                            'errors' => [
+                                [
+                                    'error' => 'ValidationError',
+                                    'message' => 'postage invalid. It must be either first or second.'
+                                ]
                             ]
-                        ]
-                    ],
-                    $httpResponse
-                )
+                        ],
+                        $mockResponse
+                    );
+                }
             ],
-            [new NotifyException\NotifyException('something went wrong')],
-            [new NotifyException\UnexpectedValueException('something went wrong')],
+            [
+                function ($mockResponse): Exception {
+                    return new NotifyException\NotifyException('something went wrong');
+                }
+            ],
+            [
+                function ($mockResponse): Exception {
+                    return new NotifyException\UnexpectedValueException('something went wrong');
+                }
+            ],
         ];
     }
 

@@ -64,7 +64,7 @@ class UpdateDocumentStatusTest extends TestCase
     /**
      * @return array<string,array<array<string,string>,string>>
      */
-    public function commandDataProvider(): array
+    public static function commandDataProvider(): array
     {
         return [
             'missing notifyId' => [
