@@ -7,7 +7,7 @@ namespace NotifyQueueConsumerTest\Unit;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase {
-    public function configDefaults() {
+    public static function configDefaults() {
         return [
             'default_of_aws_region' => [
                 function ($config) { return $config['aws']['region']; },
@@ -83,7 +83,7 @@ class ConfigTest extends TestCase {
         self::assertEquals($expectedDefault, $configArrayAccess($config));
     }
 
-    public function configValuesFromEnvironmentVariables() {
+    public static function configValuesFromEnvironmentVariables() {
         return [
             'set_aws_region' => [
                 function ($config) { return $config['aws']['region']; },

@@ -10,6 +10,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // and functional tests which do and for which we want to setup services
 if (getenv('OPG_NOTIFY_API_KEY') !== false) {
     $config = require_once __DIR__ . '/../src/bootstrap/config.php';
+    $GLOBALS['config'] = $config;
+
     $psrLoggerAdapter = new TestLogger();
+    $GLOBALS['psrLoggerAdapter'] = $psrLoggerAdapter;
+
+    $GLOBALS['exportGlobalsInSuperGlobal'] = true;
     require_once __DIR__ . '/../src/bootstrap/services.php';
 }
