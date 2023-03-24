@@ -100,3 +100,13 @@ $consumer = new Consumer(
     $psrLoggerAdapter,
     fn() => sleep($config['consumer']['update_retry_time']),
 );
+
+// Promote globals for use in PHPUnit functional tests
+if ($GLOBALS['exportGlobalsInSuperGlobal']) {
+    $GLOBALS['awsS3Client'] = $awsS3Client;
+    $GLOBALS['awsSqsClient'] = $awsSqsClient;
+    $GLOBALS['filesystem'] = $filesystem;
+    $GLOBALS['consumer'] = $consumer;
+    $GLOBALS['sendToNotifyHandler'] = $sendToNotifyHandler;
+    $GLOBALS['updateDocumentStatusHandler'] = $updateDocumentStatusHandler;
+}
