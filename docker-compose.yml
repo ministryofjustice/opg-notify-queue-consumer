@@ -166,3 +166,10 @@ services:
       - "/app/mock-sirius/openapi.yml"
     ports:
       - "4011:4011"
+
+  composer:
+    image: composer
+    command: [ "install" ]
+    volumes:
+      - ~/.composer:/tmp
+      - ./:/app
