@@ -8,7 +8,7 @@ updates Sirius with status.
     cp local.env.example local.env
     
     # Install dependencies on your host machine
-    composer install --prefer-dist --no-interaction --no-scripts
+    docker-compose run composer
     
     # Update the local.env file with any secret credentials when testing external services
     docker-compose build consumer
@@ -46,6 +46,13 @@ See [IDE PHPUnit coverage integration setup](docs/ide-coverage-setup.md)
 
     docker-compose --project-name notify-queue-consumer run --rm lint    
     docker-compose --project-name notify-queue-consumer run --rm phpstan
+
+## Updating composer.json dependencies
+
+    docker-compose run composer require <PACKAGE>>:<VERSION>
+
+    E.g.
+    ocker-compose run composer require package/name:^1.0
    
 ## References
 
