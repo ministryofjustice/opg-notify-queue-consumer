@@ -5,19 +5,18 @@ declare(strict_types=1);
 namespace NotifyQueueConsumer\Command\Handler;
 
 use Alphagov\Notifications\Client;
-use League\Flysystem\FileNotFoundException;
+use Alphagov\Notifications\Exception;
 use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\UnableToReadFile;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
+use Psr\Log\LoggerInterface;
 use UnexpectedValueException;
-use Alphagov\Notifications\Exception;
 
 class SendToNotifyHandler
 {
-    private Filesystem $filesystem;
-    private Client $notifyClient;
-
     const NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE = '9286a7db-a316-4103-a1c7-7bc1fdbbaa81';
     const NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE = '017b664c-2776-497b-ad6e-b25b8a365ae0';
     const NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER = '3dc53e2c-7e90-4e5f-95ef-8e7a98a6ee55';
@@ -36,16 +35,16 @@ class SendToNotifyHandler
     const NOTIFY_EMAIL_PFA_PA = 'd8b4e115-5688-4161-82ca-82a93344a21f';
     const NOTIFY_EMAIL_FINANCE = 'f1e5faf6-e6aa-4beb-b6b8-cfa418482653';
 
-    public function __construct(Filesystem $filesystem, Client $notifyClient)
-    {
-        $this->filesystem = $filesystem;
-        $this->notifyClient = $notifyClient;
+    public function __construct(
+        private readonly Filesystem $filesystem,
+        private readonly Client $notifyClient,
+        private readonly LoggerInterface $logger
+    ) {
     }
 
     /**
      * @param SendToNotify $sendToNotifyCommand
      * @return UpdateDocumentStatus
-     * @throws FileNotFoundException
      * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
     public function handle(SendToNotify $sendToNotifyCommand): UpdateDocumentStatus
@@ -58,9 +57,11 @@ class SendToNotifyHandler
 
         // 2. Fetch PDF for queued item
         $pdf = $sendToNotifyCommand->getFilename();
-        $contents = $this->filesystem->read($pdf);
 
-        if ($contents === false) {
+        try {
+            $contents = $this->filesystem->read($pdf);
+        } catch (FilesystemException | UnableToReadFile $ex) {
+            $this->logger->error($ex);
             throw new UnexpectedValueException("Cannot read PDF");
         }
 

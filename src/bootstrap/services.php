@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 use Alphagov\Notifications\Client;
-use GuzzleHttp\Client as GuzzleClient;
 use Aws\S3\S3Client;
 use Aws\Sqs\SqsClient;
+use GuzzleHttp\Client as GuzzleClient;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Authentication\JwtAuthenticator;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Command\Handler\UpdateDocumentStatusHandler;
+use NotifyQueueConsumer\Mapper\NotifyStatus;
 use NotifyQueueConsumer\Queue\Consumer;
 use NotifyQueueConsumer\Queue\SqsAdapter;
-use NotifyQueueConsumer\Mapper\NotifyStatus;
 use Psr\Log\LoggerInterface;
 
 // Make IDEs not show errors...
@@ -77,7 +77,8 @@ $queue = new SqsAdapter(
 
 $sendToNotifyHandler = new SendToNotifyHandler(
     $filesystem,
-    $notifyClient
+    $notifyClient,
+    $psrLoggerAdapter
 );
 
 $jwtAuthenticator = new JwtAuthenticator(
