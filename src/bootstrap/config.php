@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Alphagov\Notifications\Client;
+use League\Flysystem\Visibility;
 
 return [
     'aws' => [
@@ -16,7 +17,8 @@ return [
             'prefix' => '/',
             'options' => [
                 'ServerSideEncryption' => 'AES256',
-            ]
+            ],
+            'visibility' => Visibility::PRIVATE
         ],
         'sqs' => [
             'queue_url' => getenv('AWS_SQS_QUEUE_URL') ?: null,

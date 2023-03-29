@@ -6,7 +6,8 @@ use Alphagov\Notifications\Client;
 use Aws\S3\S3Client;
 use Aws\Sqs\SqsClient;
 use GuzzleHttp\Client as GuzzleClient;
-use League\Flysystem\AwsS3v3\AwsS3Adapter;
+use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
+use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Authentication\JwtAuthenticator;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
@@ -41,11 +42,11 @@ try {
     throw $ex;
 }
 
-$adapter = new AwsS3Adapter(
+$adapter = new AwsS3V3Adapter(
     $awsS3Client,
     $config['aws']['s3']['bucket'],
     $config['aws']['s3']['prefix'],
-    $config['aws']['s3']['options']
+    new PortableVisibilityConverter($config['aws']['s3']['visibility'])
 );
 $filesystem = new Filesystem($adapter);
 

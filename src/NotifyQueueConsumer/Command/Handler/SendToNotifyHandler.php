@@ -61,7 +61,7 @@ class SendToNotifyHandler
         try {
             $contents = $this->filesystem->read($pdf);
         } catch (FilesystemException | UnableToReadFile $ex) {
-            $this->logger->error($ex);
+            $this->logger->error($ex->getMessage());
             throw new UnexpectedValueException("Cannot read PDF");
         }
 
