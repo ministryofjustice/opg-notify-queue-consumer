@@ -34,8 +34,8 @@ class ConfigTest extends TestCase {
                 '/',
             ],
             'default_of_aws_s3_options' => [
-                function ($config) { return $config['aws']['s3']['options']; },
-                [ 'ServerSideEncryption' => 'AES256',],
+                function ($config) { return $config['aws']['s3']['visibility']; },
+                'private',
             ],
             'default_of_aws_sqs_queue_url' => [
                 function ($config) { return $config['aws']['sqs']['queue_url']; },

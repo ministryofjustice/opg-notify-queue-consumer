@@ -78,11 +78,14 @@ class ConsumerTest extends TestCase
                 'baseUrl' => $config['notify']['base_url'],
             ]
         );
+
+        $this->logger = new TestLogger();
+
         $sendToNotifyHandler = new SendToNotifyHandler(
             $filesystem,
-            $notifyClient
+            $notifyClient,
+            $this->logger
         );
-        $this->logger = new TestLogger();
 
         $this->consumer = new Consumer(
             $queueAdapter,
@@ -271,7 +274,7 @@ class ConsumerTest extends TestCase
         $content = file_get_contents(self::TEST_FILE_PATH);
         $destination = basename(self::TEST_FILE_PATH);
 
-        $this->filesystem->put($destination, $content);
+        $this->filesystem->write($destination, $content);
 
         $this->awsSqsClient->sendMessage(
             [
