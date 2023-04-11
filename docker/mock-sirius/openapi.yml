@@ -7,6 +7,20 @@ servers:
   - url: http://localhost:4011
     description: Local Prism server
 paths:
+  "/health-check":
+    get:
+      summary: Check mock service is ready
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    default: "OK"
   "/update-send-status":
     put:
       tags:

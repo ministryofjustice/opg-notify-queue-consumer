@@ -74,23 +74,18 @@ jobs:
       - uses: actions/checkout@v3
       - run: |
           cp local.env.example local.env
-          chmod +x scripts/wait-for-prism.sh
       - name: Build consumer dev image
         run: |
           docker-compose build consumer
       - name: Setup Localstack
         run: |
           docker-compose up -d localstack
-          chmod +x ./scripts/localstack/wait-for-localstack-ready.sh
-          ./scripts/localstack/wait-for-localstack-ready.sh
       - name: Start Mock Notify
         run: |
           docker-compose up --build --force-recreate -d mock-notify-ci
-          ./scripts/wait-for-prism.sh consumer-mock-notify
       - name: Start Mock Sirius
         run: |
           docker-compose up --build --force-recreate -d mock-sirius-ci
-          ./scripts/wait-for-prism.sh consumer-mock-sirius
 
       - name: Run Functional Tests
         run: |

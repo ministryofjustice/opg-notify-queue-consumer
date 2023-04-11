@@ -9,6 +9,20 @@ servers:
 #  - url: https://api.notifications.service.gov.uk
 #    description: Main (production) server
 paths:
+  "/health-check":
+    get:
+      summary: Check mock service is ready
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    default: "OK"
   "/v2/notifications/{id}":
     get:
       summary: Check status
