@@ -1,5 +1,5 @@
 ---
-version: "3.6"
+version: "3.7"
 
 services:
 
@@ -65,9 +65,12 @@ services:
   test-functional:
     image: notify-queue-consumer:latest
     depends_on:
-      - localstack
-      - consumer-mock-notify
-      - consumer-mock-sirius
+      localstack:
+        condition: service_healthy
+      consumer-mock-notify:
+        condition: service_healthy
+      consumer-mock-sirius:
+        condition: service_healthy
     volumes:
       - .:/var/www
     command:
@@ -81,9 +84,12 @@ services:
   test-functional-ci:
     image: notify-queue-consumer:latest
     depends_on:
-      - localstack
-      - mock-notify-ci
-      - mock-sirius-ci
+      localstack:
+        condition: service_healthy
+      mock-notify-ci:
+        condition: service_healthy
+      mock-sirius-ci:
+        condition: service_healthy
     command:
       - "/var/www/vendor/bin/phpunit"
       - "--configuration=/var/www/tests/phpunit.xml"
@@ -100,8 +106,14 @@ services:
       SERVICES: sqs,s3
       DEBUG: 1
     volumes:
-      - "./scripts/localstack:/docker-entrypoint-initaws.d"
+      - "./scripts/localstack/init:/etc/localstack/init/ready.d"
+      - "./scripts/localstack/wait:/scripts/wait"
       - "./tests/fixtures:/tmp/fixtures"
+    healthcheck:
+      test: bash /scripts/wait/health_check.sh
+      interval: 15s
+      timeout: 10s
+      retries: 3
 
   consumer-mock-notify:
     image: consumer-mock-notify:latest
@@ -118,6 +130,11 @@ services:
       - "./docker/mock-notify:/app/mock-notify"
     ports:
       - "4010:4010"
+    healthcheck:
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   consumer-mock-sirius:
     image: consumer-mock-sirius:latest
@@ -150,6 +167,11 @@ services:
       - "/app/mock-notify/openapi.yml"
     ports:
       - "4010:4010"
+    healthcheck:
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   mock-sirius-ci:
     image: mock-sirius:latest
@@ -166,6 +188,11 @@ services:
       - "/app/mock-sirius/openapi.yml"
     ports:
       - "4011:4011"
+    healthcheck:
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   composer:
     image: composer
