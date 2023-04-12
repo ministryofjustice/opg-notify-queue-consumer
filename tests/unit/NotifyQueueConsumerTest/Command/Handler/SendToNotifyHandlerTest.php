@@ -9,15 +9,14 @@ use Alphagov\Notifications\Exception as NotifyException;
 use Closure;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
-use League\Flysystem\UnableToReadFile;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 use UnexpectedValueException;
 
 class SendToNotifyHandlerTest extends TestCase
@@ -32,15 +31,15 @@ class SendToNotifyHandlerTest extends TestCase
 
         $this->mockFilesystem = $this->createMock(Filesystem::class);
         $this->mockNotifyClient = $this->createMock(Client::class);
-        $mockLogger = $this->createMock(LoggerInterface::class);
-
         $this->handler = new SendToNotifyHandler(
             $this->mockFilesystem,
-            $this->mockNotifyClient,
-            $mockLogger
+            $this->mockNotifyClient
         );
     }
 
+    /**
+     * @throws FileNotFoundException
+     */
     public function testRetrieveQueueMessageSendToNotifyPostLetterAndReturnCommandSuccess(): void
     {
         $data = $this->getData('post', 'letter', null, null);
@@ -104,6 +103,7 @@ class SendToNotifyHandlerTest extends TestCase
 
     /**
      * @dataProvider financeInvoiceLetterData
+     * @throws FileNotFoundException
      */
     public function testRetrieveQueueMessageSendToNotifyEmailInvoiceAndReturnCommandExpected(string $letterType, string $letterTemplate, string $replyToType): void
     {
@@ -140,6 +140,7 @@ class SendToNotifyHandlerTest extends TestCase
 
     /**
      * @dataProvider annualReportLetterData
+     * @throws FileNotFoundException
      */
     public function testRetrieveQueueMessageSendToNotifyEmailLetterAndReturnCommandExpected(string $letterType, string $letterTemplate, ?string $replyToType): void
     {
@@ -149,6 +150,8 @@ class SendToNotifyHandlerTest extends TestCase
     }
 
     /**
+     * @param Exception $notifyException
+     * @throws FileNotFoundException
      * @dataProvider notifyExceptionProvider
      */
     public function testSendToNotifyBubblesUpApiExceptionFailure(Closure $notifyExceptionClosure): void
@@ -211,6 +214,9 @@ class SendToNotifyHandlerTest extends TestCase
         ];
     }
 
+    /**
+     * @throws FileNotFoundException
+     */
     public function testRetrieveDuplicateMessageThrowsExceptionFailure(): void
     {
         $data = $this->getData('post', 'letter', 'a6', 'HW');
@@ -242,13 +248,16 @@ class SendToNotifyHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 
+    /**
+     * @throws FileNotFoundException
+     */
     public function testEmptyPdfInQueueFailure(): void
     {
         $data = $this->getData('post', 'letter', null, null);
 
         $command = SendToNotify::fromArray($data);
 
-        $this->mockFilesystem->method('read')->willThrowException(new UnableToReadFile('Test exception'));
+        $this->mockFilesystem->method('read')->willReturn(false);
 
         self::expectException(UnexpectedValueException::class);
         self::expectExceptionMessage("Cannot read PDF");
@@ -256,6 +265,9 @@ class SendToNotifyHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 
+    /**
+     * @throws FileNotFoundException
+     */
     public function testNotifyResponseIdNotFoundFailure(): void
     {
         $data = $this->getData('post', 'letter', null, null);
@@ -287,6 +299,9 @@ class SendToNotifyHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 
+    /**
+     * @throws FileNotFoundException
+     */
     public function testNotifyStatusNotFoundFailure(): void
     {
         $data = $this->getData('post', 'letter', null, null);
@@ -324,6 +339,9 @@ class SendToNotifyHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 
+    /**
+     * @throws FileNotFoundException
+     */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoNotifyIdReturned(): void
     {
        $data = $this->getData('email', 'letter', 'a6', 'HW');
@@ -380,6 +398,9 @@ class SendToNotifyHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 
+    /**
+     * @throws FileNotFoundException
+     */
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoStatusRetrieved(): void
     {
         $data = $this->getData('email', 'letter', null, null);
@@ -516,6 +537,7 @@ class SendToNotifyHandlerTest extends TestCase
      * @param SendToNotify $command
      * @param array $payload
      * @return void
+     * @throws FileNotFoundException
      */
     public function notifyClientAndAssertions(
         array $response,
@@ -542,6 +564,9 @@ class SendToNotifyHandlerTest extends TestCase
         self::assertEquals($payload['notifySendId'], $command->getNotifyId());
     }
 
+    /**
+     * @throws FileNotFoundException
+     */
     public function setupForInvoiceAndLettersWithAssertions(array $data, string $letterTemplate): void
     {
         $contents = "pdf content";

@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 use Alphagov\Notifications\Client;
+use GuzzleHttp\Client as GuzzleClient;
 use Aws\S3\S3Client;
 use Aws\Sqs\SqsClient;
-use GuzzleHttp\Client as GuzzleClient;
-use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
+use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Authentication\JwtAuthenticator;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Command\Handler\UpdateDocumentStatusHandler;
-use NotifyQueueConsumer\Mapper\NotifyStatus;
 use NotifyQueueConsumer\Queue\Consumer;
 use NotifyQueueConsumer\Queue\SqsAdapter;
+use NotifyQueueConsumer\Mapper\NotifyStatus;
 use Psr\Log\LoggerInterface;
 
 // Make IDEs not show errors...
@@ -41,11 +41,11 @@ try {
     throw $ex;
 }
 
-$adapter = new AwsS3V3Adapter(
+$adapter = new AwsS3Adapter(
     $awsS3Client,
     $config['aws']['s3']['bucket'],
     $config['aws']['s3']['prefix'],
-    options: $config['aws']['s3']['options']
+    $config['aws']['s3']['options']
 );
 $filesystem = new Filesystem($adapter);
 
@@ -77,8 +77,7 @@ $queue = new SqsAdapter(
 
 $sendToNotifyHandler = new SendToNotifyHandler(
     $filesystem,
-    $notifyClient,
-    $psrLoggerAdapter
+    $notifyClient
 );
 
 $jwtAuthenticator = new JwtAuthenticator(
