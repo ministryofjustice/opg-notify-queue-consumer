@@ -66,7 +66,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/NotifyApiError'
                   status_code:
-                    type: int
+                    type: integer
                     enum:
                       - 403
                       - 404
@@ -103,20 +103,20 @@ paths:
                     items:
                       $ref: '#/components/schemas/NotifyError'
                   status_code:
-                    type: int
+                    type: integer
                     enum:
                       - 429
 
   "/v2/notifications/email":
     post:
       summary: Send an email with an attachment
-      parameters:
-        - name: body
-          in: body
-          description: Request body needed by Notify for an email with an attachment,
-          required: true
-          schema:
-            $ref: "#/components/schemas/Email"
+      requestBody:
+        description: Request body needed by Notify for an email with an attachment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Email"
       responses:
         '201':
           description: Simple post example
@@ -147,7 +147,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/NotifyError'
                   status_code:
-                    type: int
+                    type: integer
                     enum:
                       - 429
 
