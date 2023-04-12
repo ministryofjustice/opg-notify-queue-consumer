@@ -29,33 +29,60 @@ paths:
       operationId: updateSendStatus
       security:
         - bearerAuth: []
-      parameters:
-        - name: request
-          in: body
-          description: The document with associated Notify ID and status
-          required: true
-          schema:
-            type: object
-            required:
-              - documentId
-              - notifySendId
-              - notifyStatus
-            properties:
-              documentId:
-                type: integer
-                example: 11
-              notifySendId:
-                type: string
-                format: uuid
-                example: "740e5834-3a29-46b4-9a6f-16142fde533a"
-              notifyStatus:
-                type: string
-                enum:
-                  - queued
-                  - posting
-                  - rejected
-                  - posted
-                example: posting
+      requestBody:
+        description: The document with associated Notify ID and status
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - documentId
+                - notifySendId
+                - notifyStatus
+              properties:
+                documentId:
+                  type: integer
+                  example: 11
+                notifySendId:
+                  type: string
+                  format: uuid
+                  example: "740e5834-3a29-46b4-9a6f-16142fde533a"
+                notifyStatus:
+                  type: string
+                  enum:
+                    - queued
+                    - posting
+                    - rejected
+                    - posted
+                  example: posting
+#      parameters:
+#        - name: request
+#          in: body
+#          description: The document with associated Notify ID and status
+#          required: true
+#          schema:
+#            type: object
+#            required:
+#              - documentId
+#              - notifySendId
+#              - notifyStatus
+#            properties:
+#              documentId:
+#                type: integer
+#                example: 11
+#              notifySendId:
+#                type: string
+#                format: uuid
+#                example: "740e5834-3a29-46b4-9a6f-16142fde533a"
+#              notifyStatus:
+#                type: string
+#                enum:
+#                  - queued
+#                  - posting
+#                  - rejected
+#                  - posted
+#                example: posting
       responses:
         '204':
           description: The status was updated
