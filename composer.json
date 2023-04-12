@@ -9,8 +9,8 @@
     "guzzlehttp/guzzle": "^7.0",
     "guzzlehttp/psr7": "^2.0",
     "laminas/laminas-log": "^2.12",
-    "league/flysystem": "^3.0",
-    "league/flysystem-aws-s3-v3": "^3.0",
+    "league/flysystem": "^1.0",
+    "league/flysystem-aws-s3-v3": "^1.0",
     "lcobucci/jwt": "^5.0"
   },
   "require-dev": {
