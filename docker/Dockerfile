@@ -19,8 +19,10 @@ RUN apk --no-cache upgrade \
   libcrypto3 \
   libcurl \
   libssl3 \
+  libxml2 \
   openssl \
   tar
+  
 RUN docker-php-ext-install pcntl
 RUN docker-php-ext-install calendar
 RUN docker-php-ext-install intl
