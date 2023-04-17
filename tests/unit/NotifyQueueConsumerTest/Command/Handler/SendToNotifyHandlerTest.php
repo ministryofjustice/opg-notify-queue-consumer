@@ -455,7 +455,7 @@ class SendToNotifyHandlerTest extends TestCase
         $this->mockNotifyClient
             ->expects(self::once())
             ->method('prepareUpload')
-            ->with($contents)
+            ->with($contents, false, null, '56 weeks')
             ->willReturn($prepareUploadResponse);
 
         $this->mockNotifyClient
