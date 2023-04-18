@@ -33,7 +33,6 @@ class ConsumerTest extends TestCase
     {
         global $awsSqsClient,
                $filesystem,
-               $awsS3Client,
                $config,
                $sendToNotifyHandler,
                $updateDocumentStatusHandler;
@@ -41,28 +40,9 @@ class ConsumerTest extends TestCase
         parent::setUp();
 
         $this->awsSqsClient = $awsSqsClient;
-        $queueName = md5(__CLASS__ . '_' . time());
-        $createQueueResult = $this->awsSqsClient
-            ->createQueue(
-                [
-                    'QueueName' => $queueName,
-                    'Attributes' => [
-                        'VisibilityTimeout' => 0,
-                        'ReceiveMessageWaitTimeSeconds' => 0,
-                    ],
-                ]
-            );
-        $this->queueUrl = (string)$createQueueResult->get('QueueUrl');
         $this->filesystem = $filesystem;
 
-        if (!$awsS3Client->doesBucketExist($config['aws']['s3']['bucket'])) {
-            $awsS3Client
-                ->createBucket(
-                    [
-                        'Bucket' => $config['aws']['s3']['bucket'],
-                    ]
-                );
-        }
+        $this->createUniqueSqsQueueForThisRun();
 
         // Short wait time so tests run fast...
         $waitTime = 0;
@@ -91,6 +71,23 @@ class ConsumerTest extends TestCase
             $this->logger,
             function() {},
         );
+    }
+
+    // This is shared between tests in a run, so failure to pick up a message may affect other tests in the same run, but not subsequent ones
+    private function createUniqueSqsQueueForThisRun(): void
+    {
+        $queueName = md5(__CLASS__ . '_' . time());
+        $createQueueResult = $this->awsSqsClient
+            ->createQueue(
+                [
+                    'QueueName' => $queueName,
+                    'Attributes' => [
+                        'VisibilityTimeout' => 0,
+                        'ReceiveMessageWaitTimeSeconds' => 0,
+                    ],
+                ]
+            );
+        $this->queueUrl = (string)$createQueueResult->get('QueueUrl');
     }
 
     public function tearDown(): void
