@@ -74,6 +74,13 @@ paths:
   "/v2/notifications/letter":
     post:
       summary: Send a precompiled letter
+      requestBody:
+        description: Request body needed by Notify for a precompiled letter
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
       responses:
         '201':
           description: Simple post example - note that request body isn't mocked
@@ -151,7 +158,7 @@ paths:
                     enum:
                       - 429
 
-  "/v2/notifications?reference={reference}":
+  "/v2/notifications":
     get:
       summary: Get the status of multiple messages
       description: https://docs.notifications.service.gov.uk/php.html#get-the-status-of-multiple-messages
@@ -161,7 +168,6 @@ paths:
           required: true # not in the actual api
           schema:
             type: string
-      # https://swagger.io/docs/specification/describing-responses/
       responses:
         '200':
           description: A JSON array of user names
