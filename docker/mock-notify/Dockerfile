@@ -1,4 +1,4 @@
-FROM stoplight/prism:4
+FROM stoplight/prism:5
 
 RUN apk --no-cache add curl
 
