@@ -20,13 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          tools: phpcs
       - name: Run PHPCS
-        run: |
-          phpcs -p --report=checkstyle --standard=PSR12 --warning-severity=0 src public
+        run: make lint
+
 
   test-unit:
     name: Unit Testing
@@ -50,15 +46,12 @@ jobs:
           restore-keys: |
             composer-v1-${{ hashFiles('**/composer.lock') }}
             composer-v1
-      - name: Run composer install
-        run: composer install -n --prefer-dist
 
       - name: Run Unit Tests Docker
-        run: docker-compose --project-name notify-queue-consumer run --rm test
+        run: make unit-test
 
       - name: Check Coverage
-        run: |
-          php -f scripts/coverage-checker.php test-results/clover/results.xml 100
+        run: make check-coverage
 
       - name: Upload Coverage
         uses: actions/upload-artifact@v3
@@ -72,36 +65,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          cp local.env.example local.env
       - name: Build consumer dev image
-        run: |
-          docker-compose build consumer
-      - name: Setup Localstack
-        run: |
-          docker-compose up -d localstack
-      - name: Start Mock Notify
-        run: |
-          docker-compose up --build --force-recreate -d mock-notify-ci
-      - name: Start Mock Sirius
-        run: |
-          docker-compose up --build --force-recreate -d mock-sirius-ci
-
+        run: make build DEV_DEPS="true"
       - name: Run Functional Tests
-        run: |
-          docker-compose run test-functional-ci
+        run: make functional-test
 
   metrics:
     name: Metrics
     runs-on: ubuntu-latest
-    # uses this container as setup-php doesn't support phpmetrics yet
-    container: jakzal/phpqa:php8.2-alpine
     steps:
       - uses: actions/checkout@v3
       - name: Generate report
-        shell: sh
-        run: |
-          phpmetrics --report-html=./test-results/phpmetrics src/NotifyQueueConsumer
+        run: make phpmetrics
 
       - name: Upload Metrics
         uses: actions/upload-artifact@v3
@@ -115,27 +90,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          tools: composer:v1 , phpstan
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-v1-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            composer-v1-${{ hashFiles('**/composer.lock') }}
-            composer-v1
-      - name: Run composer install
-        run: composer install -n --prefer-dist
-
       - name: Run PHPStan
-        run: |
-          phpstan analyse --no-progress --level=7 src
+        run: make phpstan
 
   build:
     name: "Build & Push Containers"
@@ -158,8 +114,7 @@ jobs:
       - uses: unfor19/install-aws-cli-action@v1
 
       - name: Build Container
-        run: |
-          docker build --file docker/Dockerfile --tag notify-queue-consumer:latest .
+        run: make build
 
       - name: Trivy Image Vulnerability Scanner
         uses: aquasecurity/trivy-action@master
@@ -167,6 +122,8 @@ jobs:
           image-ref: notify-queue-consumer:latest
           severity: 'MEDIUM,HIGH,CRITICAL'
           format: 'template'
+          exit-code: '1'
+          ignore-unfixed: true
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
 
