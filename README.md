@@ -1,59 +1,53 @@
 [![ministryofjustice](https://circleci.com/gh/ministryofjustice/opg-notify-queue-consumer.svg?style=svg)](https://github.com/ministryofjustice/opg-notify-queue-consumer)
 
-Queue consumer; messages represent a PDF letter to be sent to the Notify (Notifications) API for printing, 
+Queue consumer; messages represent a PDF letter to be sent to the Notify (Notifications) API for printing,
 updates Sirius with status.
 
 ### Building
 
-    cp local.env.example local.env
-    
     # Install dependencies on your host machine
-    docker-compose run composer
-    
+    make composer-install
+
     # Update the local.env file with any secret credentials when testing external services
-    docker-compose build consumer
+    make build
 
 ### Running
 
-    docker-compose --project-name notify-queue-consumer up localstack
-    docker-compose --project-name notify-queue-consumer up consumer
-    
+    make up
+
 If you are not developing against a local or test version of Notify or Sirius you can run the mock services with:
 
-    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-notify
-    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-sirius
+    docker compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-notify
+    docker compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-sirius
 
 ## Testing
 
 Unit tests
 
-    docker-compose --project-name notify-queue-consumer run --rm test
+    make unit-test
 
 Functional tests
 
-    # Ensure the consumer is built before attempting to run the functional tests 
-    
-    docker-compose --project-name notify-queue-consumer up -d --force-recreate localstack
-    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-notify
-    docker-compose --project-name notify-queue-consumer up -d --build --force-recreate consumer-mock-sirius
-    docker-compose --project-name notify-queue-consumer run --rm test-functional
-    
+    # Ensure the consumer is built before attempting to run the functional tests
+
+    make functional-test
+
 ### Coverage
 
-See [IDE PHPUnit coverage integration setup](docs/ide-coverage-setup.md)    
-    
+See [IDE PHPUnit coverage integration setup](docs/ide-coverage-setup.md)
+
 ## Check Linting / Static Analysis
 
-    docker-compose --project-name notify-queue-consumer run --rm lint    
-    docker-compose --project-name notify-queue-consumer run --rm phpstan
+    make lint
+    make phpstan
 
 ## Updating composer.json dependencies
 
-    docker-compose run composer require <PACKAGE>>:<VERSION>
+    docker compose run composer require <PACKAGE>>:<VERSION>
 
     E.g.
-    ocker-compose run composer require package/name:^1.0
-   
+    docker compose run composer require package/name:^1.0
+
 ## References
 
 - [Localstack useful commands ](docs/localstack.md)
