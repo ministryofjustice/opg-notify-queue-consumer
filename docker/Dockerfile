@@ -9,7 +9,7 @@ RUN if [ "$ENABLE_DEV_DEPS" = "true" ] ; then composer install --prefer-dist --n
     composer install --prefer-dist --no-interaction --no-scripts --no-dev; fi
 RUN composer dumpautoload -o
 
-FROM php:8.2.8-cli-alpine
+FROM php:8.2.9-cli-alpine@sha256:5497eac8cf1089126bf5ea906abffcb69f6129286921ed1a679290d558047c55
 RUN apk --no-cache add \
   # needed by intl
   icu-dev
