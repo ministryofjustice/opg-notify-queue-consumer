@@ -4,12 +4,17 @@ version: "3.7"
 services:
 
   consumer:
-    image: notify-queue-consumer:latest
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:latest
     build:
       context: .
       dockerfile: docker/Dockerfile
-      args:
-        ENABLE_DEV_DEPS: "true"
+    depends_on:
+      localstack:
+        condition: service_healthy
+      mock-notify:
+        condition: service_healthy
+      mock-sirius:
+        condition: service_healthy
     env_file: [local.env]
 
   phpstan:
@@ -56,6 +61,17 @@ services:
       - text
       - codesize,unusedcode,naming
 
+  check-coverage:
+    image: jakzal/phpqa:php8.2-alpine
+    volumes:
+      - .:/app
+    command:
+      - "php"
+      - "-f"
+      - "/app/scripts/coverage-checker.php" 
+      - "/app/test-results/clover/results.xml" 
+      - "100"
+      
   test:
     image: jakzal/phpqa:php8.2-alpine
     volumes:
@@ -72,33 +88,16 @@ services:
       - "--testsuite=unit"
 
   test-functional:
-    image: notify-queue-consumer:latest
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:latest
     depends_on:
       localstack:
         condition: service_healthy
-      consumer-mock-notify:
+      mock-notify:
         condition: service_healthy
-      consumer-mock-sirius:
+      mock-sirius:
         condition: service_healthy
     volumes:
       - .:/var/www
-    command:
-      - "/var/www/vendor/bin/phpunit"
-      - "--configuration=/var/www/tests/phpunit.xml"
-      - "--no-coverage"
-      - "--log-junit=/var/www/test-results/functional/results.xml"
-      - "--testsuite=functional"
-    env_file: [local.env]
-
-  test-functional-ci:
-    image: notify-queue-consumer:latest
-    depends_on:
-      localstack:
-        condition: service_healthy
-      mock-notify-ci:
-        condition: service_healthy
-      mock-sirius-ci:
-        condition: service_healthy
     command:
       - "/var/www/vendor/bin/phpunit"
       - "--configuration=/var/www/tests/phpunit.xml"
@@ -124,7 +123,7 @@ services:
       timeout: 10s
       retries: 3
 
-  consumer-mock-notify:
+  mock-notify:
     image: consumer-mock-notify:latest
     container_name: consumer-notify
     build:
@@ -145,7 +144,7 @@ services:
       retries: 3
       start_period: 10s
 
-  consumer-mock-sirius:
+  mock-sirius:
     image: consumer-mock-sirius:latest
     container_name: consumer-sirius
     build:
@@ -168,49 +167,16 @@ services:
       retries: 3
       start_period: 10s
 
-  mock-notify-ci:
-    image: mock-notify:latest
-    container_name: consumer-mock-notify
-    build:
-      context: .
-      dockerfile: docker/mock-notify/Dockerfile
-    command:
-      - "mock"
-      - "-h"
-      - "0.0.0.0"
-      - "/app/mock-notify/openapi.yml"
-    ports:
-      - "4010:4010"
-    healthcheck:
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-
-  mock-sirius-ci:
-    image: mock-sirius:latest
-    container_name: consumer-mock-sirius
-    build:
-      context: .
-      dockerfile: docker/mock-sirius/Dockerfile
-    command:
-      - "mock"
-      - "-p"
-      - "4011"
-      - "-h"
-      - "0.0.0.0"
-      - "/app/mock-sirius/openapi.yml"
-    ports:
-      - "4011:4011"
-    healthcheck:
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-
   composer:
     image: composer
     command: [ "install" ]
     volumes:
       - ~/.composer:/tmp
       - ./:/app
+
+  trivy:
+    image: aquasec/trivy:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.trivy-cache:/root/.cache
+      - ./test-results:/test-results
