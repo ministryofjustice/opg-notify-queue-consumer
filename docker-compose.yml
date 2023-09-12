@@ -96,8 +96,6 @@ services:
         condition: service_healthy
       mock-sirius:
         condition: service_healthy
-    volumes:
-      - .:/var/www
     command:
       - "/var/www/vendor/bin/phpunit"
       - "--configuration=/var/www/tests/phpunit.xml"

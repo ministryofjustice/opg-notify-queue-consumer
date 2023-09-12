@@ -29,6 +29,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: |
+          cp local.env.example local.env
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-v1-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-v1-${{ hashFiles('**/composer.lock') }}
+            composer-v1
 
       - name: Run Unit Tests Docker
         run: make unit-test
