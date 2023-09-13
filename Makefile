@@ -1,19 +1,24 @@
-all: lint static-analysis unit-test check-coverage build-dev functional-test build scan
+all: lint static-analysis unit-test check-coverage build-dev functional-test build scan down
 
 lint: copy-env
 	docker compose run lint
+
+test-results:
+	mkdir -p -m 0777 test-results .trivy-cache
+
+setup-directories: test-results
 
 static-analysis phpstan: copy-env composer-install
 	docker compose run phpstan
 
 composer-install:
-	composer install -n --prefer-dist
+	docker compose run composer
 
 unit-test: composer-install copy-env
 	docker compose --project-name notify-queue-consumer run --rm test
 
 check-coverage: copy-env
-	php -f scripts/coverage-checker.php test-results/clover/results.xml 100
+	docker compose run check-coverage
 
 DEV_DEPS:="false"
 
@@ -27,17 +32,20 @@ copy-env:
 
 functional-test: copy-env build-dev
 	docker compose up --wait -d localstack
-	docker compose up --wait --build --force-recreate -d mock-notify-ci
-	docker compose up --wait --build --force-recreate -d mock-sirius-ci
-	docker compose run test-functional-ci
+	docker compose up --wait --build --force-recreate -d mock-sirius
+	docker compose up --wait --build --force-recreate -d mock-notify
+	docker compose run test-functional
 	docker compose down
 
 phpmetrics: copy-env
 	docker compose run phpmetrics
 
-scan:
-	trivy image --exit-code 1 notify-queue-consumer:latest
+scan: setup-directories
+	docker compose run --rm trivy image --format table --exit-code 0 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:latest
+	docker compose run --rm trivy image --format sarif --output /test-results/trivy.sarif --exit-code 1 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:latest
 
 up: copy-env
-	docker compose up --wait -d localstack
 	docker compose up --wait consumer
+
+down:
+	docker compose down
