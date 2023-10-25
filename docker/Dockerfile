@@ -14,7 +14,7 @@ RUN apk --no-cache add \
   # needed by intl
   icu-dev
 # Alpine Image Vulnerabilities
-RUN apk upgrade --no-cache curl libcurl nghttp2-libs
+RUN apk upgrade --no-cache curl libcurl nghttp2-libs libcrypto3 libssl3
 
 RUN docker-php-ext-install pcntl
 RUN docker-php-ext-install calendar
