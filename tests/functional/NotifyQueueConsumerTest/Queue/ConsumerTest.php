@@ -268,13 +268,13 @@ class ConsumerTest extends TestCase
         $content = file_get_contents(self::TEST_FILE_PATH);
         $destination = basename(self::TEST_FILE_PATH);
 
-        $this->filesystem->write($destination, $content);
+        $this->filesystem->put($destination, $content);
 
         $this->awsSqsClient->sendMessage(
             [
                 'QueueUrl' => $this->queueUrl,
                 'MessageBody' => sprintf(
-                    '{"message":{"uuid":"%s","filename":"%s","documentId":"%d",
+                    '{"message":{"uuid":"%s","filename":"%s","documentId":"%d", 
                     "recipientEmail":"%s", "recipientName":"%s", "clientFirstName":"%s", "clientSurname":"%s",
                     "sendBy":{"method": "%s", "documentType": "%s"}, "letterType":"%s", "pendingOrDueReportType":"%s",
                      "caseNumber":"%s", "replyToType":"%s"}}',
