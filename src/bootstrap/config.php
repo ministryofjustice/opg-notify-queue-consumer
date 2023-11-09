@@ -13,7 +13,7 @@ return [
             'use_path_style_endpoint' => getenv('AWS_S3_USE_PATH_STYLE_ENDPOINT') ?
                 filter_var(getenv('AWS_S3_USE_PATH_STYLE_ENDPOINT'), FILTER_VALIDATE_BOOLEAN) : false,
             'bucket' => getenv('AWS_S3_BUCKET') ?: 'localbucket',
-            'prefix' => '/',
+            'prefix' => '',
             'options' => [
                 'ServerSideEncryption' => 'AES256',
             ]
