@@ -6,6 +6,8 @@ namespace NotifyQueueConsumerTest\Unit\Command\Handler;
 
 use Alphagov\Notifications\Client;
 use Alphagov\Notifications\Exception as NotifyException;
+use Aws\Command;
+use Aws\Exception\AwsException;
 use Closure;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
@@ -245,10 +247,14 @@ class SendToNotifyHandlerTest extends TestCase
 
         $command = SendToNotify::fromArray($data);
 
-        $this->mockFilesystem->method('read')->willThrowException(new UnableToReadFile("file does not exist"));
+        $this->mockFilesystem->method('read')->willThrowException(new UnableToReadFile(
+            "file does not exist",
+            0,
+            new AwsException('no permission to access KMS key', new Command('PutObject'))
+        ));
 
         self::expectException(UnexpectedValueException::class);
-        self::expectExceptionMessage("Cannot read PDF: file does not exist");
+        self::expectExceptionMessage("Cannot read PDF: file does not exist: no permission to access KMS key");
 
         $this->handler->handle($command);
     }
@@ -323,7 +329,7 @@ class SendToNotifyHandlerTest extends TestCase
 
     public function testRetrieveQueueMessageSendToNotifyEmailFailsWhenNoNotifyIdReturned(): void
     {
-       $data = $this->getData('email', 'letter', 'a6', 'HW');
+        $data = $this->getData('email', 'letter', 'a6', 'HW');
 
         $contents = "pdf content";
 

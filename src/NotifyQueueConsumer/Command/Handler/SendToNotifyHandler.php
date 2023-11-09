@@ -18,23 +18,23 @@ class SendToNotifyHandler
     private Filesystem $filesystem;
     private Client $notifyClient;
 
-    const NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE = '9286a7db-a316-4103-a1c7-7bc1fdbbaa81';
-    const NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE = '017b664c-2776-497b-ad6e-b25b8a365ae0';
-    const NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER = '3dc53e2c-7e90-4e5f-95ef-8e7a98a6ee55';
-    const NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER = '228746a3-a445-412d-995e-ae60af86b63d';
-    const NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER = 'ed08b8c0-dcd6-4cd4-9798-779189e0abe8';
-    const NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER = '7bc45244-1545-4978-9a01-926d1291b1df';
-    const NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER = 'd17bb689-52d1-4d73-a501-9955282cfe2e';
-    const NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER = '473de8af-c59f-4b7e-8e12-240450ec3fb4';
-    const NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER = 'f93687ad-d1e3-4577-83e9-1f5db0748d38';
-    const NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER = 'd43958ef-4a93-4cd8-abda-c4001785e740';
-    const NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER = '19610ca0-0225-423a-8f83-729be739be66';
-    const NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER = '08a7256f-921c-4cff-a4ef-70d50e2b1847';
-    const NOTIFY_EMAIL_HEALTH_AND_WELFARE = '9b1dfc66-8ccb-4db8-b4e7-17f03f487874';
-    const NOTIFY_EMAIL_PFA_LAY = '27e5deb5-8ea0-4d91-83d1-ae4145c351f9';
-    const NOTIFY_EMAIL_PFA_PRO = '3e6753b7-6602-4363-8c9a-c88d02b239ba';
-    const NOTIFY_EMAIL_PFA_PA = 'd8b4e115-5688-4161-82ca-82a93344a21f';
-    const NOTIFY_EMAIL_FINANCE = 'f1e5faf6-e6aa-4beb-b6b8-cfa418482653';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE = '9286a7db-a316-4103-a1c7-7bc1fdbbaa81';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE = '017b664c-2776-497b-ad6e-b25b8a365ae0';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER = '3dc53e2c-7e90-4e5f-95ef-8e7a98a6ee55';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER = '228746a3-a445-412d-995e-ae60af86b63d';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER = 'ed08b8c0-dcd6-4cd4-9798-779189e0abe8';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_RD2_LETTER = '7bc45244-1545-4978-9a01-926d1291b1df';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_RI2_LETTER = 'd17bb689-52d1-4d73-a501-9955282cfe2e';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_RI3_LETTER = '473de8af-c59f-4b7e-8e12-240450ec3fb4';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_RR1_LETTER = 'f93687ad-d1e3-4577-83e9-1f5db0748d38';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_RR2_LETTER = 'd43958ef-4a93-4cd8-abda-c4001785e740';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_RR3_LETTER = '19610ca0-0225-423a-8f83-729be739be66';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_FN14_LETTER = '08a7256f-921c-4cff-a4ef-70d50e2b1847';
+    public const NOTIFY_EMAIL_HEALTH_AND_WELFARE = '9b1dfc66-8ccb-4db8-b4e7-17f03f487874';
+    public const NOTIFY_EMAIL_PFA_LAY = '27e5deb5-8ea0-4d91-83d1-ae4145c351f9';
+    public const NOTIFY_EMAIL_PFA_PRO = '3e6753b7-6602-4363-8c9a-c88d02b239ba';
+    public const NOTIFY_EMAIL_PFA_PA = 'd8b4e115-5688-4161-82ca-82a93344a21f';
+    public const NOTIFY_EMAIL_FINANCE = 'f1e5faf6-e6aa-4beb-b6b8-cfa418482653';
 
     public function __construct(Filesystem $filesystem, Client $notifyClient)
     {
@@ -60,7 +60,13 @@ class SendToNotifyHandler
         try {
             $contents = $this->filesystem->read($pdf);
         } catch (UnableToReadFile $e) {
-            throw new UnexpectedValueException("Cannot read PDF: " . $e->getMessage());
+            $message = "Cannot read PDF";
+            do {
+                $message .= ': ' . $e->getMessage();
+                $e = $e->getPrevious();
+            } while (!is_null($e));
+
+            throw new UnexpectedValueException($message);
         }
 
         // 3. Send to notify
