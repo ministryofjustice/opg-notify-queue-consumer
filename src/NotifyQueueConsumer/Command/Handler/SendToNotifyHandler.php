@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace NotifyQueueConsumer\Command\Handler;
 
 use Alphagov\Notifications\Client;
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use UnexpectedValueException;
 use Alphagov\Notifications\Exception;
-use League\Flysystem\UnableToReadFile;
 
 class SendToNotifyHandler
 {
@@ -45,6 +45,7 @@ class SendToNotifyHandler
     /**
      * @param SendToNotify $sendToNotifyCommand
      * @return UpdateDocumentStatus
+     * @throws FileNotFoundException
      * @throws Exception\NotifyException|Exception\ApiException|Exception\UnexpectedValueException
      */
     public function handle(SendToNotify $sendToNotifyCommand): UpdateDocumentStatus
@@ -57,9 +58,9 @@ class SendToNotifyHandler
 
         // 2. Fetch PDF for queued item
         $pdf = $sendToNotifyCommand->getFilename();
-        try {
-            $contents = $this->filesystem->read($pdf);
-        } catch (UnableToReadFile) {
+        $contents = $this->filesystem->read($pdf);
+
+        if ($contents === false) {
             throw new UnexpectedValueException("Cannot read PDF");
         }
 
