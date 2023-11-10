@@ -31,7 +31,7 @@ class ConfigTest extends TestCase {
             ],
             'default_of_aws_s3_prefix' => [
                 function ($config) { return $config['aws']['s3']['prefix']; },
-                '/',
+                '',
             ],
             'default_of_aws_s3_options' => [
                 function ($config) { return $config['aws']['s3']['options']; },
