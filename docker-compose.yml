@@ -68,10 +68,10 @@ services:
     command:
       - "php"
       - "-f"
-      - "/app/scripts/coverage-checker.php" 
-      - "/app/test-results/clover/results.xml" 
+      - "/app/scripts/coverage-checker.php"
+      - "/app/test-results/clover/results.xml"
       - "100"
-      
+
   test:
     image: jakzal/phpqa:php8.2-alpine
     volumes:
@@ -108,13 +108,14 @@ services:
     image: localstack/localstack:3.0.0
     environment:
       DEFAULT_REGION: eu-west-1
-      HOSTNAME_EXTERNAL: localstack
-      SERVICES: sqs,s3
-      DEBUG: 1
     volumes:
       - "./scripts/localstack/init:/etc/localstack/init/ready.d"
       - "./scripts/localstack/wait:/scripts/wait"
       - "./tests/fixtures:/tmp/fixtures"
+    networks:
+      default:
+        aliases:
+          - sqs.eu-west-1.localhost.localstack.cloud
     healthcheck:
       test: bash /scripts/wait/health_check.sh
       interval: 15s
