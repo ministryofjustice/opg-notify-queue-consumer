@@ -6,10 +6,10 @@ COPY composer.lock composer.lock
 
 RUN composer check-platform-reqs
 RUN if [ "$ENABLE_DEV_DEPS" = "true" ] ; then composer install --prefer-dist --no-interaction --no-scripts; else \
-    composer install --prefer-dist --no-interaction --no-scripts --no-dev; fi
+  composer install --prefer-dist --no-interaction --no-scripts --no-dev; fi
 RUN composer dumpautoload -o
 
-FROM php:8.2.12-cli-alpine
+FROM php:8.3.0-cli-alpine
 RUN apk --no-cache add \
   # needed by intl
   icu-dev
