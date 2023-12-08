@@ -15,10 +15,10 @@ services:
         condition: service_healthy
       mock-sirius:
         condition: service_healthy
-    env_file: [local.env]
+    env_file: [ local.env ]
 
   phpstan:
-    image: jakzal/phpqa:php8.2-alpine
+    image: jakzal/phpqa:php8.3-alpine
     volumes:
       - .:/app
     command:
@@ -28,7 +28,7 @@ services:
       - "/app/tests/phpstan.neon"
 
   phpmetrics:
-    image: jakzal/phpqa:php8.2-alpine
+    image: jakzal/phpqa:php8.3-alpine
     volumes:
       - .:/app
     command:
@@ -37,7 +37,7 @@ services:
       - "/app/src/NotifyQueueConsumer"
 
   lint:
-    image: jakzal/phpqa:php8.2-alpine
+    image: jakzal/phpqa:php8.3-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -51,7 +51,7 @@ services:
       - /app/public
 
   phpmd:
-    image: jakzal/phpqa:php8.2-alpine
+    image: jakzal/phpqa:php8.3-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -62,7 +62,7 @@ services:
       - codesize,unusedcode,naming
 
   check-coverage:
-    image: jakzal/phpqa:php8.2-alpine
+    image: jakzal/phpqa:php8.3-alpine
     volumes:
       - .:/app
     command:
@@ -73,7 +73,7 @@ services:
       - "100"
 
   test:
-    image: jakzal/phpqa:php8.2-alpine
+    image: jakzal/phpqa:php8.3-alpine
     volumes:
       - .:/app
     command:
@@ -102,7 +102,7 @@ services:
       - "--no-coverage"
       - "--log-junit=/var/www/test-results/functional/results.xml"
       - "--testsuite=functional"
-    env_file: [local.env]
+    env_file: [ local.env ]
 
   localstack:
     image: localstack/localstack:3.0.1
