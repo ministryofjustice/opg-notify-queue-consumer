@@ -14,9 +14,10 @@ use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Queue\Consumer;
 use NotifyQueueConsumer\Queue\SqsAdapter;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
-use Psr\Log\Test\TestLogger;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 class ConsumerTest extends TestCase
@@ -26,16 +27,16 @@ class ConsumerTest extends TestCase
     private SqsClient $awsSqsClient;
     private string $queueUrl;
     private Consumer $consumer;
-    private TestLogger $logger;
+    private LoggerInterface&MockObject $logger;
     private HandlerStack $guzzleHandlerStack;
 
     public function setUp(): void
     {
         global $awsSqsClient,
-               $filesystem,
-               $config,
-               $sendToNotifyHandler,
-               $updateDocumentStatusHandler;
+        $filesystem,
+        $config,
+        $sendToNotifyHandler,
+        $updateDocumentStatusHandler;
 
         parent::setUp();
 
@@ -62,14 +63,14 @@ class ConsumerTest extends TestCase
             $filesystem,
             $notifyClient
         );
-        $this->logger = new TestLogger();
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->consumer = new Consumer(
             $queueAdapter,
             $sendToNotifyHandler,
             $updateDocumentStatusHandler,
             $this->logger,
-            function() {},
+            function () {},
         );
     }
 
@@ -136,17 +137,13 @@ class ConsumerTest extends TestCase
             'Success',
         ];
 
+
+        $this->logger
+            ->expects($this->exactly(count($expectedLogMessageSequence)))
+            ->method('info')
+            ->with($this->callback(fn ($msg) => in_array($msg, $expectedLogMessageSequence)));
+
         $this->consumer->run();
-
-        self::assertNotEmpty($this->logger->records);
-
-        foreach ($expectedLogMessageSequence as $i => $expectedMessage) {
-            self::assertEquals(
-                $expectedMessage,
-                $this->logger->records[$i]['message'],
-                var_export($this->logger->records, true)
-            );
-        }
     }
 
     /**
@@ -175,17 +172,12 @@ class ConsumerTest extends TestCase
             'Success',
         ];
 
+        $this->logger
+            ->expects($this->exactly(count($expectedLogMessageSequence)))
+            ->method('info')
+            ->with($this->callback(fn ($msg) => in_array($msg, $expectedLogMessageSequence)));
+
         $this->consumer->run();
-
-        self::assertNotEmpty($this->logger->records);
-
-        foreach ($expectedLogMessageSequence as $i => $expectedMessage) {
-            self::assertEquals(
-                $expectedMessage,
-                $this->logger->records[$i]['message'],
-                var_export($this->logger->records, true)
-            );
-        }
     }
 
     /**
@@ -209,20 +201,19 @@ class ConsumerTest extends TestCase
         $expectedLogMessageSequence = [
             'Asking for next message',
             'Sending to Notify',
-            'Error processing message',
         ];
 
+        $this->logger
+            ->expects($this->exactly(count($expectedLogMessageSequence)))
+            ->method('info')
+            ->with($this->callback(fn ($msg) => in_array($msg, $expectedLogMessageSequence)));
+
+        $this->logger
+            ->expects($this->once())
+            ->method('critical')
+            ->with('Error processing message');
+
         $this->consumer->run();
-
-        self::assertNotEmpty($this->logger->records);
-
-        foreach ($expectedLogMessageSequence as $i => $expectedMessage) {
-            self::assertEquals(
-                $expectedMessage,
-                $this->logger->records[$i]['message'],
-                var_export($this->logger->records, true)
-            );
-        }
     }
 
     /**
@@ -250,17 +241,12 @@ class ConsumerTest extends TestCase
             'Deleting duplicate message',
         ];
 
+        $this->logger
+            ->expects($this->exactly(count($expectedLogMessageSequence)))
+            ->method('info')
+            ->with($this->callback(fn ($msg) => in_array($msg, $expectedLogMessageSequence)));
+
         $this->consumer->run();
-
-        self::assertNotEmpty($this->logger->records);
-
-        foreach ($expectedLogMessageSequence as $i => $expectedMessage) {
-            self::assertEquals(
-                $expectedMessage,
-                $this->logger->records[$i]['message'],
-                var_export($this->logger->records, true)
-            );
-        }
     }
 
     private function createMessageWithFile(string $uuid, int $documentId, ?string $letterType, string $sendByMethod, string $sendByDocumentType, ?string $replyToType): void
