@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Psr\Log\Test\TestLogger;
+use Monolog\Logger;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -12,7 +12,7 @@ if (getenv('OPG_NOTIFY_API_KEY') !== false) {
     $config = require_once __DIR__ . '/../src/bootstrap/config.php';
     $GLOBALS['config'] = $config;
 
-    $psrLoggerAdapter = new TestLogger();
+    $psrLoggerAdapter = new Logger('test');
     $GLOBALS['psrLoggerAdapter'] = $psrLoggerAdapter;
 
     $GLOBALS['exportGlobalsInSuperGlobal'] = true;
