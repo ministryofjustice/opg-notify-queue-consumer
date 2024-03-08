@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
-use Laminas\Log\Formatter\Json;
-use Laminas\Log\Logger;
-use Laminas\Log\PsrLoggerAdapter;
-use Laminas\Log\Writer\Stream;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use NotifyQueueConsumer\Logging\Context;
+use NotifyQueueConsumer\Logging\OpgFormatter;
+use Psr\Log\LogLevel;
 
 $doRunLoop = true;
 
 // Setup logging
-$formatter = new Json();
-$logger = new Logger();
-$writer = new Stream("php://stdout");
-$writer->setFormatter($formatter);
-$logger->addWriter($writer);
-$psrLoggerAdapter = new PsrLoggerAdapter($logger);
+$streamHandler = new StreamHandler('php://stderr', LogLevel::INFO);
+$streamHandler->setFormatter(new OpgFormatter());
+$psrLoggerAdapter = new Logger('opg-notify-queue-consumer', [$streamHandler]);
 
 // Set custom handlers
 function shutdown_handler(): void
