@@ -4,7 +4,7 @@
   "type": "project",
   "license": "ISC",
   "require": {
-    "alphagov/notifications-php-client": "^5.0",
+    "alphagov/notifications-php-client": "^6.0",
     "aws/aws-sdk-php": "^3.147",
     "guzzlehttp/guzzle": "^7.0",
     "guzzlehttp/psr7": "^2.0",
