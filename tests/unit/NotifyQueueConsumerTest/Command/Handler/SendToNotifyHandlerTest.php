@@ -259,6 +259,7 @@ class SendToNotifyHandlerTest extends TestCase
         $this->handler->handle($command);
     }
 
+
     public function testNotifyResponseIdNotFoundFailure(): void
     {
         $data = $this->getData('post', 'letter', null, null);
