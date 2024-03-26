@@ -160,7 +160,7 @@ class SendToNotifyHandler
             'case_number' => $sendToNotifyCommand->getCaseNumber(),
             'client_first_name' => $sendToNotifyCommand->getClientFirstName(),
             'client_surname' => $sendToNotifyCommand->getClientSurname(),
-            'link_to_file' => $this->notifyClient->prepareUpload($contents, false, null, '56 weeks'),
+            'link_to_file' => $this->notifyClient->prepareUpload($contents, null, null, '56 weeks'),
         ];
 
         $sendResponse = $this->notifyClient->sendEmail(

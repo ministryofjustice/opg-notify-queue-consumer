@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2470ad2ad0d1f98b35594ff53acf99e4",
+    "content-hash": "1ae963cd5b5bf0dbf5a34907fc981a33",
     "packages": [
         {
             "name": "alphagov/notifications-php-client",
-            "version": "5.0.0",
+            "version": "6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alphagov/notifications-php-client.git",
-                "reference": "3dbe415415b52c07a986559aae5152481df90213"
+                "reference": "ffa3cefd063ec951c55ea612ebb11c32454a54dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alphagov/notifications-php-client/zipball/3dbe415415b52c07a986559aae5152481df90213",
-                "reference": "3dbe415415b52c07a986559aae5152481df90213",
+                "url": "https://api.github.com/repos/alphagov/notifications-php-client/zipball/ffa3cefd063ec951c55ea612ebb11c32454a54dd",
+                "reference": "ffa3cefd063ec951c55ea612ebb11c32454a54dd",
                 "shasum": ""
             },
             "require": {
@@ -55,9 +55,9 @@
             "description": "PHP client for GOV.UK Notifications",
             "support": {
                 "issues": "https://github.com/alphagov/notifications-php-client/issues",
-                "source": "https://github.com/alphagov/notifications-php-client/tree/5.0.0"
+                "source": "https://github.com/alphagov/notifications-php-client/tree/6.0.0"
             },
-            "time": "2022-12-16T11:40:31+00:00"
+            "time": "2024-01-04T12:29:59+00:00"
         },
         {
             "name": "aws/aws-crt-php",
@@ -210,16 +210,16 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.5.0",
+            "version": "v6.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "e94e7353302b0c11ec3cfff7180cd0b1743975d2"
+                "reference": "a49db6f0a5033aef5143295342f1c95521b075ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/e94e7353302b0c11ec3cfff7180cd0b1743975d2",
-                "reference": "e94e7353302b0c11ec3cfff7180cd0b1743975d2",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/a49db6f0a5033aef5143295342f1c95521b075ff",
+                "reference": "a49db6f0a5033aef5143295342f1c95521b075ff",
                 "shasum": ""
             },
             "require": {
@@ -267,9 +267,9 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.5.0"
+                "source": "https://github.com/firebase/php-jwt/tree/v6.10.0"
             },
-            "time": "2023-05-12T15:47:07+00:00"
+            "time": "2023-12-01T16:26:39+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
