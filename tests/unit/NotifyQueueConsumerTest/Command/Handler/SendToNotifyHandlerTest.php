@@ -146,6 +146,27 @@ class SendToNotifyHandlerTest extends TestCase
         $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
     }
 
+    #[ArrayShape([
+        'FF2 Template' => "array",
+    ])] public static function debtChaseLetterData(): array
+    {
+        return [
+            'FF2 Template' => ['ff2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF2_LETTER],
+        ];
+    }
+
+    /**
+     * @dataProvider debtChaseLetterData
+     */
+    public function testRetrieveQueueMessageSendToNotifyDebtChaseLetterAndReturnCommandExpected(string $letterType, string $letterTemplate): void
+    {
+        $data = $this->getData('email', 'letter', $letterType, null);
+
+        $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
+    }
+
+
+
     /**
      * @param Exception $notifyException
      * @dataProvider notifyExceptionProvider
