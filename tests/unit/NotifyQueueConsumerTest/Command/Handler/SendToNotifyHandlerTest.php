@@ -148,10 +148,12 @@ class SendToNotifyHandlerTest extends TestCase
 
     #[ArrayShape([
         'FF2 Template' => "array",
+        'FF3 Template' => "array",
     ])] public static function debtChaseLetterData(): array
     {
         return [
             'FF2 Template' => ['ff2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF2_LETTER],
+            'FF3 Template' => ['ff3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF3_LETTER],
         ];
     }
 
