@@ -175,6 +175,11 @@ services:
 
   trivy:
     image: aquasec/trivy:latest
+    environment:
+      - TRIVY_DB_REPOSITORY=${TRIVY_DB_REPOSITORY}
+      - TRIVY_JAVA_DB_REPOSITORY=${TRIVY_JAVA_DB_REPOSITORY}
+      - TRIVY_USERNAME=${DOCKER_USERNAME}
+      - TRIVY_PASSWORD=${DOCKER_PASSWORD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./.trivy-cache:/root/.cache
