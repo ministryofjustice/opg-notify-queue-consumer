@@ -112,7 +112,28 @@ jobs:
       - name: Build Container
         run: make build
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ACTIONS }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::311462405659:role/sirius-actions-ci
+          role-duration-seconds: 3600
+          role-session-name: GitHubActions
+
+      - name: ECR Login
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: 311462405659
+
       - name: Trivy Image Vulnerability Scanner
+        env:
+          TRIVY_DB_REPOSITORY: ${{ steps.login-ecr.outputs.registry }}/trivy-db-public-ecr/aquasecurity/trivy-db:2
+          TRIVY_JAVA_DB_REPOSITORY: ${{ steps.login-ecr.outputs.registry }}/trivy-db-public-ecr/aquasecurity/trivy-java-db:1
+          DOCKER_USERNAME: ${{ steps.login-ecr.outputs.docker_username_311462405659_dkr_ecr_eu_west_1_amazonaws_com }}
+          DOCKER_PASSWORD: ${{ steps.login-ecr.outputs.docker_password_311462405659_dkr_ecr_eu_west_1_amazonaws_com }}
         run: make scan
 
       - name: Upload Trivy scan results to GitHub Security tab
@@ -132,22 +153,6 @@ jobs:
           PRERELEASE_SUFFIX: ${{ env.BRANCH_NAME }}
           RELEASE_BRANCHES: main
           WITH_V: true
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ACTIONS }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
-          aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::311462405659:role/sirius-actions-ci
-          role-duration-seconds: 3600
-          role-session-name: GitHubActions
-
-      - name: ECR Login
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registries: 311462405659
 
       - name: Push Container
         run: |
