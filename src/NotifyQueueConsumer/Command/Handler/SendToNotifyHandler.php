@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NotifyQueueConsumer\Command\Handler;
 
 use Alphagov\Notifications\Client;
+use DateTime;
 use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Command\Model\UpdateDocumentStatus;
@@ -33,7 +34,7 @@ class SendToNotifyHandler
     public const NOTIFY_TEMPLATE_DOWNLOAD_FF2_LETTER = '3bbac4aa-dc74-47f3-89f8-64e510cadb7c';
     public const NOTIFY_TEMPLATE_DOWNLOAD_FF3_LETTER = '972f67d4-7323-47a8-9bf9-a46fa4ad3700';
     public const NOTIFY_TEMPLATE_DOWNLOAD_FF4_LETTER = 'd00c3b14-e23f-455d-96bc-adb36f21fc36';
-    public const NOTIFY_TEMPLATE_DOWNLOAD_PA_MONTHLY_SPREADSHEET = '6c668543-fde4-4e61-80d0-7d81749af1ba';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_PA_MONTHLY_SPREADSHEET = '27db7363-540f-45bd-9059-da763e20a664';
 
     public const NOTIFY_EMAIL_HEALTH_AND_WELFARE = '9b1dfc66-8ccb-4db8-b4e7-17f03f487874';
     public const NOTIFY_EMAIL_PFA_LAY = '27e5deb5-8ea0-4d91-83d1-ae4145c351f9';
@@ -169,6 +170,7 @@ class SendToNotifyHandler
             'client_first_name' => $sendToNotifyCommand->getClientFirstName(),
             'client_surname' => $sendToNotifyCommand->getClientSurname(),
             'link_to_file' => $this->notifyClient->prepareUpload($contents, null, null, '56 weeks'),
+            'last_month' => $this->returnLastCalendarMonthAsString()
         ];
 
         $sendResponse = $this->notifyClient->sendEmail(
@@ -211,5 +213,12 @@ class SendToNotifyHandler
         }
 
         return false;
+    }
+
+    private function returnLastCalendarMonthAsString(): string
+    {
+        $now = new DateTime();
+        $previousMonth = $now->modify('first day of previous month');
+        return $previousMonth->format('F');
     }
 }
