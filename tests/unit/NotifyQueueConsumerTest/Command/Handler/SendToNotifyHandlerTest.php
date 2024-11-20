@@ -9,6 +9,7 @@ use Alphagov\Notifications\Exception as NotifyException;
 use Aws\Command;
 use Aws\Exception\AwsException;
 use Closure;
+use DateTime;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use League\Flysystem\Filesystem;
@@ -150,12 +151,14 @@ class SendToNotifyHandlerTest extends TestCase
         'FF2 Template' => "array",
         'FF3 Template' => "array",
         'FF4 Template' => "array",
+        "PASPR Template" => "array",
     ])] public static function debtChaseLetterData(): array
     {
         return [
             'FF2 Template' => ['ff2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF2_LETTER],
             'FF3 Template' => ['ff3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF3_LETTER],
             'FF4 Template' => ['ff4', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF4_LETTER],
+            'PASPR Template' => ['paspr', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_PA_MONTHLY_SPREADSHEET],
         ];
     }
 
@@ -494,7 +497,8 @@ class SendToNotifyHandlerTest extends TestCase
         'client_surname' => "mixed",
         'link_to_file' => "array",
         'pending_or_due_report_type' => "mixed",
-        'case_number' => "mixed"
+        'case_number' => "mixed",
+        'last_month' => "mixed",
     ])] public function getPersonalisationData(array $data, array $prepareUploadResponse): array
     {
         return [
@@ -504,11 +508,16 @@ class SendToNotifyHandlerTest extends TestCase
             'link_to_file' => $prepareUploadResponse,
             'pending_or_due_report_type' => $data['pendingOrDueReportType'],
             'case_number' => $data['caseNumber'],
+            'last_month' => $data['lastMonth'],
         ];
     }
 
     private function getData(string $sendByMethod, string $sendByDocType, ?string $letterType, ?string $replyToType): array
     {
+        $now = new DateTime();
+        $previousMonth = $now->modify('first day of previous month');
+        $lastMonth = $previousMonth->format('F');
+
         return [
             'id' => '123',
             'uuid' => 'asd-456',
@@ -525,6 +534,7 @@ class SendToNotifyHandlerTest extends TestCase
             'letterType' => $letterType,
             'pendingOrDueReportType' => 'OPG103',
             'caseNumber' => '74442574',
+            'lastMonth' => $lastMonth,
             'replyToType' => $replyToType
         ];
     }
