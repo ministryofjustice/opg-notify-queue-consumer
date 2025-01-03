@@ -40,6 +40,6 @@ return [
     'sirius' => [
         'update_status_endpoint' => getenv('OPG_SIRIUS_UPDATE_STATUS_ENDPOINT') ?: '/update-status',
         'jwt_secret' => getenv('JWT_SECRET') === false ? 'mysupersecrettestkeythatis128bits' : getenv('JWT_SECRET'),
-        'api_user_email' => getenv('API_USER_EMAIL') === false ? 'publicapi@opgtest.com' : getenv('API_USER_EMAIL')
+        'api_user_email' => getenv('API_USER_EMAIL') === false ? 'opg+publicapi@digital.justice.gov.uk' : getenv('API_USER_EMAIL')
     ],
 ];
