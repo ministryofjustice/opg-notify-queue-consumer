@@ -90,12 +90,12 @@ jobs:
         run: make phpstan
 
   build:
-  name: Build Image
-  uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@v3.8.0
-  with:
-    image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer
-    build_options: --build-arg ENABLE_DEV_DEPS=false --file docker/Dockerfile
-    cli_commands: make copy-env
+    name: Build Image
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@v3.8.0
+    with:
+      image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer
+      build_options: --build-arg ENABLE_DEV_DEPS=false --file docker/Dockerfile
+      cli_commands: make copy-env
 
   push:
     name: "Push Image"
