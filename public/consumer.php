@@ -6,9 +6,7 @@ use NotifyQueueConsumer\Logging\Context;
 use NotifyQueueConsumer\Queue\Consumer;
 use Psr\Log\LoggerInterface;
 
-/** @var LoggerInterface $psrLoggerAdapter */
 /** @var Consumer $consumer */
-$psrLoggerAdapter = null;
 $doRunLoop = false;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -30,6 +28,7 @@ try {
     exception_handler($e);
 }
 
+/** @var LoggerInterface $psrLoggerAdapter */
 $psrLoggerAdapter->info('Finished', ['context' => Context::NOTIFY_CONSUMER]);
 
 exit(0);
