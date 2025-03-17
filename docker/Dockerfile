@@ -1,4 +1,4 @@
-FROM composer as composer
+FROM composer AS composer
 
 ARG ENABLE_DEV_DEPS=false
 COPY composer.json composer.json
