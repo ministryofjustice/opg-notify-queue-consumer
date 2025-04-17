@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NotifyQueueConsumerTest\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase {
@@ -73,10 +74,10 @@ class ConfigTest extends TestCase {
     }
 
     /**
-     * @dataProvider configDefaults
      * @param callable $configArrayAccess
      * @param mixed $expectedDefault
      */
+    #[DataProvider('configDefaults')]
     public function test_config_defaults(callable $configArrayAccess, $expectedDefault) {
         $config = include(__DIR__ . '/../../../src/bootstrap/config.php');
 
@@ -161,12 +162,12 @@ class ConfigTest extends TestCase {
     }
 
     /**
-     * @dataProvider configValuesFromEnvironmentVariables
      * @param callable $configArrayAccess
      * @param string $environmentVariableKey
      * @param string $envionmentVaraiableValue
      * @param mixed $expectedConfigValue
      */
+    #[DataProvider('configValuesFromEnvironmentVariables')]
     public function test_config_parsing(callable $configArrayAccess, string $environmentVariableKey, string $envionmentVaraiableValue, $expectedConfigValue) {
         putenv($environmentVariableKey . '=' . $envionmentVaraiableValue); // 'AWS_S3_USE_PATH_STYLE_ENDPOINT=false');
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NotifyQueueConsumerTest\Unit\Mapper;
 
 use NotifyQueueConsumer\Mapper\NotifyStatus;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 
@@ -13,8 +14,8 @@ class NotifyStatusTest extends TestCase
     /**
      * @param string $notifyStatus
      * @param string $expectedResult
-     * @dataProvider notifyStatusProvider
      */
+    #[DataProvider('notifyStatusProvider')]
     public function testToSiriusSuccess(string $notifyStatus, string $expectedResult)
     {
         $mapper = new NotifyStatus();
