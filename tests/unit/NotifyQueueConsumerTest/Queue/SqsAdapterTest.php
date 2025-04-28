@@ -9,6 +9,7 @@ use Aws\Sqs\SqsClient;
 use Exception;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Queue\SqsAdapter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
@@ -23,11 +24,7 @@ class SqsAdapterTest extends TestCase
     public function setUp(): void
     {
         // The AWS SDK uses magic methods so we need a workaround to mock them
-        $this->sqsClientMock = $this
-            ->getMockBuilder(SqsClient::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['receiveMessage', 'deleteMessage'])
-            ->getMock();
+        $this->sqsClientMock = $this->createMock(SqsClient::class);
     }
 
     /**
@@ -80,7 +77,7 @@ class SqsAdapterTest extends TestCase
 
         $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
 
-        $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
+        $this->sqsClientMock->expects(self::once())->method('__call')->with('receiveMessage', [$config])->willReturn($awsResult);
 
         $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
@@ -140,7 +137,7 @@ class SqsAdapterTest extends TestCase
 
         $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
 
-        $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
+        $this->sqsClientMock->expects(self::once())->method('__call')->with('receiveMessage', [$config])->willReturn($awsResult);
 
         $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
@@ -202,7 +199,7 @@ class SqsAdapterTest extends TestCase
 
         $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
 
-        $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
+        $this->sqsClientMock->expects(self::once())->method('__call')->with('receiveMessage', [$config])->willReturn($awsResult);
 
         $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
@@ -229,7 +226,7 @@ class SqsAdapterTest extends TestCase
 
         $awsResult->method('get')->with('Messages')->willReturn(null);
 
-        $this->sqsClientMock->expects(self::once())->method('receiveMessage')->with($config)->willReturn($awsResult);
+        $this->sqsClientMock->expects(self::once())->method('__call')->with('receiveMessage', [$config])->willReturn($awsResult);
 
         $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
@@ -241,8 +238,8 @@ class SqsAdapterTest extends TestCase
     /**
      * @param array<mixed> $rawMessageBody
      * @throws Exception
-     * @dataProvider invalidMessageProvider
      */
+    #[DataProvider('invalidMessageProvider')]
     public function testNextInvalidMessageThrowsExceptionFailure(array $rawMessageBody, string $errorMessage): void
     {
         $awsResult = $this->createMock(Result::class);
@@ -260,7 +257,7 @@ class SqsAdapterTest extends TestCase
 
         $awsResult->method('get')->with('Messages')->willReturn([$rawData]);
 
-        $this->sqsClientMock->method('receiveMessage')->with($config)->willReturn($awsResult);
+        $this->sqsClientMock->method('__call')->with('receiveMessage', [$config])->willReturn($awsResult);
 
         $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
 
@@ -317,12 +314,13 @@ class SqsAdapterTest extends TestCase
 
         $this->sqsClientMock
             ->expects(self::once())
-            ->method('deleteMessage')
+            ->method('__call')
             ->with(
-                [
+                'deleteMessage',
+                [[
                     'QueueUrl' => self::QUEUE_URL,
                     'ReceiptHandle' => $command->getId(),
-                ]
+                ]]
             );
 
         $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
