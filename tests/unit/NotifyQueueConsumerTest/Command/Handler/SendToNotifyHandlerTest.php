@@ -17,6 +17,7 @@ use League\Flysystem\UnableToReadFile;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
 use NotifyQueueConsumer\Queue\DuplicateMessageException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -101,9 +102,7 @@ class SendToNotifyHandlerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider financeInvoiceLetterData
-     */
+    #[DataProvider('financeInvoiceLetterData')]
     public function testRetrieveQueueMessageSendToNotifyEmailInvoiceAndReturnCommandExpected(string $letterType, string $letterTemplate, string $replyToType): void
     {
         $data = $this->getData('email', 'letter', $letterType, $replyToType);
@@ -137,9 +136,7 @@ class SendToNotifyHandlerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider annualReportLetterData
-     */
+    #[DataProvider('annualReportLetterData')]
     public function testRetrieveQueueMessageSendToNotifyEmailLetterAndReturnCommandExpected(string $letterType, string $letterTemplate, ?string $replyToType): void
     {
         $data = $this->getData('email', 'letter', $letterType, $replyToType);
@@ -162,9 +159,7 @@ class SendToNotifyHandlerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider debtChaseLetterData
-     */
+    #[DataProvider('debtChaseLetterData')]
     public function testRetrieveQueueMessageSendToNotifyDebtChaseLetterAndReturnCommandExpected(string $letterType, string $letterTemplate): void
     {
         $data = $this->getData('email', 'letter', $letterType, null);
@@ -176,8 +171,8 @@ class SendToNotifyHandlerTest extends TestCase
 
     /**
      * @param Exception $notifyException
-     * @dataProvider notifyExceptionProvider
      */
+    #[DataProvider('notifyExceptionProvider')]
     public function testSendToNotifyBubblesUpApiExceptionFailure(Closure $notifyExceptionClosure): void
     {
         $mockHttpResponse = $this->createMock(ResponseInterface::class);

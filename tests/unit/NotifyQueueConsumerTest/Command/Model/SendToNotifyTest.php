@@ -6,6 +6,7 @@ namespace NotifyQueueConsumerTest\Unit\Command\Model;
 
 use NotifyQueueConsumer\Command\Model\AggregateValidationException;
 use NotifyQueueConsumer\Command\Model\SendToNotify;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class SendToNotifyTest extends TestCase
@@ -22,9 +23,8 @@ class SendToNotifyTest extends TestCase
             [null]
         ];
     }
-    /**
-     * @dataProvider fromArrayProvider
-     */
+
+    #[DataProvider('fromArrayProvider')]
     public function testFromArraySuccess(?string $replyToType): void
     {
         $data = [
@@ -56,8 +56,8 @@ class SendToNotifyTest extends TestCase
 
     /**
      * @param array<string,string> $data
-     * @dataProvider commandDataProvider
      */
+    #[DataProvider('commandDataProvider')]
     public function testFromArrayThrowsExceptionFailure(array $data, string $expectedMessage): void
     {
         self::expectException(AggregateValidationException::class);

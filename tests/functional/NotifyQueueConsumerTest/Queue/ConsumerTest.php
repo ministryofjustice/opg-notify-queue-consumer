@@ -14,6 +14,7 @@ use League\Flysystem\Filesystem;
 use NotifyQueueConsumer\Command\Handler\SendToNotifyHandler;
 use NotifyQueueConsumer\Queue\Consumer;
 use NotifyQueueConsumer\Queue\SqsAdapter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -83,8 +84,8 @@ class ConsumerTest extends TestCase
                 [
                     'QueueName' => $queueName,
                     'Attributes' => [
-                        'VisibilityTimeout' => 0,
-                        'ReceiveMessageWaitTimeSeconds' => 0,
+                        'VisibilityTimeout' => '0',
+                        'ReceiveMessageWaitTimeSeconds' => '0',
                     ],
                 ]
             );
@@ -120,9 +121,7 @@ class ConsumerTest extends TestCase
         ];
     }
 
-    /**
-     * @@dataProvider  messageProvider
-     */
+    #[DataProvider('messageProvider')]
     public function testRunNotifySendUpdateStatusSuccess(?string $templateId, string $sendByMethod, string $sendByDocumentType, ?string $replyToType)
     {
         $this->createMessageWithFile((string)Uuid::uuid4(), 1234, $templateId, $sendByMethod, $sendByDocumentType, $replyToType);
