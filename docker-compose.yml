@@ -15,7 +15,7 @@ services:
     env_file: [ local.env ]
 
   phpstan:
-    image: jakzal/phpqa:php8.3-alpine
+    image: jakzal/phpqa:php8.4-alpine
     volumes:
       - .:/app
     command:
@@ -25,7 +25,7 @@ services:
       - "/app/tests/phpstan.neon"
 
   phpmetrics:
-    image: jakzal/phpqa:php8.3-alpine
+    image: jakzal/phpqa:php8.4-alpine
     volumes:
       - .:/app
     command:
@@ -34,7 +34,7 @@ services:
       - "/app/src/NotifyQueueConsumer"
 
   lint:
-    image: jakzal/phpqa:php8.3-alpine
+    image: jakzal/phpqa:php8.4-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -48,7 +48,7 @@ services:
       - /app/public
 
   phpmd:
-    image: jakzal/phpqa:php8.3-alpine
+    image: jakzal/phpqa:php8.4-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -59,7 +59,7 @@ services:
       - codesize,unusedcode,naming
 
   check-coverage:
-    image: jakzal/phpqa:php8.3-alpine
+    image: jakzal/phpqa:php8.4-alpine
     volumes:
       - .:/app
     command:
