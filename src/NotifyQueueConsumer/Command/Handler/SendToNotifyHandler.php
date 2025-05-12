@@ -36,8 +36,6 @@ class SendToNotifyHandler
     public const NOTIFY_TEMPLATE_DOWNLOAD_FF3_LETTER = '972f67d4-7323-47a8-9bf9-a46fa4ad3700';
     public const NOTIFY_TEMPLATE_DOWNLOAD_FF4_LETTER = 'd00c3b14-e23f-455d-96bc-adb36f21fc36';
     public const NOTIFY_TEMPLATE_DOWNLOAD_PA_MONTHLY_SPREADSHEET = '27db7363-540f-45bd-9059-da763e20a664';
-    public const NOTIFY_TEMPLATE_CCNTBP = '1c29d8d4-ad8b-4218-b594-3ee1c8789b19';
-
     public const NOTIFY_EMAIL_HEALTH_AND_WELFARE = '9b1dfc66-8ccb-4db8-b4e7-17f03f487874';
     public const NOTIFY_EMAIL_PFA_LAY = '27e5deb5-8ea0-4d91-83d1-ae4145c351f9';
     public const NOTIFY_EMAIL_PFA_PRO = '3e6753b7-6602-4363-8c9a-c88d02b239ba';
@@ -97,7 +95,6 @@ class SendToNotifyHandler
                 'ff3' => self::NOTIFY_TEMPLATE_DOWNLOAD_FF3_LETTER,
                 'ff4' => self::NOTIFY_TEMPLATE_DOWNLOAD_FF4_LETTER,
                 'paspr' => self::NOTIFY_TEMPLATE_DOWNLOAD_PA_MONTHLY_SPREADSHEET,
-                'ccntbp' => self::NOTIFY_TEMPLATE_CCNTBP,
                 default => null,
             };
 
