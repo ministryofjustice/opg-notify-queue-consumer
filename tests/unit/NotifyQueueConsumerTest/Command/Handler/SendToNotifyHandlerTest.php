@@ -111,6 +111,25 @@ class SendToNotifyHandlerTest extends TestCase
     }
 
     #[ArrayShape([
+        'A9 Template' => "array",
+        'PASPR Template' => "array",
+    ])] public static function emailData(): array
+    {
+        return [
+            'A9 Template' => ['a9', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A9_LETTER, 'PFA LAY'],
+            'PASPR Template' => ['paspr', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_PA_MONTHLY_SPREADSHEET, 'PFA PA']
+        ];
+    }
+
+    #[DataProvider('emailData')]
+    public function testRetrieveQueueMessageSendToNotifyEmailAndReturnCommandExpected(string $letterType, string $letterTemplate, string $replyToType): void
+    {
+        $data = $this->getData('email', 'letter', $letterType, $replyToType);
+
+        $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
+    }
+
+    #[ArrayShape([
         'BS1 Template' => "array",
         'BS2 Template' => "array",
         'FN14 Template' => "array",
@@ -155,7 +174,6 @@ class SendToNotifyHandlerTest extends TestCase
             'FF2 Template' => ['ff2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF2_LETTER],
             'FF3 Template' => ['ff3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF3_LETTER],
             'FF4 Template' => ['ff4', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_FF4_LETTER],
-            'PASPR Template' => ['paspr', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_PA_MONTHLY_SPREADSHEET],
         ];
     }
 
@@ -166,9 +184,7 @@ class SendToNotifyHandlerTest extends TestCase
 
         $this->setupForInvoiceAndLettersWithAssertions($data, $letterTemplate);
     }
-
-
-
+    
     /**
      * @param Exception $notifyException
      */

@@ -20,6 +20,7 @@ class SendToNotifyHandler
     private Client $notifyClient;
 
     public const NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE = '9286a7db-a316-4103-a1c7-7bc1fdbbaa81';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_A9_LETTER = '6b474e4a-28be-425b-8e90-f343159db5d6';
     public const NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE = '017b664c-2776-497b-ad6e-b25b8a365ae0';
     public const NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER = '3dc53e2c-7e90-4e5f-95ef-8e7a98a6ee55';
     public const NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER = '228746a3-a445-412d-995e-ae60af86b63d';
@@ -35,7 +36,6 @@ class SendToNotifyHandler
     public const NOTIFY_TEMPLATE_DOWNLOAD_FF3_LETTER = '972f67d4-7323-47a8-9bf9-a46fa4ad3700';
     public const NOTIFY_TEMPLATE_DOWNLOAD_FF4_LETTER = 'd00c3b14-e23f-455d-96bc-adb36f21fc36';
     public const NOTIFY_TEMPLATE_DOWNLOAD_PA_MONTHLY_SPREADSHEET = '27db7363-540f-45bd-9059-da763e20a664';
-
     public const NOTIFY_EMAIL_HEALTH_AND_WELFARE = '9b1dfc66-8ccb-4db8-b4e7-17f03f487874';
     public const NOTIFY_EMAIL_PFA_LAY = '27e5deb5-8ea0-4d91-83d1-ae4145c351f9';
     public const NOTIFY_EMAIL_PFA_PRO = '3e6753b7-6602-4363-8c9a-c88d02b239ba';
@@ -79,6 +79,7 @@ class SendToNotifyHandler
         if ($sendBy['method'] === 'email' && $sendBy['documentType'] === 'letter') {
             $letterTemplate = match ($sendToNotifyCommand->getLetterType()) {
                 'a6' => self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
+                'a9' => self::NOTIFY_TEMPLATE_DOWNLOAD_A9_LETTER,
                 'af1', 'af2', 'af3' => self::NOTIFY_TEMPLATE_DOWNLOAD_AF_INVOICE,
                 'bs1' => self::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER,
                 'bs2' => self::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER,
@@ -105,6 +106,7 @@ class SendToNotifyHandler
                 'FINANCE' => self::NOTIFY_EMAIL_FINANCE,
                 default => null
             };
+
             $response = $this->sendEmailToNotify(
                 $sendToNotifyCommand,
                 $contents,
