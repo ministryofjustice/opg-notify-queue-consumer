@@ -190,7 +190,6 @@ jobs:
             echo "All checks succedeed!"
             exit 0
           fi
-          fi
 
   push-tags:
     runs-on: ubuntu-latest
