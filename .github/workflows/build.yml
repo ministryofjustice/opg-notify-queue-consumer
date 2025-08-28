@@ -97,7 +97,7 @@ jobs:
     name: Build Image
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@27a0f72b83c6b026fa4131230289bfbed9049cc7 # v3.15.0
     with:
-      image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer
+      image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer
       build_options: --build-arg ENABLE_DEV_DEPS=false --file docker/Dockerfile
       cli_commands: make copy-env
 
@@ -164,14 +164,14 @@ jobs:
 
       - name: Tag & Push
         run: |
-          docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:${{ needs.create-tag.outputs.tag }}
+          docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:${{ needs.create-tag.outputs.tag }}
           if [ $BRANCH_NAME == "main" ]; then
-            docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:main-${{ needs.create-tag.outputs.tag }}
-            docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:main-${{ needs.create-tag.outputs.tag }}-${{ needs.create-tag.outputs.timestamp }}
+            docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:main-${{ needs.create-tag.outputs.tag }}
+            docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:main-${{ needs.create-tag.outputs.tag }}-${{ needs.create-tag.outputs.timestamp }}
             # We want all of the tags pushed
-            docker push  --all-tags 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer
+            docker push  --all-tags 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer
           else
-            docker push 311462405659.dkr.ecr.eu-west-1.amazonaws.com/notify-queue-consumer:${{ needs.create-tag.outputs.tag }}
+            docker push 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:${{ needs.create-tag.outputs.tag }}
           fi
 
   end_of_pr_workflow:
