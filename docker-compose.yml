@@ -102,7 +102,7 @@ services:
     env_file: [ local.env ]
 
   localstack:
-    image: localstack/localstack:4.9.2
+    image: localstack/localstack:4.10.0
     environment:
       DEFAULT_REGION: eu-west-1
     volumes:
