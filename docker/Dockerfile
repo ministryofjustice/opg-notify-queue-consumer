@@ -19,7 +19,6 @@ RUN apk upgrade --no-cache busybox c-ares curl libcurl musl-utils nghttp2-libs l
 RUN docker-php-ext-install pcntl
 RUN docker-php-ext-install calendar
 RUN docker-php-ext-install intl
-RUN docker-php-ext-install opcache
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
