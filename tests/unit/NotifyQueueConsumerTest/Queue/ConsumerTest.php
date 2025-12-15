@@ -53,6 +53,16 @@ class ConsumerTest extends TestCase
         $command = $this->createSendToNotifyCommand();
         $updateDocumentStatusCommand = $this->createUpdateDocumentStatusCommand();
 
+        $this->loggerMock->expects(self::exactly(5))->method('info')
+            ->with(
+                $this->callback(function ($value) {
+                    return in_array($value, ['Asking for next message', 'Sending to Notify', 'Deleting processed message', 'Updating document status', 'Success']);
+                }),
+                $this->callback(function($context) {
+                    return $context['context'] === Context::NOTIFY_CONSUMER && (!isset($context['trace_id']) || $context['trace_id'] === 'the-trace-id');
+                })
+            );
+
         $this->queueMock->expects(self::once())->method('next')->willReturn($command);
         $this->sendToNotifyHandlerMock
             ->expects(self::once())
@@ -298,7 +308,8 @@ class ConsumerTest extends TestCase
                 'letterType' => 'a6',
                 'pendingOrDueReportType' => null,
                 'caseNumber' => '74442574',
-                'replyToType' => 'HW'
+                'replyToType' => 'HW',
+                'trace_id' => 'the-trace-id',
             ]
         );
     }

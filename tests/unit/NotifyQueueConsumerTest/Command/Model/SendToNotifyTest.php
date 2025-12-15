@@ -43,7 +43,8 @@ class SendToNotifyTest extends TestCase
             'letterType' => 'a6',
             'pendingOrDueReportType' => 'OPG102',
             'caseNumber' => '74442574',
-            'replyToType' => $replyToType
+            'replyToType' => $replyToType,
+            'traceId' => 'the-trace-id',
         ];
 
         $command = SendToNotify::fromArray($data);
@@ -52,6 +53,7 @@ class SendToNotifyTest extends TestCase
         self::assertEquals($data['uuid'], $command->getUuid());
         self::assertEquals($data['filename'], $command->getFilename());
         self::assertEquals($data['documentId'], $command->getDocumentId());
+        self::assertEquals('the-trace-id', $command->getTraceId());
     }
 
     /**

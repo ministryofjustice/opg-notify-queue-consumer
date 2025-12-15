@@ -22,6 +22,7 @@ class SendToNotify
     protected array $sendBy;
     protected ?string $letterType;
     protected ?string $replyToType;
+    protected ?string $traceId;
 
     private function __construct()
     {
@@ -67,6 +68,7 @@ class SendToNotify
         $instance->pendingOrDueReportType = $data['pendingOrDueReportType'];
         $instance->caseNumber = $data['caseNumber'];
         $instance->replyToType = $data['replyToType'];
+        $instance->traceId = $data['traceId'] ?? null;
 
         return $instance;
     }
@@ -137,5 +139,10 @@ class SendToNotify
     public function getReplyToType(): ?string
     {
         return $this->replyToType;
+    }
+
+    public function getTraceId(): ?string
+    {
+        return $this->traceId;
     }
 }
