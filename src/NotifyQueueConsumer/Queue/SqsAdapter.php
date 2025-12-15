@@ -43,6 +43,8 @@ class SqsAdapter implements QueueInterface
 
         $message = $body['message'];
 
+        $traceId = $raw['Attributes']['AwsTraceHeader'] ?? null;
+
         return SendToNotify::fromArray([
             'id' => $raw['ReceiptHandle'],
             'uuid' => $message['uuid'],
@@ -56,7 +58,8 @@ class SqsAdapter implements QueueInterface
             'letterType' => $message['letterType'],
             'pendingOrDueReportType' => $message['pendingOrDueReportType'],
             'caseNumber' => $message['caseNumber'],
-            'replyToType' => $message['replyToType']
+            'replyToType' => $message['replyToType'],
+            'traceId' => $traceId,
         ]);
     }
 

@@ -23,6 +23,11 @@ class OpgFormatter extends NormalizerFormatter
             'service_name' => $original['channel'],
         ];
 
+        if (isset($original['context']['trace_id'])) {
+            $record['trace_id'] = $original['context']['trace_id'];
+            unset($original['context']['trace_id']);
+        }
+
         unset($original['datetime']);
         unset($original['level_name']);
         unset($original['message']);

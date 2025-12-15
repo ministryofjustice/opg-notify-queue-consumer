@@ -21,7 +21,7 @@ class OpgFormatterTest extends TestCase
             'my_service',
             Level::Info,
             'my message',
-            ['x1' => 'field'],
+            ['x1' => 'field', 'trace_id' => 'my-trace-id'],
             ['x2' => 'field']
         );
 
@@ -35,5 +35,6 @@ class OpgFormatterTest extends TestCase
         $this->assertEquals('my_service', $out['service_name']);
         $this->assertEquals('field', $out['context']['x1']);
         $this->assertEquals('field', $out['extra']['x2']);
+        $this->assertEquals('my-trace-id', $out['trace_id']);
     }
 }
