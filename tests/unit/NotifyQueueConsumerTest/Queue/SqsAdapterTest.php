@@ -268,6 +268,52 @@ class SqsAdapterTest extends TestCase
     }
 
     /**
+     * @throws Exception
+     */
+    public function testNextExtractsTraceId(): void
+    {
+        $awsResult = $this->createMock(Result::class);
+        $config = [
+            'AttributeNames' => ['SentTimestamp'],
+            'MaxNumberOfMessages' => 1,
+            'MessageAttributeNames' => ['All'],
+            'QueueUrl' => self::QUEUE_URL,
+            'WaitTimeSeconds' => self::DEFAULT_WAIT_TIME,
+        ];
+
+        $rawBody = $this->getMessage(
+            'Test2',
+            'Test2',
+            'email',
+            'letter',
+            'a6',
+            'test@test.com',
+            'Testy McTestface',
+            'OPG104',
+            '96582147',
+            'HW'
+        );
+
+        $awsResult->method('get')->with('Messages')->willReturn([
+            [
+                'ReceiptHandle' => 'handle-12345',
+                'Body' => json_encode($rawBody),
+                'Attributes' => [
+                    'AWSTraceHeader' => 'trace-id-12345',
+                ],
+            ]
+        ]);
+
+        $this->sqsClientMock->expects(self::once())->method('__call')->with('receiveMessage', [$config])->willReturn($awsResult);
+
+        $sqsAdapter = new SqsAdapter($this->sqsClientMock, self::QUEUE_URL, self::DEFAULT_WAIT_TIME);
+
+        $actualResult = $sqsAdapter->next();
+
+        self::assertEquals('trace-id-12345', $actualResult->getTraceId());
+    }
+
+    /**
      * @return array<mixed>
      */
     public static function invalidMessageProvider(): array
