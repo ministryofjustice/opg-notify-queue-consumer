@@ -14,15 +14,6 @@
     "configMigration": true,
     "packageRules": [
         {
-            "groupName": "PHP version updates",
-            "groupSlug": "php-version",
-            "matchUpdateTypes": ["major", "minor"],
-            "prPriority": 1,
-            "minimumReleaseAge": "3 days",
-            "matchManagers": ["dockerfile", "docker-compose"],
-            "matchPackageNames": ["php", "jakzal/phpqa"]
-        },
-        {
             "automerge": true,
             "groupName": "Patch & Minor Updates",
             "groupSlug": "all-minor-patch-updates",
