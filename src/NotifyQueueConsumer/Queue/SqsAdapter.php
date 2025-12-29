@@ -24,7 +24,7 @@ class SqsAdapter implements QueueInterface
     public function next(): ?SendToNotify
     {
         $result = $this->client->receiveMessage([
-            'AttributeNames' => ['SentTimestamp'],
+            'AttributeNames' => ['All'],
             'MaxNumberOfMessages' => 1,
             'MessageAttributeNames' => ['All'],
             'QueueUrl' => $this->queueUrl,
@@ -43,6 +43,8 @@ class SqsAdapter implements QueueInterface
 
         $message = $body['message'];
 
+        $traceId = $raw['Attributes']['AWSTraceHeader'] ?? null;
+
         return SendToNotify::fromArray([
             'id' => $raw['ReceiptHandle'],
             'uuid' => $message['uuid'],
@@ -56,7 +58,8 @@ class SqsAdapter implements QueueInterface
             'letterType' => $message['letterType'],
             'pendingOrDueReportType' => $message['pendingOrDueReportType'],
             'caseNumber' => $message['caseNumber'],
-            'replyToType' => $message['replyToType']
+            'replyToType' => $message['replyToType'],
+            'traceId' => $traceId,
         ]);
     }
 
