@@ -1,5 +1,4 @@
 services:
-
   consumer:
     image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:latest
     build:
@@ -12,10 +11,10 @@ services:
         condition: service_healthy
       mock-sirius:
         condition: service_healthy
-    env_file: [ local.env ]
+    env_file: [local.env]
 
   phpstan:
-    image: jakzal/phpqa:php8.4-alpine
+    image: jakzal/phpqa:php8.5-alpine
     volumes:
       - .:/app
     command:
@@ -25,7 +24,7 @@ services:
       - "/app/tests/phpstan.neon"
 
   phpmetrics:
-    image: jakzal/phpqa:php8.4-alpine
+    image: jakzal/phpqa:php8.5-alpine
     volumes:
       - .:/app
     command:
@@ -34,7 +33,7 @@ services:
       - "/app/src/NotifyQueueConsumer"
 
   lint:
-    image: jakzal/phpqa:php8.4-alpine
+    image: jakzal/phpqa:php8.5-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -48,7 +47,7 @@ services:
       - /app/public
 
   phpmd:
-    image: jakzal/phpqa:php8.4-alpine
+    image: jakzal/phpqa:php8.5-alpine
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -59,7 +58,7 @@ services:
       - codesize,unusedcode,naming
 
   check-coverage:
-    image: jakzal/phpqa:php8.4-alpine
+    image: jakzal/phpqa:php8.5-alpine
     volumes:
       - .:/app
     command:
@@ -70,14 +69,14 @@ services:
       - "100"
 
   test:
-    image: jakzal/phpqa:php8.4-alpine
+    image: jakzal/phpqa:php8.5-alpine
     volumes:
       - .:/app
     command:
       - "php"
       - "-dpcov.enabled=1"
       - "-dpcov.directory=/app"
-      - "-dpcov.exclude=\"~vendor~\""
+      - '-dpcov.exclude="~vendor~"'
       - "/app/vendor/bin/phpunit"
       - "--configuration=/app/tests/phpunit.xml"
       - "--coverage-text"
@@ -99,7 +98,7 @@ services:
       - "--no-coverage"
       - "--log-junit=/var/www/test-results/functional/results.xml"
       - "--testsuite=functional"
-    env_file: [ local.env ]
+    env_file: [local.env]
 
   localstack:
     image: localstack/localstack:4.11.1
@@ -165,7 +164,7 @@ services:
 
   composer:
     image: composer
-    command: [ "install" ]
+    command: ["install"]
     volumes:
       - ~/.composer:/tmp
       - ./:/app
