@@ -136,7 +136,7 @@ class SendToNotifyHandler
      */
     private function sendLetterToNotify(string $reference, string $contents): array
     {
-        $sendResponse = $this->notifyClient->sendPrecompiledLetter($reference, $contents);
+        $sendResponse = $this->notifyClient->sendPrecompiledLetter($reference, $contents, 'economy');
 
         if (empty($sendResponse['id'])) {
             throw new UnexpectedValueException("No Notify id returned");
