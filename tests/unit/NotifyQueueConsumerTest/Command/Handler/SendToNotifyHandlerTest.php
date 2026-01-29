@@ -79,7 +79,7 @@ class SendToNotifyHandlerTest extends TestCase
         $this->mockNotifyClient
             ->expects(self::once())
             ->method('sendPrecompiledLetter')
-            ->with($data['uuid'], $contents)
+            ->with($data['uuid'], $contents, 'economy')
             ->willReturn($response);
 
         $this->notifyClientAndAssertions($response, $statusResponse, $command, $payload);
@@ -320,7 +320,7 @@ class SendToNotifyHandlerTest extends TestCase
         $this->mockNotifyClient
             ->expects(self::once())
             ->method('sendPrecompiledLetter')
-            ->with($data['uuid'], $contents)
+            ->with($data['uuid'], $contents, 'economy')
             ->willReturn($response);
 
         self::expectException(UnexpectedValueException::class);
@@ -351,7 +351,7 @@ class SendToNotifyHandlerTest extends TestCase
         $this->mockNotifyClient
             ->expects(self::once())
             ->method('sendPrecompiledLetter')
-            ->with($data['uuid'], $contents)
+            ->with($data['uuid'], $contents, 'economy')
             ->willReturn($response);
 
         $this->mockNotifyClient
