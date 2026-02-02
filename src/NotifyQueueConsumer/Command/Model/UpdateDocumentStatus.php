@@ -11,6 +11,7 @@ class UpdateDocumentStatus
     protected string $notifyStatus;
     protected string $sendByMethod;
     protected ?string $recipientEmailAddress;
+    protected ?string $postage;
 
     private function __construct()
     {
@@ -76,5 +77,10 @@ class UpdateDocumentStatus
     public function getRecipientEmailAddress(): ?string
     {
         return $this->recipientEmailAddress;
+    }
+
+    public function getPostage(): ?string
+    {
+        return $this->postage;
     }
 }
