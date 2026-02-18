@@ -1,3 +1,0 @@
-# firebase/php-jwt vuln required by alphagov/notifications-php-client
-# awaiting this PR https://github.com/alphagov/notifications-php-client/pull/145
-CVE-2025-45769 exp:2026-02-25
