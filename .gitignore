@@ -21,5 +21,3 @@ jm_behat_report.html
 /tmp-phpqa/
 
 local.env
-
-.trivy-cache
