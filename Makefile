@@ -4,7 +4,7 @@ lint: copy-env
 	docker compose run lint
 
 test-results:
-	mkdir -p -m 0777 test-results .trivy-cache
+	mkdir -p -m 0777 test-results
 
 setup-directories: test-results
 
@@ -39,10 +39,6 @@ functional-test: copy-env build-dev
 
 phpmetrics: copy-env
 	docker compose run phpmetrics
-
-scan: setup-directories copy-env
-	docker compose run --rm trivy image --format table --exit-code 0 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:latest
-	docker compose run --rm trivy image --format sarif --output /test-results/trivy.sarif --exit-code 1 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer:latest
 
 up: copy-env
 	docker compose up --wait consumer
