@@ -151,6 +151,8 @@ services:
       - "4011"
       - "-h"
       - "0.0.0.0"
+      - "--multiprocess"
+      - "false"
       - "/app/mock-sirius/openapi.yml"
     volumes:
       - "./docker/mock-sirius:/app/mock-sirius"
