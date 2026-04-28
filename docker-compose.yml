@@ -128,6 +128,8 @@ services:
       - "mock"
       - "-h"
       - "0.0.0.0"
+      - "--multiprocess"
+      - "false"
       - "/app/mock-notify/openapi.yml"
     volumes:
       - "./docker/mock-notify:/app/mock-notify"
@@ -151,6 +153,8 @@ services:
       - "4011"
       - "-h"
       - "0.0.0.0"
+      - "--multiprocess"
+      - "false"
       - "/app/mock-sirius/openapi.yml"
     volumes:
       - "./docker/mock-sirius:/app/mock-sirius"
