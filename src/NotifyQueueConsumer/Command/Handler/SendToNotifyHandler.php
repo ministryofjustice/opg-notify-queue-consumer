@@ -21,6 +21,7 @@ class SendToNotifyHandler
 
     public const NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE = '9286a7db-a316-4103-a1c7-7bc1fdbbaa81';
     public const NOTIFY_TEMPLATE_DOWNLOAD_A9_LETTER = '6b474e4a-28be-425b-8e90-f343159db5d6';
+    public const NOTIFY_TEMPLATE_DOWNLOAD_AD1_LETTER = 'a68caad8-656a-4f1f-9a97-fd2edbb0cae9';
     public const NOTIFY_TEMPLATE_DOWNLOAD_AF1_INVOICE = 'c9d90a53-7f06-445c-8897-5e06ffb5a9f7';
     public const NOTIFY_TEMPLATE_DOWNLOAD_AF2_INVOICE = '017b664c-2776-497b-ad6e-b25b8a365ae0';
     public const NOTIFY_TEMPLATE_DOWNLOAD_AF3_INVOICE = '0a94e58a-be9a-4344-a513-9db0d23f9f1e';
@@ -82,6 +83,7 @@ class SendToNotifyHandler
             $letterTemplate = match ($sendToNotifyCommand->getLetterType()) {
                 'a6' => self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
                 'a9' => self::NOTIFY_TEMPLATE_DOWNLOAD_A9_LETTER,
+                'ad1' => self::NOTIFY_TEMPLATE_DOWNLOAD_AD1_LETTER,
                 'af1' => self::NOTIFY_TEMPLATE_DOWNLOAD_AF1_INVOICE,
                 'af2' => self::NOTIFY_TEMPLATE_DOWNLOAD_AF2_INVOICE,
                 'af3' => self::NOTIFY_TEMPLATE_DOWNLOAD_AF3_INVOICE,
