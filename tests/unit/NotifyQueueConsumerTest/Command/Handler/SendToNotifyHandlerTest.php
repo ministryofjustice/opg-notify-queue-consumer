@@ -87,6 +87,7 @@ class SendToNotifyHandlerTest extends TestCase
 
     #[ArrayShape([
         'A6 Template' => "array",
+        'AD1 Template' => "array",
         'AF1 Template' => "array",
         'AF2 Template' => "array",
         'AF3 Template' => "array",
@@ -95,6 +96,7 @@ class SendToNotifyHandlerTest extends TestCase
     {
         return [
             'A6 Template' => ['a6', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE, 'FINANCE'],
+            'AD1 Template' => ['ad1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AD1_LETTER, 'FINANCE'],
             'AF1 Template' => ['af1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF1_INVOICE, 'FINANCE'],
             'AF2 Template' => ['af2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF2_INVOICE, 'FINANCE'],
             'AF3 Template' => ['af3', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_AF3_INVOICE, 'FINANCE'],
