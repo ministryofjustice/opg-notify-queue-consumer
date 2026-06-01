@@ -132,6 +132,10 @@ class SendToNotifyHandlerTest extends TestCase
     }
 
     #[ArrayShape([
+        'A1 Template' => "array",
+        'A3 Template' => "array",
+        'A4 Template' => "array",
+        'A5 Template' => "array",
         'BS1 Template' => "array",
         'BS2 Template' => "array",
         'FN14 Template' => "array",
@@ -145,6 +149,10 @@ class SendToNotifyHandlerTest extends TestCase
     ])] public static function annualReportLetterData(): array
     {
         return [
+            'A1 Template' => ['a1', SendToNotifyHandler::NOTIFY_USER_ISSUED_ALLOCATION_LETTERS, null],
+            'A3 Template' => ['a3', SendToNotifyHandler::NOTIFY_USER_ISSUED_ALLOCATION_LETTERS, null],
+            'A4 Template' => ['a4', SendToNotifyHandler::NOTIFY_USER_ISSUED_ALLOCATION_LETTERS, null],
+            'A5 Template' => ['a5', SendToNotifyHandler::NOTIFY_USER_ISSUED_ALLOCATION_LETTERS, null],
             'BS1 Template' => ['bs1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS1_LETTER, 'HW'],
             'BS2 Template' => ['bs2', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_BS2_LETTER, 'HW'],
             'RD1 Template' => ['rd1', SendToNotifyHandler::NOTIFY_TEMPLATE_DOWNLOAD_RD1_LETTER, 'PFA LAY'],
