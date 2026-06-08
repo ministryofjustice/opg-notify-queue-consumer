@@ -14,7 +14,7 @@ services:
     env_file: [local.env]
 
   phpstan:
-    image: jakzal/phpqa:php8.5-alpine
+    image: jakzal/phpqa:php8.5-alpine@sha256:71be5b3143e3ec9854ba6f20586ed746f606b6770aa05616e2aaf28e5d475c00
     volumes:
       - .:/app
     command:
@@ -24,7 +24,7 @@ services:
       - "/app/tests/phpstan.neon"
 
   phpmetrics:
-    image: jakzal/phpqa:php8.5-alpine
+    image: jakzal/phpqa:php8.5-alpine@sha256:71be5b3143e3ec9854ba6f20586ed746f606b6770aa05616e2aaf28e5d475c00
     volumes:
       - .:/app
     command:
@@ -33,7 +33,7 @@ services:
       - "/app/src/NotifyQueueConsumer"
 
   lint:
-    image: jakzal/phpqa:php8.5-alpine
+    image: jakzal/phpqa:php8.5-alpine@sha256:71be5b3143e3ec9854ba6f20586ed746f606b6770aa05616e2aaf28e5d475c00
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -47,7 +47,7 @@ services:
       - /app/public
 
   phpmd:
-    image: jakzal/phpqa:php8.5-alpine
+    image: jakzal/phpqa:php8.5-alpine@sha256:71be5b3143e3ec9854ba6f20586ed746f606b6770aa05616e2aaf28e5d475c00
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -58,7 +58,7 @@ services:
       - codesize,unusedcode,naming
 
   check-coverage:
-    image: jakzal/phpqa:php8.5-alpine
+    image: jakzal/phpqa:php8.5-alpine@sha256:71be5b3143e3ec9854ba6f20586ed746f606b6770aa05616e2aaf28e5d475c00
     volumes:
       - .:/app
     command:
@@ -69,7 +69,7 @@ services:
       - "100"
 
   test:
-    image: jakzal/phpqa:php8.5-alpine
+    image: jakzal/phpqa:php8.5-alpine@sha256:71be5b3143e3ec9854ba6f20586ed746f606b6770aa05616e2aaf28e5d475c00
     volumes:
       - .:/app
     command:
@@ -101,7 +101,7 @@ services:
     env_file: [local.env]
 
   localstack:
-    image: localstack/localstack:4.14.0
+    image: localstack/localstack:4.14.0@sha256:3ebc37595918b8accb852f8048fef2aff047d465167edd655528065b07bc364a
     environment:
       DEFAULT_REGION: eu-west-1
     volumes:
@@ -167,7 +167,7 @@ services:
       start_period: 10s
 
   composer:
-    image: composer
+    image: composer@sha256:41959f55087549989efcdfe953977b64e98e07ca0d7532d7e4b7fe1a90cc4159
     command: ["install"]
     volumes:
       - ~/.composer:/tmp
