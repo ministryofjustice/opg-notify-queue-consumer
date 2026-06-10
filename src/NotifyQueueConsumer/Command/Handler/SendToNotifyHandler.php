@@ -44,6 +44,7 @@ class SendToNotifyHandler
     public const NOTIFY_EMAIL_PFA_PRO = '3e6753b7-6602-4363-8c9a-c88d02b239ba';
     public const NOTIFY_EMAIL_PFA_PA = 'd8b4e115-5688-4161-82ca-82a93344a21f';
     public const NOTIFY_EMAIL_FINANCE = 'f1e5faf6-e6aa-4beb-b6b8-cfa418482653';
+    public const NOTIFY_USER_ISSUED_ALLOCATION_LETTERS = 'c715e22a-db7d-469d-849b-e85f540a6f2b';
 
     public function __construct(Filesystem $filesystem, Client $notifyClient)
     {
@@ -81,6 +82,7 @@ class SendToNotifyHandler
         $sendBy = $sendToNotifyCommand->getSendBy();
         if ($sendBy['method'] === 'email' && $sendBy['documentType'] === 'letter') {
             $letterTemplate = match ($sendToNotifyCommand->getLetterType()) {
+                'a1', 'a3', 'a4', 'a5' => self::NOTIFY_USER_ISSUED_ALLOCATION_LETTERS,
                 'a6' => self::NOTIFY_TEMPLATE_DOWNLOAD_A6_INVOICE,
                 'a9' => self::NOTIFY_TEMPLATE_DOWNLOAD_A9_LETTER,
                 'ad1' => self::NOTIFY_TEMPLATE_DOWNLOAD_AD1_LETTER,
