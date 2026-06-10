@@ -13,6 +13,7 @@ use NotifyQueueConsumer\Queue\DuplicateMessageException;
 use UnexpectedValueException;
 use Alphagov\Notifications\Exception;
 use League\Flysystem\UnableToReadFile;
+use Psr\Log\LoggerInterface;
 
 class SendToNotifyHandler
 {
@@ -46,10 +47,11 @@ class SendToNotifyHandler
     public const NOTIFY_EMAIL_FINANCE = 'f1e5faf6-e6aa-4beb-b6b8-cfa418482653';
     public const NOTIFY_USER_ISSUED_ALLOCATION_LETTERS = 'c715e22a-db7d-469d-849b-e85f540a6f2b';
 
-    public function __construct(Filesystem $filesystem, Client $notifyClient)
+    public function __construct(Filesystem $filesystem, Client $notifyClient, private readonly LoggerInterface $logger)
     {
         $this->filesystem = $filesystem;
         $this->notifyClient = $notifyClient;
+
     }
 
     /**
@@ -152,6 +154,10 @@ class SendToNotifyHandler
 
         $statusResponse = $this->notifyClient->getNotification($sendResponse['id']);
 
+        $this->logger->info('Letter sent');
+        $this->logger->info('Response logs', $sendResponse);
+        $this->logger->info('Notify response', ['response' => $statusResponse['status']]);
+
         if (empty($statusResponse['status'])) {
             throw new UnexpectedValueException(
                 sprintf("No Notify status found for the ID: %s", $sendResponse['id'])
@@ -196,6 +202,10 @@ class SendToNotifyHandler
         }
 
         $statusResponse = $this->notifyClient->getNotification($sendResponse['id']);
+
+        $this->logger->info('Email sent');
+        $this->logger->info('Response logs', $sendResponse);
+        $this->logger->info('Notify response', ['response' => $statusResponse['status']]);
 
         if (empty($statusResponse['status'])) {
             throw new UnexpectedValueException(
