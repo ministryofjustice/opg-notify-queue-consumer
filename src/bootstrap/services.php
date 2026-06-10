@@ -79,7 +79,8 @@ $queue = new SqsAdapter(
 
 $sendToNotifyHandler = new SendToNotifyHandler(
     $filesystem,
-    $notifyClient
+    $notifyClient,
+    $psrLoggerAdapter
 );
 
 $jwtAuthenticator = new JwtAuthenticator(

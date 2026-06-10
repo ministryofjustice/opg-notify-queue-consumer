@@ -21,6 +21,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use UnexpectedValueException;
 
 class SendToNotifyHandlerTest extends TestCase
@@ -35,10 +36,13 @@ class SendToNotifyHandlerTest extends TestCase
 
         $this->mockFilesystem = $this->createMock(Filesystem::class);
         $this->mockNotifyClient = $this->createMock(Client::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->handler = new SendToNotifyHandler(
             $this->mockFilesystem,
-            $this->mockNotifyClient
+            $this->mockNotifyClient,
+            $this->logger
         );
+
     }
 
     public function testRetrieveQueueMessageSendToNotifyPostLetterAndReturnCommandSuccess(): void

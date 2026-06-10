@@ -51,7 +51,6 @@ class SendToNotifyHandler
     {
         $this->filesystem = $filesystem;
         $this->notifyClient = $notifyClient;
-
     }
 
     /**
