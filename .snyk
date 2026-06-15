@@ -1,3 +1,12 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.25.1
-ignore: {}
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-PHP-MTDOWLINGJMESPATHPHP-17337032:
+    - '*':
+        reason:
+          2.9.1 is installed; detection is from nested dev composer.lock inside
+          league/flysystem-aws-s3-v3 vendor package
+        expires: 2026-07-15T10:47:10.481Z
+        created: 2026-06-15T10:47:10.485Z
 patch: {}
