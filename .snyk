@@ -2,11 +2,34 @@
 version: v1.25.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
+  SNYK-PHP-GUZZLEHTTPGUZZLE-17400370:
+    - aws/aws-sdk-php@3.379.11:
+      reason: False positive from league/flysystem-aws-s3-v3—we don't use this version of aws-sdk-php
+      expires: 2026-07-16T08:00:00.000Z
+      created: 2026-06-16T16:43:00.000Z
+  SNYK-PHP-GUZZLEHTTPGUZZLE-17400374:
+    - aws/aws-sdk-php@3.379.11:
+      reason: False positive from league/flysystem-aws-s3-v3—we don't use this version of aws-sdk-php
+      expires: 2026-07-16T08:00:00.000Z
+      created: 2026-06-16T16:43:00.000Z
+  SNYK-PHP-GUZZLEHTTPPSR7-17318030:
+    - aws/aws-sdk-php@3.379.11:
+      reason: False positive from league/flysystem-aws-s3-v3—we don't use this version of aws-sdk-php
+      expires: 2026-07-16T08:00:00.000Z
+      created: 2026-06-16T16:43:00.000Z
+  SNYK-PHP-GUZZLEHTTPPSR7-17318033:
+    - aws/aws-sdk-php@3.379.11:
+      reason: False positive from league/flysystem-aws-s3-v3—we don't use this version of aws-sdk-php
+      expires: 2026-07-16T08:00:00.000Z
+      created: 2026-06-16T16:43:00.000Z
+  SNYK-PHP-GUZZLEHTTPPSR7-17393718:
+    - aws/aws-sdk-php@3.379.11:
+      reason: False positive from league/flysystem-aws-s3-v3—we don't use this version of aws-sdk-php
+      expires: 2026-07-16T08:00:00.000Z
+      created: 2026-06-16T16:43:00.000Z
   SNYK-PHP-MTDOWLINGJMESPATHPHP-17337032:
-    - '*':
-        reason:
-          2.9.1 is installed; detection is from nested dev composer.lock inside
-          league/flysystem-aws-s3-v3 vendor package
-        expires: 2026-07-15T10:47:10.481Z
-        created: 2026-06-15T10:47:10.485Z
+    - aws/aws-sdk-php@3.379.11:
+      reason: False positive from league/flysystem-aws-s3-v3—we don't use this version of aws-sdk-php
+      expires: 2026-07-16T08:00:00.000Z
+      created: 2026-06-16T16:43:00.000Z
 patch: {}
