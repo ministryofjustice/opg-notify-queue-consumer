@@ -1,4 +1,4 @@
-all: lint static-analysis unit-test check-coverage build-dev functional-test build down
+all: lint static-analysis unit-test check-coverage functional-test build down
 
 lint: copy-env
 	docker compose run lint
@@ -20,21 +20,17 @@ unit-test: composer-install copy-env
 check-coverage: copy-env
 	docker compose run check-coverage
 
-DEV_DEPS:="false"
-
-build-dev: DEV_DEPS="true"
-
-build build-dev: copy-env
-	docker compose build consumer --build-arg ENABLE_DEV_DEPS=$(DEV_DEPS)
+build: copy-env
+	docker compose build consumer
 
 copy-env:
 	cp local.env.example local.env
 
-functional-test: copy-env build-dev
+functional-test: copy-env
 	docker compose up --wait -d localstack
 	docker compose up --wait --build --force-recreate -d mock-sirius
 	docker compose up --wait --build --force-recreate -d mock-notify
-	docker compose run test-functional
+	docker compose run --build test-functional
 	docker compose down
 
 phpmetrics: copy-env
