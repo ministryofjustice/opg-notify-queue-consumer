@@ -1,15 +1,22 @@
-FROM composer AS composer
+FROM composer:latest@sha256:7725eb4545c438629ae8bde3ef0bb9a5038ef566126ad878442a69007242d267 AS composer-prod
 
-ARG ENABLE_DEV_DEPS=false
 COPY composer.json composer.json
 COPY composer.lock composer.lock
 
 RUN composer check-platform-reqs
-RUN if [ "$ENABLE_DEV_DEPS" = "true" ] ; then composer install --prefer-dist --no-interaction --no-scripts; else \
-  composer install --prefer-dist --no-interaction --no-scripts --no-dev; fi
+RUN composer install --prefer-dist --no-interaction --no-scripts --no-dev
 RUN composer dumpautoload -o
 
-FROM php:8.5.7-cli-alpine@sha256:bc49fd4f6ea0f46fd45756349747400f668586ee1c4a69c63a436a6b51761350
+FROM composer:latest@sha256:7725eb4545c438629ae8bde3ef0bb9a5038ef566126ad878442a69007242d267AS composer-test
+
+COPY composer.json composer.json
+COPY composer.lock composer.lock
+
+RUN composer check-platform-reqs
+RUN composer install --prefer-dist --no-interaction --no-scripts
+RUN composer dumpautoload -o
+
+FROM FROM php:8.5.7-cli-alpine@sha256:bc49fd4f6ea0f46fd45756349747400f668586ee1c4a69c63a436a6b51761350 as build
 RUN apk --no-cache add \
   # needed by intl
   icu-dev
@@ -26,10 +33,21 @@ COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 WORKDIR /var/www/
 RUN mkdir -p test-results/unit
-COPY src src
-COPY public public
-COPY tests tests
+COPY --chown=www-data:www-data src src
+COPY --chown=www-data:www-data public public
 
-COPY --from=composer /app/vendor /var/www/vendor
+FROM build AS test
+COPY --from=composer-test /app/vendor /var/www/vendor
 RUN test -d /var/www/vendor
+COPY --chown=www-data:www-data tests tests
+RUN mkdir -p /var/www/test-results/functional
+RUN chown -R www-data:www-data /var/www/test-results/functional
+USER "www-data"
+CMD ["php", "-f", "/var/www/public/consumer.php"]
+
+
+FROM build AS production
+COPY --from=composer-prod /app/vendor /var/www/vendor
+RUN test -d /var/www/vendor
+USER "www-data"
 CMD ["php", "-f", "/var/www/public/consumer.php"]
