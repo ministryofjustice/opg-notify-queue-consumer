@@ -16,7 +16,7 @@ RUN composer check-platform-reqs
 RUN composer install --prefer-dist --no-interaction --no-scripts
 RUN composer dumpautoload -o
 
-FROM php:8.5.7-cli-alpine@sha256:bc49fd4f6ea0f46fd45756349747400f668586ee1c4a69c63a436a6b51761350 AS build
+FROM php:8.5.8-cli-alpine@sha256:8d7090ce03736b6ecfd739d87a46ab59b5d1d0d837f1ac7c5d2702f1d312f5a0 AS build
 RUN apk --no-cache add \
   # needed by intl
   icu-dev
