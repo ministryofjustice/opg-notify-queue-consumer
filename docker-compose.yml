@@ -7,6 +7,7 @@ services:
       target: production
     privileged: false
     user: www-data
+    read_only: true
     depends_on:
       localstack:
         condition: service_healthy
