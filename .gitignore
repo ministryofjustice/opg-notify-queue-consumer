@@ -18,6 +18,5 @@ jm_behat_report.html
 /test-results/
 /tests/.phpunit.cache
 /vendor/
-/tmp-phpqa/
 
 local.env
