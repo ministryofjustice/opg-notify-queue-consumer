@@ -28,79 +28,32 @@ defaults:
 
 jobs:
 
-  lint:
-    name: PHPCS
+  qa:
+    strategy:
+      fail-fast: false
+      matrix:
+        command: ['lint', 'static-analysis', 'unit-test', 'functional-test']
+    name: "QA: ${{ matrix.command }}"
     runs-on: ubuntu-latest
+    needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Run PHPCS
-        run: make lint
-
-
-  test-unit:
-    name: Unit Testing
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - run: |
-          cp local.env.example local.env
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-v1-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            composer-v1-${{ hashFiles('**/composer.lock') }}
-            composer-v1
-
-      - name: Run Unit Tests Docker
-        run: make unit-test
-
-      - name: Check Coverage
-        run: make check-coverage
-
+          path: /tmp/images
+          name: multi-arch-image-test
+      - name: Load Image
+        run: |
+          docker load -i /tmp/images/multi-arch-image-test.tar
+      - run: mkdir -p build/output
+      - run: make ${{ matrix.command }}
       - name: Upload Coverage
+        if: matrix.command == 'unit-test'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-report
           path: |
-            ./test-results/coverage
-
-  test-functional:
-    name: Functional Testing
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Build consumer dev image
-        run: make build DEV_DEPS="true"
-      - name: Run Functional Tests
-        run: make functional-test
-
-  metrics:
-    name: Metrics
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Generate report
-        run: make phpmetrics
-
-      - name: Upload Metrics
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: phpmetrics
-          path: |
-            ./test-results/phpmetrics
-
-  static-analysis:
-    name: Static Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Run PHPStan
-        run: make phpstan
+            ./build/output/unit-coverage.txt
 
   create-tag:
     name: Create Tags
@@ -147,13 +100,21 @@ jobs:
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@54c2ae52e1361f11d2623a3627bdf2c5ca2c3f0c # v3.19.18
     with:
       image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer
-      build_options: --build-arg ENABLE_DEV_DEPS=false --file docker/Dockerfile
+      build_options: --file docker/Dockerfile
       cli_commands: make copy-env
+
+  build-test:
+    name: Build Test Image
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@54c2ae52e1361f11d2623a3627bdf2c5ca2c3f0c # v3.19.18
+    with:
+      image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/notify-queue-consumer-test
+      build_options: --target=test --file docker/Dockerfile
+      artifact_name: multi-arch-image-test
 
   push:
     name: "Push Image"
     runs-on: ubuntu-latest
-    needs: ['lint', 'test-unit', 'test-functional', 'static-analysis', 'verify-readonly-fs', 'create-tag', 'build']
+    needs: ['qa', 'verify-readonly-fs', 'create-tag', 'build']
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -216,7 +177,7 @@ jobs:
     name: End of PR Workflow
     runs-on: ubuntu-latest
     if: always()
-    needs: ['lint', 'test-unit', 'test-functional', 'static-analysis', 'verify-readonly-fs', 'create-tag', 'build', 'push']
+    needs: ['qa', 'verify-readonly-fs', 'create-tag', 'build', 'push']
     steps:
       - name: End of PR Workflow
         run: |
