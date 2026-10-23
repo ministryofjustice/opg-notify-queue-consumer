@@ -41,4 +41,3 @@ Makefile
 composer.phar
 
 local.env
-tmp-phpqa
