@@ -38,13 +38,16 @@ COPY --chown=www-data:www-data src src
 COPY --chown=www-data:www-data public public
 
 FROM build AS test
+
+RUN apk add --no-cache --virtual .php-pie-deps autoconf build-base libtool
+COPY --from=ghcr.io/php/pie:bin@sha256:bc894d47ddfc4b805bf88f4528fa7c34ecca383f4bc30480ca67ec0a4d3f2cfe /pie /usr/bin/pie
+RUN pie install pecl/pcov:1.0.12
+RUN apk del .php-pie-deps
+
 COPY --from=composer-test /app/vendor /var/www/vendor
 RUN test -d /var/www/vendor
 COPY --chown=www-data:www-data tests tests
-RUN mkdir -p /var/www/test-results/functional
-RUN chown -R www-data:www-data /var/www/test-results/functional
 USER "www-data"
-CMD ["php", "-f", "/var/www/public/consumer.php"]
 
 
 FROM build AS production

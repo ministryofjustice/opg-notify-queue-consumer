@@ -1,40 +1,60 @@
 all: lint static-analysis unit-test check-coverage functional-test build down
 
-lint: copy-env
-	docker compose run lint
-
 test-results:
 	mkdir -p -m 0777 test-results
 
 setup-directories: test-results
 
-static-analysis phpstan: copy-env composer-install
-	docker compose run phpstan
-
 composer-install:
 	docker compose run composer
 
-unit-test: composer-install copy-env
-	docker compose --project-name notify-queue-consumer run --rm test
+lint:
+	docker compose run \
+	--volume ${PWD}/build/output/:/output/ \
+	--rm consumer-test \
+	vendor/bin/phpcs \
+		-p --report=checkstyle --standard=PSR12 \
+		--warning-severity=0 ./src ./public
 
-check-coverage: copy-env
-	docker compose run check-coverage
+static-analysis phpstan:
+	docker compose run \
+	--volume ${PWD}/build/output/:/output/ \
+	--rm consumer-test \
+	vendor/bin/phpstan \
+		analyse -c /var/www/tests/phpstan.neon
 
-build: copy-env
+unit-test: create-output-dir
+		docker compose run \
+		--volume ${PWD}/build/output/:/output/ \
+		--rm consumer-test \
+		vendor/bin/phpunit \
+			--configuration=/var/www/tests/phpunit.xml \
+			--coverage-text=/output/unit-coverage.txt \
+			--log-junit=/output/unit-test.xml \
+			--testsuite=unit
+
+build:
 	docker compose build consumer
 
 copy-env:
 	cp local.env.example local.env
 
-functional-test: copy-env
+create-output-dir:
+	mkdir -p -m 0777 build/output
+
+functional-test: create-output-dir
 	docker compose up --wait -d localstack
 	docker compose up --wait --build --force-recreate -d mock-sirius
 	docker compose up --wait --build --force-recreate -d mock-notify
-	docker compose run --build test-functional
-	docker compose down
-
-phpmetrics: copy-env
-	docker compose run phpmetrics
+	docker compose run \
+		--volume ${PWD}/build/output/:/output/ \
+		--env-from-file local.env.example \
+		--rm consumer-test \
+		vendor/bin/phpunit \
+			--configuration=/var/www/tests/phpunit.xml \
+			--no-coverage \
+			--log-junit=/output/functional-test.xml \
+			--testsuite=functional
 
 up: copy-env
 	docker compose up --wait consumer
