@@ -1,4 +1,4 @@
-FROM composer:2.10.3@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035672e84c2010fee  AS composer-prod
+FROM composer:2.11@sha256:919efe8e62179c71dfd31fad035fd671fe7454211c6b2aa30a10af0ab4acedba  AS composer-prod
 
 COPY composer.json composer.json
 COPY composer.lock composer.lock
@@ -7,7 +7,7 @@ RUN composer check-platform-reqs
 RUN composer install --prefer-dist --no-interaction --no-scripts --no-dev
 RUN composer dumpautoload -o
 
-FROM composer:2.10.3@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035672e84c2010fee  AS composer-test
+FROM composer:2.11@sha256:919efe8e62179c71dfd31fad035fd671fe7454211c6b2aa30a10af0ab4acedba  AS composer-test
 
 COPY composer.json composer.json
 COPY composer.lock composer.lock
@@ -16,7 +16,7 @@ RUN composer check-platform-reqs
 RUN composer install --prefer-dist --no-interaction --no-scripts
 RUN composer dumpautoload -o
 
-FROM php:8.5.12-cli-alpine@sha256:e899a75c775804e5466dbd9c96b31f8b6c6ae2ddb053a8466223a0c32992ff8e AS build
+FROM php:8.5.12-cli-alpine@sha256:b9d7db51a2b83c41420ba04de0b90e6078d4b6440e5cc480fc4dc51b18e0b6db AS build
 RUN apk --no-cache add \
   # needed by intl
   icu-dev
