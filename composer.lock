@@ -4127,7 +4127,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.5.12"
+        "php": ">=8.5.13"
     },
     "platform-dev": {},
     "platform-overrides": {
